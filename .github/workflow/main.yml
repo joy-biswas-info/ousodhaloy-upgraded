@@ -1,0 +1,31 @@
+name: Deploy via FTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: 103.159.37.114
+          username: ousodhaloy_joy@ousodhaloy.com
+          password: ousodhaloy_joy
+          protocol: ftp
+          port: 21
+          server-dir: public_html/
+
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            tests/**
+            .env

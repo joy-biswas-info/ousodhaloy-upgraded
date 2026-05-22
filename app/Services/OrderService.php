@@ -1,0 +1,240 @@
+<?php
+namespace App\Services;
+
+use App\Models\{Order, OrderItem, OrderStatusHistory, Product, PromoCode, Setting, LoyaltyPoint};
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
+class OrderService
+{
+    public function __construct(
+        private SmsService $sms,
+    ) {
+    }
+
+    /**
+     * Create an order from cart data.
+     */
+    public function create(array $data, ?int $userId = null): Order
+    {
+        return DB::transaction(function () use ($data, $userId) {
+
+            // 1. Validate items & calculate subtotal
+            $orderItems = [];
+            $subtotal = 0;
+
+            foreach ($data['items'] as $item) {
+                $product = Product::active()->lockForUpdate()->findOrFail($item['product_id']);
+
+                if ($product->stock < $item['qty']) {
+                    throw new \Exception("Insufficient stock for: {$product->name}");
+                }
+
+                $price = $product->effective_price;
+                $lineTotal = round($price * $item['qty'], 2);
+                $subtotal += $lineTotal;
+
+                $orderItems[] = [
+                    'product' => $product,
+                    'price' => $price,
+                    'mrp' => $product->mrp,
+                    'qty' => $item['qty'],
+                    'subtotal' => $lineTotal,
+                ];
+            }
+
+            // 2. Promo code
+            $discount = 0;
+            $promoCode = null;
+            if (!empty($data['promo_code'])) {
+                $promo = PromoCode::where('code', strtoupper($data['promo_code']))->first();
+                if ($promo && $promo->isValid()) {
+                    // Check per-user limit
+                    if ($userId) {
+                        $userUsage = \App\Models\PromoCodeUsage::where('promo_code_id', $promo->id)
+                            ->where('user_id', $userId)->count();
+                        if ($userUsage < $promo->per_user_limit) {
+                            $discount = $promo->calculateDiscount($subtotal);
+                            $promoCode = $promo->code;
+                        }
+                    } else {
+                        $discount = $promo->calculateDiscount($subtotal);
+                        $promoCode = $promo->code;
+                    }
+                }
+            }
+
+            // 3. Delivery charge
+            $deliveryCharge = $this->calculateDelivery(
+                $subtotal - $discount,
+                $data['shipping_division'],
+                $data['shipping_district']
+            );
+
+            $total = $subtotal + $deliveryCharge - $discount;
+
+            // 4. Create order
+            $order = Order::create([
+                'user_id' => $userId,
+                'guest_name' => $userId ? null : ($data['guest_name'] ?? $data['shipping_name']),
+                'guest_email' => $userId ? null : ($data['guest_email'] ?? null),
+                'guest_phone' => $userId ? null : ($data['shipping_phone']),
+                'status' => 'pending',
+                'payment_status' => $data['payment_method'] === 'cod' ? 'unpaid' : 'pending',
+                'payment_method' => $data['payment_method'],
+                'subtotal' => $subtotal,
+                'delivery_charge' => $deliveryCharge,
+                'discount' => $discount,
+                'total' => $total,
+                'promo_code' => $promoCode,
+                'shipping_name' => $data['shipping_name'],
+                'shipping_phone' => $data['shipping_phone'],
+                'shipping_email' => $data['shipping_email'] ?? null,
+                'shipping_division' => $data['shipping_division'],
+                'shipping_district' => $data['shipping_district'],
+                'shipping_upazila' => $data['shipping_upazila'] ?? null,
+                'shipping_address' => $data['shipping_address'],
+                'shipping_postcode' => $data['shipping_postcode'] ?? null,
+                'customer_note' => $data['notes'] ?? null,
+                'prescription_image' => $data['prescription_image'] ?? null,
+            ]);
+
+            // 5. Create items & deduct stock
+            foreach ($orderItems as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product']->id,
+                    'product_name' => $item['product']->name,
+                    'product_sku' => $item['product']->sku,
+                    'price' => $item['price'],
+                    'mrp' => $item['mrp'],
+                    'quantity' => $item['qty'],
+                    'subtotal' => $item['subtotal'],
+                ]);
+                $item['product']->decrementStock($item['qty']);
+            }
+
+            // 6. Status history
+            OrderStatusHistory::create([
+                'order_id' => $order->id,
+                'status' => 'pending',
+                'note' => 'Order placed',
+                'changed_by' => 'customer',
+            ]);
+
+            // 7. Update promo usage
+            if ($promoCode) {
+                $promo = PromoCode::where('code', $promoCode)->first();
+                $promo?->increment('used_count');
+                \App\Models\PromoCodeUsage::create([
+                    'promo_code_id' => $promo->id,
+                    'order_id' => $order->id,
+                    'user_id' => $userId,
+                    'discount_amount' => $discount,
+                ]);
+            }
+
+            // 8. Loyalty points (earn 1 point per ৳10)
+            if ($userId) {
+                $points = (int) ($total / 10);
+                if ($points > 0) {
+                    LoyaltyPoint::create([
+                        'user_id' => $userId,
+                        'points' => $points,
+                        'type' => 'earn',
+                        'description' => "Earned for order #{$order->order_number}",
+                        'order_id' => $order->id,
+                    ]);
+                }
+            }
+
+            // 9. Send confirmation SMS
+            $this->sms->orderConfirm($order);
+
+            return $order->fresh(['items']);
+        });
+    }
+
+    /**
+     * Update order status with history + SMS.
+     */
+    public function updateStatus(Order $order, string $newStatus, string $note = '', bool $notifyCustomer = true): bool
+    {
+        if ($order->status === $newStatus)
+            return false;
+
+        $order->update([
+            'status' => $newStatus,
+            'delivered_at' => $newStatus === 'delivered' ? now() : $order->delivered_at,
+        ]);
+
+        OrderStatusHistory::create([
+            'order_id' => $order->id,
+            'status' => $newStatus,
+            'note' => $note ?: null,
+            'changed_by' => Auth::user()?->name ?? 'system',
+            'notify_customer' => $notifyCustomer,
+        ]);
+
+        // Restore stock on cancel
+        if ($newStatus === 'cancelled') {
+            foreach ($order->items as $item) {
+                $item->product?->restoreStock($item->quantity);
+            }
+        }
+
+        // SMS notification
+        if ($notifyCustomer) {
+            $this->sms->orderStatusUpdate($order, $newStatus);
+        }
+
+        return true;
+    }
+
+    /**
+     * Calculate delivery charge based on location.
+     */
+    public function calculateDelivery(float $orderTotal, string $division, string $district): float
+    {
+        $zone = \App\Models\DeliveryZone::where('division', $division)
+            ->whereJsonContains('districts', $district)
+            ->where('is_active', true)
+            ->first();
+
+        $charge = $zone ? $zone->delivery_charge : (float) Setting::get('delivery_charge', 60);
+        $freeAbove = $zone ? $zone->free_delivery_above : (float) Setting::get('free_delivery_min', 500);
+
+        return $orderTotal >= $freeAbove ? 0 : $charge;
+    }
+
+    /**
+     * Validate a promo code for a given subtotal.
+     */
+    public function validatePromo(string $code, float $subtotal, ?int $userId = null): array
+    {
+        $promo = PromoCode::where('code', strtoupper($code))->first();
+
+        if (!$promo || !$promo->isValid()) {
+            return ['valid' => false, 'message' => 'Invalid or expired promo code'];
+        }
+        if ($subtotal < $promo->min_order) {
+            return ['valid' => false, 'message' => "Minimum order amount ৳{$promo->min_order} required"];
+        }
+        if ($userId && $promo->first_order_only) {
+            $hasOrders = Order::where('user_id', $userId)->where('status', '!=', 'cancelled')->exists();
+            if ($hasOrders) {
+                return ['valid' => false, 'message' => 'This code is for first orders only'];
+            }
+        }
+
+        $discount = $promo->calculateDiscount($subtotal);
+        return [
+            'valid' => true,
+            'code' => $promo->code,
+            'type' => $promo->type,
+            'value' => $promo->value,
+            'discount' => $discount,
+            'message' => "Promo applied! You save ৳{$discount}",
+        ];
+    }
+}

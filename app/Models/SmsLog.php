@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class SmsLog extends Model
+{
+    protected $fillable = ['phone', 'message', 'status', 'provider', 'reference', 'purpose', 'order_id', 'response'];
+    protected $casts = ['response' => 'array'];
+}

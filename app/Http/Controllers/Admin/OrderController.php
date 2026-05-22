@@ -1,0 +1,200 @@
+<?php
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\{Order, Setting};
+use App\Services\{OrderService, PathaoService};
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+
+class OrderController extends Controller
+{
+    public function __construct(
+        private OrderService $orderService,
+        private PathaoService $pathao,
+    ) {
+    }
+
+    public function index(Request $request)
+    {
+        $query = Order::with('items')->latest();
+
+        if ($q = $request->q)
+            $query->where(
+                fn($sub) =>
+                $sub->where('order_number', 'like', "%{$q}%")
+                    ->orWhere('shipping_name', 'like', "%{$q}%")
+                    ->orWhere('shipping_phone', 'like', "%{$q}%")
+                    ->orWhere('guest_phone', 'like', "%{$q}%")
+            );
+
+        if ($status = $request->status)
+            $query->where('status', $status);
+        if ($payment = $request->payment_status)
+            $query->where('payment_status', $payment);
+        if ($method = $request->payment_method)
+            $query->where('payment_method', $method);
+        if ($from = $request->date_from)
+            $query->whereDate('created_at', '>=', $from);
+        if ($to = $request->date_to)
+            $query->whereDate('created_at', '<=', $to);
+
+        $orders = $query->paginate(20)->withQueryString();
+        $statusCounts = Order::selectRaw('status, count(*) as count')->groupBy('status')->pluck('count', 'status');
+        return view('admin.orders.index', compact('orders', 'statusCounts'));
+    }
+
+    public function show(Order $order)
+    {
+        $order->load('items.product', 'statusHistory', 'user');
+
+        $steadfastEnabled = Setting::get('steadfast_enabled', 'false') === 'true';
+
+        $pathaoDefaults = [
+            'city' => (int) Setting::get('pathao_default_city_id', 0),
+            'zone' => (int) Setting::get('pathao_default_zone_id', 0),
+            'area' => (int) Setting::get('pathao_default_area_id', 0),
+        ];
+
+        return view('admin.orders.show', compact('order', 'steadfastEnabled', 'pathaoDefaults'));
+    }
+
+    public function updateStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|string',
+            'note' => 'nullable|string|max:500',
+            'notify_customer' => 'nullable|boolean',
+        ]);
+
+        $notify = $request->boolean('notify_customer', true);
+        $this->orderService->updateStatus($order, $request->status, $request->note ?? '', $notify);
+
+        return back()->with('success', "Order status updated to: " . Order::STATUS_LABELS[$request->status]);
+    }
+
+    public function updatePayment(Request $request, Order $order)
+    {
+        $request->validate(['payment_status' => 'required|in:unpaid,pending,paid,failed,refunded']);
+        $order->update(['payment_status' => $request->payment_status]);
+        return back()->with('success', 'Payment status updated.');
+    }
+
+    public function pushToPathao(Request $request, Order $order)
+    {
+        // city_id and zone_id come from the modal form; area_id is optional
+        $cityId = $request->integer('pathao_city_id') ?: null;
+        $zoneId = $request->integer('pathao_zone_id') ?: null;
+        $areaId = $request->integer('pathao_area_id') ?: null;
+
+        $result = $this->pathao->createOrder($order, $cityId, $zoneId, $areaId);
+
+        if ($result['success']) {
+            $this->orderService->updateStatus($order, 'ready_to_ship', 'Pushed to Pathao', false);
+            return back()->with('success', "Pushed to Pathao ✅  Consignment: {$order->fresh()->pathao_consignment_id}");
+        }
+        return back()->with('error', 'Pathao error: ' . ($result['error'] ?? 'Unknown'));
+    }
+
+    public function pathaoLookup(Request $request)
+    {
+        $type = $request->type; // cities | zones | areas
+        try {
+            $data = match ($type) {
+                'cities' => $this->pathao->getCities(),
+                'zones' => $this->pathao->getZones((int) $request->city_id),
+                'areas' => $this->pathao->getAreas((int) $request->zone_id),
+                default => [],
+            };
+            return response()->json(['success' => true, 'data' => $data]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
+        }
+    }
+
+    public function syncPathao(Order $order)
+    {
+        $synced = $this->pathao->syncOrderStatus($order);
+        return back()->with('success', $synced ? 'Status synced from Pathao.' : 'No update from Pathao.');
+    }
+
+    public function adminNote(Request $request, Order $order)
+    {
+        $request->validate(['admin_note' => 'nullable|string|max:1000']);
+        $order->update(['admin_note' => $request->admin_note]);
+        return back()->with('success', 'Note saved.');
+    }
+
+    public function invoice(Order $order)
+    {
+        $order->load('items.product');
+        $pdf = Pdf::loadView('admin.orders.invoice', compact('order'));
+        $pdf->setPaper('A4', 'portrait');
+        return $pdf->download("Invoice-{$order->order_number}.pdf");
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:confirm,cancel,export',
+            'order_ids' => 'required|array',
+        ]);
+
+        $orders = Order::whereIn('id', $request->order_ids)->get();
+
+        if ($request->action === 'export') {
+            return Excel::download(new \App\Exports\OrdersExport($orders), 'orders.xlsx');
+        }
+
+        $statusMap = ['confirm' => 'confirmed', 'cancel' => 'cancelled'];
+        $newStatus = $statusMap[$request->action];
+
+        foreach ($orders as $order) {
+            $this->orderService->updateStatus($order, $newStatus, 'Bulk action', false);
+        }
+
+        return back()->with('success', count($orders) . " orders updated to {$newStatus}.");
+    }
+    // ── Steadfast courier ─────────────────────────────────────────────────
+
+    public function pushToSteadfast(Order $order)
+    {
+        $result = app(\App\Services\SteadfastService::class)->createOrder($order);
+        if ($result['success']) {
+            $this->orderService->updateStatus($order, 'ready_to_ship', 'Pushed to Steadfast', false);
+            return back()->with('success', "Order pushed to Steadfast. Consignment: {$order->fresh()->steadfast_consignment_id}");
+        }
+        return back()->with('error', $result['error'] ?? 'Failed to create Steadfast order.');
+    }
+
+    public function syncSteadfast(Order $order)
+    {
+        $synced = app(\App\Services\SteadfastService::class)->syncOrderStatus($order);
+        return back()->with('success', $synced ? 'Status synced from Steadfast.' : 'No update from Steadfast.');
+    }
+
+    // ── Shipping labels ───────────────────────────────────────────────────
+
+    public function shippingLabel(Order $order)
+    {
+        $order->load('items');
+        $courier = $order->courier ?? ($order->pathao_consignment_id ? 'pathao' : null);
+
+        if (!$courier) {
+            return back()->with('error', 'This order has not been assigned to a courier yet.');
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.orders.shipping-label', compact('order', 'courier'));
+        $pdf->setPaper([0, 0, 283.46, 425.20], 'portrait'); // 10cm × 15cm label
+        return $pdf->download("Label-{$order->order_number}.pdf");
+    }
+
+    public function shippingLabelPreview(Order $order)
+    {
+        $order->load('items');
+        $courier = $order->courier ?? ($order->pathao_consignment_id ? 'pathao' : null);
+        return view('admin.orders.shipping-label', compact('order', 'courier'));
+    }
+}
+
