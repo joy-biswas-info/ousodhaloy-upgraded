@@ -21,7 +21,7 @@ jobs:
           password: ousodhaloy_joy
           protocol: ftp
           port: 21
-          server-dir: public_html/
+          server-dir: upgrade.ousodhaloy.com/
 
           exclude: |
             **/.git*
