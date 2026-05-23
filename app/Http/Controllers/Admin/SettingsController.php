@@ -34,7 +34,19 @@ class SettingsController extends Controller
 
     // All keys per group — used to know which keys to save
     private const GROUPS = [
-        'general' => ['site_name', 'site_tagline', 'site_phone', 'site_email', 'site_address', 'maintenance_mode'],
+        'general' => [
+            'site_name',
+            'site_tagline',
+            'site_phone',
+            'site_email',
+            'site_address',
+            'maintenance_mode',
+            'brand_primary',
+            'brand_dark',
+            'brand_light',
+            'brand_bg',
+            'messenger_url'
+        ],
         'orders' => ['guest_checkout', 'free_delivery_min', 'delivery_charge', 'min_order_amount'],
         'payment' => [
             'cod_enabled',
@@ -113,6 +125,46 @@ class SettingsController extends Controller
             }
         }
         return back()->with('success', 'Meta Pixel settings saved!');
+    }
+
+    // ── Customization ─────────────────────────────────────────────────────
+
+    public function customization()
+    {
+        $settings = Setting::all()->pluck('value', 'key');
+        $banners = \App\Models\Banner::orderBy('position')->orderBy('sort_order')->paginate(20);
+        return view('admin.customization.index', compact('settings', 'banners'));
+    }
+
+    public function saveCustomization(\Illuminate\Http\Request $request)
+    {
+        if ($request->filled('logo_media_path')) {
+            Setting::set('site_logo', $request->logo_media_path, 'general');
+        } elseif ($request->hasFile('site_logo')) {
+            $file = $request->file('site_logo');
+            $seoName = \App\Models\Media::seoFilename($file->getClientOriginalName(), 'settings');
+            $path = $file->storeAs('settings', $seoName, 'public');
+            \App\Models\Media::create([
+                'filename' => $seoName,
+                'original_name' => $file->getClientOriginalName(),
+                'path' => $path,
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
+                'alt_text' => 'Site Logo',
+                'folder' => 'settings',
+                'uploaded_by' => auth()->id(),
+            ]);
+            Setting::set('site_logo', $path, 'general');
+        }
+        foreach (['brand_primary', 'brand_dark', 'brand_light', 'brand_bg'] as $k) {
+            if ($request->filled($k))
+                Setting::set($k, $request->input($k), 'general');
+        }
+        foreach (['site_name', 'site_tagline', 'site_phone', 'site_email', 'site_address', 'messenger_url', 'hero_banner_height', 'promo_banner_height'] as $k) {
+            if ($request->has($k))
+                Setting::set($k, $request->input($k), 'general');
+        }
+        return back()->with('success', 'Customization saved!');
     }
 
     // ── Promo Codes ───────────────────────────────────────────────────────

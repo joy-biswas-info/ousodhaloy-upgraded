@@ -52,7 +52,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::mYFkTePyhgMsWTgs',
+            '_route' => 'generated::maczGcJC8wikiog8',
           ),
           1 => NULL,
           2 => 
@@ -72,7 +72,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::Xz9J6vWBFYJzvFrS',
+            '_route' => 'generated::8AdXVlmTK66r2UBX',
           ),
           1 => NULL,
           2 => 
@@ -111,7 +111,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::8gjBmwWxTgikQOUf',
+            '_route' => 'generated::NlMV1if7CUHsxrF5',
           ),
           1 => NULL,
           2 => 
@@ -698,62 +698,6 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      '/admin/media' => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'admin.media.index',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'GET' => 0,
-            'HEAD' => 1,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-        1 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'admin.media.store',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'POST' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-      ),
-      '/admin/media/search' => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'admin.media.search',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'GET' => 0,
-            'HEAD' => 1,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-      ),
       '/admin/products/bulk' => 
       array (
         0 => 
@@ -1211,6 +1155,42 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/admin/customization' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'admin.customization.index',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+        1 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'admin.customization.save',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
       '/admin/settings' => 
       array (
         0 => 
@@ -1357,6 +1337,62 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/admin/media/search' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'admin.media.search',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/admin/media' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'admin.media.index',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+        1 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'admin.media.store',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
       '/admin/sms-logs' => 
       array (
         0 => 
@@ -1380,7 +1416,7 @@ app('router')->setCompiledRoutes(
     ),
     2 => 
     array (
-      0 => '{^(?|/livewire/preview\\-file/([^/]++)(*:39)|/shop/product/([^/]++)(*:68)|/cart/(?|update/([^/]++)(*:99)|remove/([^/]++)(*:121))|/order/([^/]++)(*:145)|/admin/(?|media/([^/]++)(?|(*:180))|pr(?|oducts/([^/]++)(?|/(?|restore(*:223)|force(*:236)|edit(*:248))|(*:257))|escriptions/([^/]++)/review(*:293))|orders/([^/]++)(?|(*:320)|/(?|s(?|t(?|atus(*:344)|eadfast(*:359))|ync\\-(?|pathao(*:382)|steadfast(*:399))|hipping\\-label(*:422))|pa(?|yment(*:441)|thao(*:453))|note(*:466)|invoice(*:481)))|categories/([^/]++)(?|/edit(*:518)|(*:526))|brands/([^/]++)(?|/edit(*:558)|(*:566))|users/([^/]++)(?|(*:592))|reviews/([^/]++)(?|/approve(*:628)|(*:636))|settings/(?|promos/([^/]++)(?|/toggle(*:682)|(*:690))|banners/([^/]++)(*:715)|delivery\\-zones/([^/]++)(?|(*:750)))))/?$}sDu',
+      0 => '{^(?|/livewire/preview\\-file/([^/]++)(*:39)|/shop/product/([^/]++)(*:68)|/cart/(?|update/([^/]++)(*:99)|remove/([^/]++)(*:121))|/order/([^/]++)(*:145)|/admin/(?|pr(?|oducts/([^/]++)(?|/(?|restore(*:197)|force(*:210)|edit(*:222))|(*:231))|escriptions/([^/]++)/review(*:267))|orders/([^/]++)(?|(*:294)|/(?|s(?|t(?|atus(*:318)|eadfast(*:333))|ync\\-(?|pathao(*:356)|steadfast(*:373))|hipping\\-label(*:396))|pa(?|yment(*:415)|thao(*:427))|note(*:440)|invoice(*:455)))|categories/([^/]++)(?|/edit(*:492)|(*:500))|brands/([^/]++)(?|/edit(*:532)|(*:540))|users/([^/]++)(?|(*:566))|reviews/([^/]++)(?|/approve(*:602)|(*:610))|settings/(?|promos/([^/]++)(?|/toggle(*:656)|(*:664))|banners/([^/]++)(*:689)|delivery\\-zones/([^/]++)(?|(*:724)))|media/([^/]++)(?|(*:751))))/?$}sDu',
     ),
     3 => 
     array (
@@ -1497,48 +1533,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      180 => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'admin.media.update',
-          ),
-          1 => 
-          array (
-            0 => 'medium',
-          ),
-          2 => 
-          array (
-            'PATCH' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => true,
-          6 => NULL,
-        ),
-        1 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'admin.media.destroy',
-          ),
-          1 => 
-          array (
-            0 => 'medium',
-          ),
-          2 => 
-          array (
-            'DELETE' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => true,
-          6 => NULL,
-        ),
-      ),
-      223 => 
+      197 => 
       array (
         0 => 
         array (
@@ -1560,7 +1555,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      236 => 
+      210 => 
       array (
         0 => 
         array (
@@ -1582,7 +1577,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      248 => 
+      222 => 
       array (
         0 => 
         array (
@@ -1605,7 +1600,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      257 => 
+      231 => 
       array (
         0 => 
         array (
@@ -1647,7 +1642,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      293 => 
+      267 => 
       array (
         0 => 
         array (
@@ -1669,7 +1664,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      320 => 
+      294 => 
       array (
         0 => 
         array (
@@ -1692,7 +1687,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      344 => 
+      318 => 
       array (
         0 => 
         array (
@@ -1714,7 +1709,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      359 => 
+      333 => 
       array (
         0 => 
         array (
@@ -1736,7 +1731,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      382 => 
+      356 => 
       array (
         0 => 
         array (
@@ -1758,7 +1753,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      399 => 
+      373 => 
       array (
         0 => 
         array (
@@ -1780,7 +1775,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      422 => 
+      396 => 
       array (
         0 => 
         array (
@@ -1803,7 +1798,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      441 => 
+      415 => 
       array (
         0 => 
         array (
@@ -1825,7 +1820,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      453 => 
+      427 => 
       array (
         0 => 
         array (
@@ -1847,7 +1842,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      466 => 
+      440 => 
       array (
         0 => 
         array (
@@ -1869,7 +1864,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      481 => 
+      455 => 
       array (
         0 => 
         array (
@@ -1892,7 +1887,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      518 => 
+      492 => 
       array (
         0 => 
         array (
@@ -1915,7 +1910,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      526 => 
+      500 => 
       array (
         0 => 
         array (
@@ -1957,7 +1952,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      558 => 
+      532 => 
       array (
         0 => 
         array (
@@ -1980,7 +1975,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      566 => 
+      540 => 
       array (
         0 => 
         array (
@@ -2022,7 +2017,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      592 => 
+      566 => 
       array (
         0 => 
         array (
@@ -2064,7 +2059,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      628 => 
+      602 => 
       array (
         0 => 
         array (
@@ -2086,7 +2081,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      636 => 
+      610 => 
       array (
         0 => 
         array (
@@ -2108,7 +2103,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      682 => 
+      656 => 
       array (
         0 => 
         array (
@@ -2130,7 +2125,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      690 => 
+      664 => 
       array (
         0 => 
         array (
@@ -2152,7 +2147,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      715 => 
+      689 => 
       array (
         0 => 
         array (
@@ -2174,7 +2169,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      750 => 
+      724 => 
       array (
         0 => 
         array (
@@ -2204,6 +2199,47 @@ app('router')->setCompiledRoutes(
           1 => 
           array (
             0 => 'zone',
+          ),
+          2 => 
+          array (
+            'DELETE' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      751 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'admin.media.update',
+          ),
+          1 => 
+          array (
+            0 => 'medium',
+          ),
+          2 => 
+          array (
+            'PATCH' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+        1 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'admin.media.destroy',
+          ),
+          1 => 
+          array (
+            0 => 'medium',
           ),
           2 => 
           array (
@@ -2298,7 +2334,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::mYFkTePyhgMsWTgs' => 
+    'generated::maczGcJC8wikiog8' => 
     array (
       'methods' => 
       array (
@@ -2310,7 +2346,7 @@ app('router')->setCompiledRoutes(
       array (
         'uses' => 'Livewire\\Mechanisms\\FrontendAssets\\FrontendAssets@returnJavaScriptAsFile',
         'controller' => 'Livewire\\Mechanisms\\FrontendAssets\\FrontendAssets@returnJavaScriptAsFile',
-        'as' => 'generated::mYFkTePyhgMsWTgs',
+        'as' => 'generated::maczGcJC8wikiog8',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2326,7 +2362,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::Xz9J6vWBFYJzvFrS' => 
+    'generated::8AdXVlmTK66r2UBX' => 
     array (
       'methods' => 
       array (
@@ -2338,7 +2374,7 @@ app('router')->setCompiledRoutes(
       array (
         'uses' => 'Livewire\\Mechanisms\\FrontendAssets\\FrontendAssets@maps',
         'controller' => 'Livewire\\Mechanisms\\FrontendAssets\\FrontendAssets@maps',
-        'as' => 'generated::Xz9J6vWBFYJzvFrS',
+        'as' => 'generated::8AdXVlmTK66r2UBX',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2409,7 +2445,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::8gjBmwWxTgikQOUf' => 
+    'generated::NlMV1if7CUHsxrF5' => 
     array (
       'methods' => 
       array (
@@ -2438,7 +2474,7 @@ app('router')->setCompiledRoutes(
                         \'exception\' => $exception,
                     ]), status: $exception ? 500 : 200);
                 }";s:5:"scope";s:54:"Illuminate\\Foundation\\Configuration\\ApplicationBuilder";s:4:"this";N;s:4:"self";s:32:"00000000000008000000000000000000";}}',
-        'as' => 'generated::8gjBmwWxTgikQOUf',
+        'as' => 'generated::NlMV1if7CUHsxrF5',
       ),
       'fallback' => false,
       'defaults' => 
@@ -3684,198 +3720,6 @@ app('router')->setCompiledRoutes(
         'uses' => 'App\\Http\\Controllers\\Admin\\DashboardController@index',
         'controller' => 'App\\Http\\Controllers\\Admin\\DashboardController@index',
         'as' => 'admin.dashboard',
-        'namespace' => NULL,
-        'prefix' => '/admin',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'admin.media.index' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'GET',
-        1 => 'HEAD',
-      ),
-      'uri' => 'admin/media',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'manager',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@index',
-        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@index',
-        'as' => 'admin.media.index',
-        'namespace' => NULL,
-        'prefix' => '/admin',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'admin.media.store' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'POST',
-      ),
-      'uri' => 'admin/media',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'manager',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@store',
-        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@store',
-        'as' => 'admin.media.store',
-        'namespace' => NULL,
-        'prefix' => '/admin',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'admin.media.search' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'GET',
-        1 => 'HEAD',
-      ),
-      'uri' => 'admin/media/search',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'manager',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@search',
-        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@search',
-        'as' => 'admin.media.search',
-        'namespace' => NULL,
-        'prefix' => '/admin',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'admin.media.update' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'PATCH',
-      ),
-      'uri' => 'admin/media/{medium}',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'manager',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@update',
-        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@update',
-        'as' => 'admin.media.update',
-        'namespace' => NULL,
-        'prefix' => '/admin',
-        'where' => 
-        array (
-        ),
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'admin.media.destroy' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'DELETE',
-      ),
-      'uri' => 'admin/media/{medium}',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-          2 => 'manager',
-        ),
-        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@destroy',
-        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@destroy',
-        'as' => 'admin.media.destroy',
         'namespace' => NULL,
         'prefix' => '/admin',
         'where' => 
@@ -5822,6 +5666,83 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
+    'admin.customization.index' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'admin/customization',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'manager',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Admin\\SettingsController@customization',
+        'controller' => 'App\\Http\\Controllers\\Admin\\SettingsController@customization',
+        'as' => 'admin.customization.index',
+        'namespace' => NULL,
+        'prefix' => '/admin',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'admin.customization.save' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'admin/customization',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'manager',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Admin\\SettingsController@saveCustomization',
+        'controller' => 'App\\Http\\Controllers\\Admin\\SettingsController@saveCustomization',
+        'as' => 'admin.customization.save',
+        'namespace' => NULL,
+        'prefix' => '/admin',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
     'admin.settings.index' => 
     array (
       'methods' => 
@@ -6319,6 +6240,198 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
+    'admin.media.search' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'admin/media/search',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'manager',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@search',
+        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@search',
+        'as' => 'admin.media.search',
+        'namespace' => NULL,
+        'prefix' => '/admin',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'admin.media.index' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'admin/media',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'manager',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@index',
+        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@index',
+        'as' => 'admin.media.index',
+        'namespace' => NULL,
+        'prefix' => '/admin',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'admin.media.store' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'admin/media',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'manager',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@store',
+        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@store',
+        'as' => 'admin.media.store',
+        'namespace' => NULL,
+        'prefix' => '/admin',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'admin.media.update' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'PATCH',
+      ),
+      'uri' => 'admin/media/{medium}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'manager',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@update',
+        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@update',
+        'as' => 'admin.media.update',
+        'namespace' => NULL,
+        'prefix' => '/admin',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'admin.media.destroy' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'DELETE',
+      ),
+      'uri' => 'admin/media/{medium}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+          2 => 'manager',
+        ),
+        'uses' => 'App\\Http\\Controllers\\Admin\\MediaController@destroy',
+        'controller' => 'App\\Http\\Controllers\\Admin\\MediaController@destroy',
+        'as' => 'admin.media.destroy',
+        'namespace' => NULL,
+        'prefix' => '/admin',
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
     'admin.sms-logs' => 
     array (
       'methods' => 
@@ -6337,7 +6450,7 @@ app('router')->setCompiledRoutes(
         ),
         'uses' => 'O:55:"Laravel\\SerializableClosure\\UnsignedSerializableClosure":1:{s:12:"serializable";O:46:"Laravel\\SerializableClosure\\Serializers\\Native":5:{s:3:"use";a:0:{}s:8:"function";s:102:"fn() => \\view(\'admin.sms-logs\', [
         \'logs\' => \\App\\Models\\SmsLog::latest()->paginate(30),
-    ])";s:5:"scope";s:37:"Illuminate\\Routing\\RouteFileRegistrar";s:4:"this";N;s:4:"self";s:32:"0000000000000b180000000000000000";}}',
+    ])";s:5:"scope";s:37:"Illuminate\\Routing\\RouteFileRegistrar";s:4:"this";N;s:4:"self";s:32:"0000000000000b1a0000000000000000";}}',
         'as' => 'admin.sms-logs',
         'namespace' => NULL,
         'prefix' => '/admin',

@@ -1,12 +1,30 @@
+@import "tailwindcss";
+
+@source "./views";
+@source "./js";
+
+@theme {
+    --color-teal-50:  #f0fafa;
+    --color-teal-100: #e6f4f4;
+    --color-teal-200: #c4e8e8;
+    --color-teal-300: #93d5d5;
+    --color-teal-400: #5bbebe;
+    --color-teal-500: #35a5a5;
+    --color-teal-600: #13a09c;
+    --color-teal-700: #0e7673;
+    --color-teal-800: #0a5250;
+    --color-teal-900: #073f3d;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root { --teal: #0e7673; --teal-dark: #0a5250; --teal-bg: #e6f4f4; }
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; }
 body { font-family: 'Inter', sans-serif; }
-.font-inter { font-family: 'Inter', sans-serif; }
 [x-cloak] { display: none !important; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
 
-/* Re-use form styles from main app.css */
 .form-label { display: block; font-size: 11px; font-weight: 600; color: #6b7280; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
 .form-input { width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 9px 12px; font-size: 13px; font-family: inherit; outline: none; transition: border-color 0.15s, box-shadow 0.15s; color: #1f2937; background: #fff; }
 .form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-bg); }
@@ -15,7 +33,7 @@ body { font-family: 'Inter', sans-serif; }
 .form-error { font-size: 11px; color: #dc2626; margin-top: 4px; }
 
 .btn-primary  { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--teal); color: #fff; border: none; border-radius: 9px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; font-family: inherit; text-decoration: none; }
-.btn-primary:hover { background: var(--teal-dark); }
+.btn-primary:hover { background: var(--teal-dark); color: #fff; }
 .btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--teal-bg); color: var(--teal); border: 1px solid var(--teal); border-radius: 9px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: inherit; text-decoration: none; }
 .btn-secondary:hover { background: var(--teal); color: #fff; }
 .btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #fff; color: #374151; border: 1px solid #d1d5db; border-radius: 9px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; font-family: inherit; text-decoration: none; }
@@ -29,20 +47,25 @@ body { font-family: 'Inter', sans-serif; }
 .admin-table td { padding: 12px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
 .admin-table tr:hover td { background: #fafafa; }
 
-/* Status badges */
 .status-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-.status-pending        { background: #fef3c7; color: #92400e; }
-.status-confirmed      { background: #dbeafe; color: #1e40af; }
-.status-processing     { background: #e0e7ff; color: #3730a3; }
-.status-ready_to_ship  { background: #cffafe; color: #155e75; }
-.status-shipped        { background: #ede9fe; color: #5b21b6; }
-.status-out_for_delivery { background: #fed7aa; color: #9a3412; }
-.status-delivered      { background: #d1fae5; color: #065f46; }
-.status-cancelled      { background: #fee2e2; color: #991b1b; }
-.status-refunded       { background: #f3f4f6; color: #374151; }
-.status-on_hold        { background: #f3f4f6; color: #374151; }
-.status-returned       { background: #fecaca; color: #7f1d1d; }
+.status-pending{background:#fef3c7;color:#92400e} .status-confirmed{background:#dbeafe;color:#1e40af}
+.status-processing{background:#e0e7ff;color:#3730a3} .status-ready_to_ship{background:#cffafe;color:#155e75}
+.status-shipped{background:#ede9fe;color:#5b21b6} .status-out_for_delivery{background:#fed7aa;color:#9a3412}
+.status-delivered{background:#d1fae5;color:#065f46} .status-cancelled{background:#fee2e2;color:#991b1b}
+.status-refunded,.status-on_hold{background:#f3f4f6;color:#374151} .status-returned{background:#fecaca;color:#7f1d1d}
 
-/* Editor buttons */
-.editor-btn { padding: 4px 8px; border-radius: 5px; border: none; font-size: 12px; font-weight: 500; color: #374151; background: transparent; cursor: pointer; transition: background 0.15s; }
+.editor-btn { padding: 4px 8px; border-radius: 5px; border: none; font-size: 12px; color: #374151; background: transparent; cursor: pointer; transition: background 0.15s; }
 .editor-btn:hover { background: #e5e7eb; }
+
+.prose h2{font-size:1.15rem;font-weight:700;margin-top:1em;margin-bottom:.4em;color:#111827}
+.prose h3{font-size:1rem;font-weight:600;margin-top:.8em;color:#1f2937}
+.prose p{margin-bottom:.6em;color:#374151;line-height:1.7;font-size:14px}
+.prose ul,.prose ol{padding-left:1.25em;margin-bottom:.6em}
+.prose li{margin-bottom:.25em;color:#374151;font-size:14px}
+.prose strong{font-weight:700}
+.prose table{width:100%;border-collapse:collapse;margin:1em 0;font-size:13px}
+.prose td,.prose th{border:1px solid #e5e7eb;padding:8px 12px}
+.prose th{background:#f9fafb;font-weight:600}
+.border{
+    border: 1px #d1d5db;
+}

@@ -2,7 +2,8 @@
     <a href="<?php echo e(route('shop.product', $product->slug)); ?>" class="block">
         <div class="card-img">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->thumbnail): ?>
-                <img src="<?php echo e($product->thumbnail_url); ?>" alt="<?php echo e($product->name); ?>" class="max-h-full object-contain" loading="lazy">
+                <img src="<?php echo e($product->thumbnail_url); ?>" alt="<?php echo e($product->name); ?>" class="max-h-full object-contain"
+                    loading="lazy">
             <?php else: ?>
                 <span class="text-5xl">💊</span>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
@@ -45,16 +46,10 @@
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->is_low_stock): ?>
             <p class="text-[10px] text-orange-600 font-semibold mb-1">⚠ Only <?php echo e($product->stock); ?> left</p>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-        <button
-            <?php if($product->is_in_stock && !$product->requires_prescription): ?>
-                onclick="addToCart(<?php echo e($product->id); ?>)"
-            <?php elseif($product->requires_prescription): ?>
-                onclick="window.location='<?php echo e(route('shop.product', $product->slug)); ?>'"
-            <?php else: ?>
-                disabled
-            <?php endif; ?>
-            class="card-add-btn"
-        >
+        <button <?php if($product->is_in_stock && !$product->requires_prescription): ?>
+        onclick="addToCart(<?php echo e($product->id); ?>, 1, this)" <?php elseif($product->requires_prescription): ?>
+        onclick="window.location='<?php echo e(route('shop.product', $product->slug)); ?>'" <?php else: ?> disabled <?php endif; ?>
+            class="card-add-btn">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$product->is_in_stock): ?>
                 Out of Stock
             <?php elseif($product->requires_prescription): ?>
@@ -64,5 +59,4 @@
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </button>
     </div>
-</div>
-<?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/partials/product-card.blade.php ENDPATH**/ ?>
+</div><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/partials/product-card.blade.php ENDPATH**/ ?>

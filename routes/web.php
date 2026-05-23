@@ -20,9 +20,7 @@ use App\Http\Controllers\{
     Admin\ReviewController,
     Admin\ManualOrderController,
     Admin\BulkProductController,
-    Admin\MediaController,
 };
-
 
 // ── Public shop routes ─────────────────────────────────────────────────────
 
@@ -97,12 +95,6 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logou
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    // ── Media Library ────────────────────────────────────────────────────────────
-    Route::get('/media', [MediaController::class, 'index'])->name('media.index');
-    Route::post('/media', [MediaController::class, 'store'])->name('media.store');
-    Route::get('/media/search', [MediaController::class, 'search'])->name('media.search');
-    Route::patch('/media/{medium}', [MediaController::class, 'update'])->name('media.update');
-    Route::delete('/media/{medium}', [MediaController::class, 'destroy'])->name('media.destroy');
 
     // ── Products — specific routes BEFORE resource wildcard ───
     Route::get('/products/bulk', [BulkProductController::class, 'index'])->name('products.bulk');
@@ -153,6 +145,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::patch('/reviews/{r}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
     Route::delete('/reviews/{r}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
+    // ── Customization ────────────────────────────────────────────
+    Route::get('/customization', [\App\Http\Controllers\Admin\SettingsController::class, 'customization'])->name('customization.index');
+    Route::post('/customization', [\App\Http\Controllers\Admin\SettingsController::class, 'saveCustomization'])->name('customization.save');
+
     // ── Settings — specific before wildcards ─────────────────
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
@@ -167,6 +163,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::put('/settings/delivery-zones/{zone}', [SettingsController::class, 'updateDeliveryZone'])->name('settings.delivery-zones.update');
     Route::delete('/settings/delivery-zones/{zone}', [SettingsController::class, 'destroyDeliveryZone'])->name('settings.delivery-zones.destroy');
     Route::post('/settings/pixel', [SettingsController::class, 'savePixel'])->name('settings.pixel');
+
+    // ── Media Library ────────────────────────────────────────────
+    Route::get('/media/search', [\App\Http\Controllers\Admin\MediaController::class, 'search'])->name('media.search');
+    Route::get('/media', [\App\Http\Controllers\Admin\MediaController::class, 'index'])->name('media.index');
+    Route::post('/media', [\App\Http\Controllers\Admin\MediaController::class, 'store'])->name('media.store');
+    Route::patch('/media/{medium}', [\App\Http\Controllers\Admin\MediaController::class, 'update'])->name('media.update');
+    Route::delete('/media/{medium}', [\App\Http\Controllers\Admin\MediaController::class, 'destroy'])->name('media.destroy');
 
     // ── SMS Logs ──────────────────────────────────────────────
     Route::get('/sms-logs', fn() => view('admin.sms-logs', [

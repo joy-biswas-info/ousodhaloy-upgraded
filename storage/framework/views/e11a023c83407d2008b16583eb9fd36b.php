@@ -1,10 +1,10 @@
 <?php $__env->startSection('page-title', 'Settings'); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="max-w-6xl space-y-5" x-data="{ tab: '<?php echo e(request('tab','general')); ?>' }">
+<div class="space-y-5" x-data="{ tab: '<?php echo e(request('tab','general')); ?>' }">
 
     
-    <div class="bg-white rounded-xl border p-1.5 flex flex-wrap gap-1">
+    <div class="bg-white rounded-xl border p-1.5 flex gap-1 overflow-x-auto">
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
             'general'  => '🌐 General',
             'orders'   => '🚚 Delivery',
@@ -12,12 +12,12 @@
             'checkout' => '🛒 Checkout',
             'sms'      => '📱 SMS',
             'pathao'   => '🚚 Pathao',
-            'pixel'    => '📊 Meta Pixel',
+            'pixel'    => '📊 Pixel',
             'steadfast'=> '📦 Steadfast',
         ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <button @click="tab = '<?php echo e($key); ?>'"
             :class="tab === '<?php echo e($key); ?>' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
-            class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors"><?php echo e($label); ?></button>
+            class="flex-shrink-0 px-3 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap"><?php echo e($label); ?></button>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
 
@@ -39,11 +39,56 @@
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <input type="file" name="site_logo" accept="image/*" class="form-input py-1.5">
                 </div>
+                <div>
+                    <label class="form-label">Messenger / WhatsApp URL</label>
+                    <input type="url" name="messenger_url" value="<?php echo e($settings['messenger_url'] ?? ''); ?>" class="form-input" placeholder="https://m.me/yourpage or https://wa.me/8801...">
+                    <p class="text-xs text-gray-400 mt-1">Shows a chat button on the storefront. Leave blank to hide.</p>
+                </div>
                 <div class="flex items-center gap-2 pt-5">
                     <input type="checkbox" name="maintenance_mode" value="true" <?php echo e(($settings['maintenance_mode'] ?? '') === 'true' ? 'checked' : ''); ?> class="accent-teal-600">
                     <label class="text-sm text-gray-700">Maintenance Mode</label>
                 </div>
             </div>
+
+            
+            <div class="border-t pt-4 mt-2">
+                <p class="text-sm font-bold text-gray-700 mb-3">🎨 Brand Colors</p>
+                <p class="text-xs text-gray-400 mb-3">These replace the default teal colors across the entire storefront.</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
+                        ['key'=>'brand_primary', 'label'=>'Primary',    'default'=>'#0e7673', 'hint'=>'Main buttons, links'],
+                        ['key'=>'brand_dark',    'label'=>'Dark',        'default'=>'#0a5250', 'hint'=>'Hover states, header'],
+                        ['key'=>'brand_light',   'label'=>'Light',       'default'=>'#13a09c', 'hint'=>'Accents, badges'],
+                        ['key'=>'brand_bg',      'label'=>'Background',  'default'=>'#e6f4f4', 'hint'=>'Subtle backgrounds'],
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div>
+                        <label class="form-label"><?php echo e($color['label']); ?></label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" name="<?php echo e($color['key']); ?>"
+                                value="<?php echo e($settings[$color['key']] ?? $color['default']); ?>"
+                                class="w-10 h-9 rounded border cursor-pointer">
+                            <input type="text" name="<?php echo e($color['key']); ?>_hex"
+                                value="<?php echo e($settings[$color['key']] ?? $color['default']); ?>"
+                                class="form-input flex-1 font-mono text-xs py-1.5"
+                                oninput="document.querySelector('[name=<?php echo e($color['key']); ?>]').value=this.value"
+                                onchange="document.querySelector('[name=<?php echo e($color['key']); ?>]').value=this.value">
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1"><?php echo e($color['hint']); ?></p>
+                    </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+                <div class="mt-3 p-3 rounded-xl border flex items-center gap-3" id="color-preview"
+                    style="background: <?php echo e($settings['brand_bg'] ?? '#e6f4f4'); ?>">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
+                        style="background: <?php echo e($settings['brand_primary'] ?? '#0e7673'); ?>">A</div>
+                    <div>
+                        <p class="text-sm font-bold" style="color: <?php echo e($settings['brand_primary'] ?? '#0e7673'); ?>">Preview: Brand Color</p>
+                        <p class="text-xs text-gray-500">This is how your brand color looks on a background</p>
+                    </div>
+                    <button class="btn-primary btn-sm ml-auto" style="background: <?php echo e($settings['brand_primary'] ?? '#0e7673'); ?>">Button</button>
+                </div>
+            </div>
+
             <button type="submit" class="btn-primary">Save General Settings</button>
         </form>
     </div>
@@ -308,7 +353,7 @@
             </h2>
             <p class="text-xs text-gray-500 mb-4">
                 Get your API credentials from
-                <a href="https://steadfast.com.bd/user/consignment/status/pending" target="_blank" class="text-teal-600 underline font-semibold">portal.steadfast.com.bd</a>
+                <a href="https://portal.steadfast.com.bd" target="_blank" class="text-teal-600 underline font-semibold">portal.steadfast.com.bd</a>
                 → Account → API Credentials
             </p>
             <form method="POST" action="<?php echo e(route('admin.settings.update')); ?>" class="space-y-4">
@@ -375,7 +420,7 @@
         <div class="bg-white rounded-xl border p-5">
             <h3 class="font-bold text-gray-800 mb-3 text-sm">How to Use</h3>
             <ol class="space-y-2 text-xs text-gray-600 list-decimal list-inside">
-                <li>Get API Key & Secret Key from <a href="https://steadfast.com.bd/user/consignment/status/pending" target="_blank" class="text-teal-600 underline">Steadfast Portal</a> → Account → API Credentials</li>
+                <li>Get API Key & Secret Key from <a href="https://portal.steadfast.com.bd" target="_blank" class="text-teal-600 underline">Steadfast Portal</a> → Account → API Credentials</li>
                 <li>Enter them above and save</li>
                 <li>Go to any order → click <strong>📦 Steadfast</strong> button to push the order</li>
                 <li>Once pushed, a <strong>Print Label</strong> button appears — click to download the shipping label PDF</li>

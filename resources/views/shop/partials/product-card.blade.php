@@ -2,7 +2,8 @@
     <a href="{{ route('shop.product', $product->slug) }}" class="block">
         <div class="card-img">
             @if($product->thumbnail)
-                <img src="{{ $product->thumbnail_url }}" alt="{{ $product->name }}" class="max-h-full object-contain" loading="lazy">
+                <img src="{{ $product->thumbnail_url }}" alt="{{ $product->name }}" class="max-h-full object-contain"
+                    loading="lazy">
             @else
                 <span class="text-5xl">💊</span>
             @endif
@@ -45,16 +46,10 @@
         @if($product->is_low_stock)
             <p class="text-[10px] text-orange-600 font-semibold mb-1">⚠ Only {{ $product->stock }} left</p>
         @endif
-        <button
-            @if($product->is_in_stock && !$product->requires_prescription)
-                onclick="addToCart({{ $product->id }})"
-            @elseif($product->requires_prescription)
-                onclick="window.location='{{ route('shop.product', $product->slug) }}'"
-            @else
-                disabled
-            @endif
-            class="card-add-btn"
-        >
+        <button @if($product->is_in_stock && !$product->requires_prescription)
+        onclick="addToCart({{ $product->id }}, 1, this)" @elseif($product->requires_prescription)
+        onclick="window.location='{{ route('shop.product', $product->slug) }}'" @else disabled @endif
+            class="card-add-btn">
             @if(!$product->is_in_stock)
                 Out of Stock
             @elseif($product->requires_prescription)

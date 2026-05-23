@@ -227,9 +227,11 @@
                                 <p class="font-semibold text-sm text-gray-800">Card / bKash / Nagad / Rocket</p>
                                 <p class="text-xs text-gray-500">Visa, Mastercard, bKash, Nagad, Rocket, Net Banking</p>
                             </div>
-                            <div class="flex gap-1 flex-shrink-0">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Bkash_logo.png/160px-Bkash_logo.png" class="h-4 object-contain opacity-75" alt="bKash">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/7/74/Nagad-Logo.png" class="h-4 object-contain opacity-75" alt="Nagad">
+                            <div class="flex gap-1.5 flex-shrink-0 items-center">
+                                {{-- bKash --}}
+                                <span style="background:#E2136E;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:.3px">bKash</span>
+                                {{-- Nagad --}}
+                                <span style="background:#F16322;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:.3px">Nagad</span>
                             </div>
                         </label>
                         @endif

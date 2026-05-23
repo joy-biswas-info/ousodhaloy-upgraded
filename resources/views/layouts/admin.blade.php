@@ -10,23 +10,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    {{-- Tailwind CSS (Play CDN – no build step needed) --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        teal: {
-                            50: '#f0fafa', 100: '#e6f4f4', 200: '#c4e8e8', 300: '#93d5d5',
-                            400: '#5bbebe', 500: '#35a5a5', 600: '#13a09c', 700: '#0e7673',
-                            800: '#0a5250', 900: '#073f3d',
-                        },
-                    },
-                },
-            },
-        }
-    </script>
+    @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -343,13 +327,14 @@
                     ['route' => 'admin.orders.index', 'icon' => 'box', 'label' => 'Orders', 'badge' => \App\Models\Order::where('status', 'pending')->count()],
                     ['route' => 'admin.orders.create', 'icon' => 'plus-circle', 'label' => 'New Order'],
                     ['route' => 'admin.products.index', 'icon' => 'pills', 'label' => 'Products'],
-                    ['route' => 'admin.media.index', 'icon' => 'images', 'label' => 'Media Library'],
                     ['route' => 'admin.products.bulk', 'icon' => 'file-import', 'label' => 'Bulk Import'],
                     ['route' => 'admin.categories.index', 'icon' => 'th-large', 'label' => 'Categories'],
                     ['route' => 'admin.brands.index', 'icon' => 'trademark', 'label' => 'Brands'],
                     ['route' => 'admin.users.index', 'icon' => 'users', 'label' => 'Customers'],
                     ['route' => 'admin.prescriptions', 'icon' => 'file-medical', 'label' => 'Prescriptions', 'badge' => \App\Models\Prescription::where('status', 'pending')->count()],
                     ['route' => 'admin.reviews', 'icon' => 'star', 'label' => 'Reviews', 'badge' => \App\Models\ProductReview::where('is_approved', false)->count()],
+                    ['route' => 'admin.customization.index', 'icon' => 'paint-brush', 'label' => 'Customization'],
+                    ['route' => 'admin.media.index', 'icon' => 'images', 'label' => 'Media Library'],
                     ['route' => 'admin.settings.index', 'icon' => 'cog', 'label' => 'Settings'],
                     ['route' => 'admin.settings.promos', 'icon' => 'tag', 'label' => 'Promo Codes'],
                     ['route' => 'admin.settings.banners', 'icon' => 'images', 'label' => 'Banners'],
@@ -359,7 +344,7 @@
             @foreach($navItems as $item)
                 <a href="{{ route($item['route']) }}"
                     class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group
-                            {{ request()->routeIs($item['route']) || request()->routeIs($item['route'] . '.*') ? 'bg-teal-700 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        {{ request()->routeIs($item['route']) || request()->routeIs($item['route'] . '.*') ? 'bg-teal-700 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-{{ $item['icon'] }} w-4 text-center"></i>
                         {{ $item['label'] }}

@@ -30,6 +30,9 @@ class CartController extends Controller
         $qty = max(1, (int) $request->qty);
 
         if ($product->stock < $qty) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => "Only {$product->stock} in stock."], 422);
+            }
             return back()->with('error', "Only {$product->stock} in stock.");
         }
 
@@ -54,11 +57,14 @@ class CartController extends Controller
 
         $this->saveCart($cart);
 
-        return response()->json([
-            'success' => true,
-            'message' => "{$product->name} added to cart",
-            'count' => array_sum(array_column($cart, 'qty')),
-        ]);
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "{$product->name} added to cart",
+                'count' => array_sum(array_column($cart, 'qty')),
+            ]);
+        }
+        return back()->with('success', "{$product->name} added to cart!");
     }
 
     public function update(Request $request, int $productId)
