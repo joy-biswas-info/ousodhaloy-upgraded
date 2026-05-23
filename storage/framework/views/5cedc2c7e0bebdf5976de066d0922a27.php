@@ -38,16 +38,6 @@
             </div>
         </div>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,var(--teal-dark),var(--teal-light));display:flex;align-items:center;padding:0 32px">
-            <div style="color:#fff;max-width:480px">
-                <span style="display:inline-block;background:rgba(255,255,255,.2);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:10px">🇧🇩 Trusted Pharmacy</span>
-                <h1 style="font-size:clamp(22px,4vw,38px);font-weight:900;line-height:1.2;margin-bottom:8px">আসল ওষুধ, দ্রুত ডেলিভারি</h1>
-                <p style="font-size:14px;opacity:.85;margin-bottom:16px">৳<?php echo e(\App\Models\Setting::get('free_delivery_min',500)); ?>+ অর্ডারে ফ্রি হোম ডেলিভারি</p>
-                <a href="<?php echo e(route('shop.index')); ?>" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--teal-dark);font-weight:700;font-size:13px;padding:10px 22px;border-radius:10px;text-decoration:none">
-                    Shop Now <i class="fas fa-arrow-right" style="font-size:11px"></i>
-                </a>
-            </div>
-        </div>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
 
@@ -69,7 +59,7 @@
 </section>
 
 
-<div style="background:#fff;border-bottom:1px solid #e5e7eb">
+<!-- <div style="background:#fff;border-bottom:1px solid #e5e7eb">
     <div style="max-width:900px;margin:0 auto;padding:10px 16px">
         <div style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
@@ -88,7 +78,7 @@
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     </div>
-</div>
+</div> -->
 
 
 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($promoBanners->count() > 0): ?>

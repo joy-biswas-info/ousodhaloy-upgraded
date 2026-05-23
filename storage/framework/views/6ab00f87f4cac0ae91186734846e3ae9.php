@@ -9,7 +9,9 @@
             <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>
                     <h1 class="font-bold text-gray-800">
-                        <?php echo e($currentCat ? $currentCat->icon . ' ' . $currentCat->name : 'All Products'); ?></h1>
+                        <?php echo e($currentCat ? $currentCat->icon . ' ' . $currentCat->name : 'All Products'); ?>
+
+                    </h1>
                     <p class="text-xs text-gray-500"><?php echo e($products->total()); ?> products found</p>
                 </div>
                 <div class="flex items-center gap-2">
@@ -68,7 +70,6 @@
                 </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-    </div>
     </div>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.shop', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/products/index.blade.php ENDPATH**/ ?>

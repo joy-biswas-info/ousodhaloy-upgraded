@@ -338,28 +338,81 @@
                     Upload Prescription
                 </a>
             </div>
-
-            {{-- Trust badges --}}
-            <div style="padding:4px 14px 20px">
-                <p
-                    style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">
-                    Why choose us</p>
-                @foreach([['fas fa-certificate', 'DGDA Licensed', '100% genuine medicines'], ['fas fa-truck', 'Fast Delivery', '24-48hrs nationwide'], ['fas fa-headset', '24/7 Support', 'Always here to help'], ['fas fa-shield-alt', 'Secure Payment', 'bKash, Nagad, Card'],] as [$icon, $text, $sub])
-                    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6">
-                        <i class="{{ $icon }}"
-                            style="color:var(--teal);font-size:13px;width:16px;margin-top:1px;flex-shrink:0"></i>
-                        <div>
-                            <p style="font-size:12px;font-weight:600;color:#374151;margin:0">{{ $text }}</p>
-                            <p style="font-size:10px;color:#9ca3af;margin:0">{{ $sub }}</p>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
         </aside>
 
         {{-- MAIN CONTENT — full remaining width --}}
         <main style="flex:1;min-width:0;overflow-x:hidden">
             @yield('content')
+            {{-- ── FOOTER ────────────────────────────────────────────────────────── --}}
+
+            <footer style="background:#111827;color:#9ca3af;padding:0 0px 40px 0px;margin-top:0">
+                <div style="background:#fff;border-bottom:1px solid #e5e7eb" class=" w-full">
+                    <div style="margin:0 auto;padding:10px 16px">
+                        <div
+                            style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px">
+                            @foreach([['fas fa-certificate', '100% Genuine', 'DGDA Licensed'], ['fas fa-truck', 'Fast Delivery', '24-48hrs'], ['fas fa-headset', '24/7 Support', 'Always here'], ['fas fa-shield-alt', 'Secure Pay', 'bKash · Card'],] as [$icon, $text, $sub])
+                                <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+                                    <i class="{{ $icon }}" style="color:var(--teal);font-size:15px"></i>
+                                    <div>
+                                        <p style="font-size:12px;font-weight:700;color:#1f2937;margin:0">{{ $text }}</p>
+                                        <p style="font-size:10px;color:#9ca3af;margin:0">{{ $sub }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div style="max-width:1400px;margin:0 auto;padding:16px">
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-bottom:32px">
+                        <div style="grid-column:1/-1">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                                <div
+                                    style="width:34px;height:34px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
+                                    ও</div>
+                                <span
+                                    style="color:#fff;font-weight:700;font-size:16px">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
+                            </div>
+                            <p style="font-size:12px;line-height:1.7;margin-bottom:8px">বাংলাদেশের বিশ্বস্ত অনলাইন
+                                ফার্মেসি। আসল
+                                ওষুধ, দ্রুত ডেলিভারি।</p>
+                        </div>
+                        <div>
+                            <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
+                            @foreach([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account']] as [$rt, $lb])
+                                <a href="{{ route($rt) }}"
+                                    style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
+                                    @mouseenter="$el.style.color='#fff'"
+                                    @mouseleave="$el.style.color='#9ca3af'">{{ $lb }}</a>
+                            @endforeach
+                        </div>
+                        <div>
+                            <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Contact</p>
+                            <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-phone"
+                                    style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_phone', '09610016778') }}
+                            </p>
+                            <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-envelope"
+                                    style="color:var(--teal-light);margin-right:6px"></i>{{
+                                \App\Models\Setting::get('site_email','info@ousodhaloy.com') }}</p>
+                            <p style="font-size:12px"><i class="fas fa-map-marker-alt"
+                                    style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_address', 'Dhaka, Bangladesh') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div
+                        style="border-top:1px solid #1f2937;padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px">
+                        <p>© {{ date('Y') }} {{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }} Ltd. All rights
+                            reserved.
+                        </p>
+                        <div style="display:flex;gap:14px">
+                            <span><i class="fas fa-certificate"
+                                    style="color:var(--teal-light);margin-right:4px"></i>DGDA
+                                Licensed</span>
+                            <span><i class="fas fa-lock" style="color:var(--teal-light);margin-right:4px"></i>SSL
+                                Secured</span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </main>
     </div>
 
@@ -379,7 +432,6 @@
             </svg>
         </a>
     @endif
-
     {{-- ── MOBILE BOTTOM NAV ────────────────────────────────────────────── --}}
     <nav class="mobile-bottom-nav">
         <div class="nav-items">
@@ -407,57 +459,6 @@
             </a>
         </div>
     </nav>
-
-    {{-- ── FOOTER ────────────────────────────────────────────────────────── --}}
-    <footer style="background:#111827;color:#9ca3af;padding:40px 0 24px;margin-top:0">
-        <div style="max-width:1400px;margin:0 auto;padding:0 16px">
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-bottom:32px">
-                <div style="grid-column:1/-1">
-                    @media(min-width:640px){ div { grid-column: auto; } }
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-                        <div
-                            style="width:34px;height:34px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
-                            ও</div>
-                        <span
-                            style="color:#fff;font-weight:700;font-size:16px">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
-                    </div>
-                    <p style="font-size:12px;line-height:1.7;margin-bottom:8px">বাংলাদেশের বিশ্বস্ত অনলাইন ফার্মেসি। আসল
-                        ওষুধ, দ্রুত ডেলিভারি।</p>
-                </div>
-                <div>
-                    <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
-                    @foreach([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account']] as [$rt, $lb])
-                        <a href="{{ route($rt) }}"
-                            style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
-                            @mouseenter="$el.style.color='#fff'" @mouseleave="$el.style.color='#9ca3af'">{{ $lb }}</a>
-                    @endforeach
-                </div>
-                <div>
-                    <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Contact</p>
-                    <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-phone"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_phone', '09610016778') }}
-                    </p>
-                    <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-envelope"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{
-                        \App\Models\Setting::get('site_email','info@ousodhaloy.com') }}</p>
-                    <p style="font-size:12px"><i class="fas fa-map-marker-alt"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_address', 'Dhaka, Bangladesh') }}
-                    </p>
-                </div>
-            </div>
-            <div
-                style="border-top:1px solid #1f2937;padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px">
-                <p>© {{ date('Y') }} {{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }} Ltd. All rights reserved.
-                </p>
-                <div style="display:flex;gap:14px">
-                    <span><i class="fas fa-certificate" style="color:var(--teal-light);margin-right:4px"></i>DGDA
-                        Licensed</span>
-                    <span><i class="fas fa-lock" style="color:var(--teal-light);margin-right:4px"></i>SSL Secured</span>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     {{-- Back to top --}}
     <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"
         style="display:none;position:fixed;bottom:80px;right:16px;background:var(--teal);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:90;align-items:center;justify-content:center;transition:background .15s">
