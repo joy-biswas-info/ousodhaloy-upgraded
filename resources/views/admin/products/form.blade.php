@@ -4,21 +4,20 @@
 @section('breadcrumb', 'Products / ' . ($product ? 'Edit' : 'New'))
 
 {{-- ── Prepare PHP data BEFORE @section('content') so it's available everywhere ── --}}
-    @php
-        $defaultTabs = [
-            ['id' => 'desc',  'label' => 'Description',   'content' => ''],
-            ['id' => 'usage', 'label' => 'Usage & Dosage', 'content' => ''],
-            ['id' => 'info',  'label' => 'Product Info',   'content' => ''],
-        ];
-        $tabs = old('tabs')
-            ? json_decode(old('tabs'), true)
-            : ($product?->tabs ?? $defaultTabs);
+@php
+    $defaultTabs = [
+        ['id' => 'desc',  'label' => 'Description',   'content' => ''],
+        ['id' => 'usage', 'label' => 'Usage & Dosage', 'content' => ''],
+        ['id' => 'info',  'label' => 'Product Info',   'content' => ''],
+    ];
+    $tabs = old('tabs')
+        ? json_decode(old('tabs'), true)
+        : ($product?->tabs ?? $defaultTabs);
 
-        $selectedCatIds = old(
-    'category_ids',
-    $product?->categories?->pluck('id')->toArray() ?? []
-);
-    @endphp
+    $selectedCatIds = old('category_ids',
+        $product?->categories->pluck('id')->toArray() ?? []
+    );
+@endphp
 
 @section('content')
 <form method="POST" action="{{ $product ? route('admin.products.update', $product) : route('admin.products.store') }}"
@@ -294,7 +293,13 @@
                     @endif
                 </div>
                 <input type="hidden" name="thumbnail_media_path" id="thumbnail-media-path" value="{{ $product?->thumbnail }}">
-                <button type="button" onclick="openThumbPicker()" class="w-full btn-secondary py-2 text-sm">
+                <button type="button"
+                    onclick="openMediaPicker('thumbnail', (path, url) => {
+                        document.getElementById('thumbnail-media-path').value = path;
+                        const p = document.getElementById('thumb-preview');
+                        p.innerHTML = '<img src=\''+url+'\' class=\'w-full h-full object-contain\'>';
+                    })"
+                    class="w-full btn-secondary py-2 text-sm">
                     <i class="fas fa-images mr-2"></i>Pick from Media Library
                 </button>
                 @if($product?->thumbnail)
@@ -318,7 +323,19 @@
                             class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs flex items-center justify-center rounded-bl">×</button>
                     </div>
                     @endforeach
-                    <button type="button" onclick="openGalleryPicker()"
+                    <button type="button"
+                        onclick="openMediaPicker('gallery', (path, url) => {
+                            if (!galleryPaths.includes(path)) {
+                                galleryPaths.push(path);
+                                document.getElementById('images-json').value = JSON.stringify(galleryPaths);
+                                const wrap = document.getElementById('gallery-wrap');
+                                const div  = document.createElement('div');
+                                div.className = 'relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border';
+                                div.dataset.path = path;
+                                div.innerHTML = '<img src=\''+url+'\' class=\'w-full h-full object-contain\'><button type=\'button\' onclick=\'removeGalleryItem(this)\' class=\'absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs flex items-center justify-center rounded-bl\'>×</button>';
+                                wrap.insertBefore(div, wrap.lastElementChild);
+                            }
+                        })"
                         class="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-teal-400 hover:text-teal-600 transition-colors text-xs cursor-pointer">
                         <i class="fas fa-plus text-xl mb-1"></i> Add
                     </button>
@@ -353,31 +370,7 @@
     </div>
 </form>
 
-{{-- Media picker modal — inside @section so it renders in the layout body --}}
-<div id="prod-media-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[80vh] flex flex-col">
-        <div class="flex items-center justify-between p-4 border-b">
-            <h3 class="font-bold text-gray-800">🖼 Pick from Media Library</h3>
-            <button type="button" onclick="closeMediaPickerModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
-        </div>
-        <div class="p-3 border-b flex gap-3 items-center">
-            <input type="text" id="prod-media-search" placeholder="Search by filename…"
-                oninput="loadPickerGrid(this.value)" class="form-input flex-1">
-            <a href="{{ route('admin.media.index') }}" target="_blank" class="btn-secondary btn-sm flex-shrink-0">
-                <i class="fas fa-plus mr-1"></i>Upload New
-            </a>
-        </div>
-        <div id="prod-media-grid" class="flex-1 overflow-y-auto p-4 grid grid-cols-4 sm:grid-cols-5 gap-3">
-            <div class="col-span-5 text-center py-8 text-gray-400">
-                <i class="fas fa-spinner fa-spin text-2xl"></i>
-            </div>
-        </div>
-        <div class="p-3 border-t flex justify-between items-center text-xs text-gray-400">
-            <span>For gallery: pick multiple then click Done.</span>
-            <button type="button" onclick="closeMediaPickerModal()" class="btn-outline btn-sm">Done</button>
-        </div>
-    </div>
-</div>
+@include('partials.media-picker')
 
 @endsection
 
@@ -416,23 +409,46 @@ function productForm() {
     };
 }
 
-// ── Thumbnail ──────────────────────────────────────────────────────────────
+// ── Thumbnail picker ───────────────────────────────────────────────────────
 function openThumbPicker() {
-    window._pickerMode = 'thumb';
-    openMediaPickerModal();
+    openMediaPicker({
+        title: 'Pick Thumbnail',
+        multiple: false,
+        onPick(media) {
+            document.getElementById('thumbnail-media-path').value = media.path;
+            const p = document.getElementById('thumb-preview');
+            p.innerHTML = `<img src="${media.url}" style="width:100%;height:100%;object-fit:contain">`;
+        }
+    });
 }
 function clearThumb() {
     document.getElementById('thumbnail-media-path').value = '';
     document.getElementById('thumb-preview').innerHTML =
-        '<div class="text-center text-gray-400"><i class="fas fa-image text-3xl mb-2"></i><p class="text-xs">Pick from media library</p></div>';
+        '<div style="text-align:center;color:#9ca3af"><i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:6px"></i><p style="font-size:12px">Pick from media library</p></div>';
 }
 
-// ── Gallery ────────────────────────────────────────────────────────────────
+// ── Gallery picker ──────────────────────────────────────────────────────────
 let galleryPaths = JSON.parse(document.getElementById('images-json').value || '[]');
 
 function openGalleryPicker() {
-    window._pickerMode = 'gallery';
-    openMediaPickerModal();
+    openMediaPicker({
+        title: 'Add Gallery Images',
+        multiple: true,
+        onPick(media) {
+            if (!galleryPaths.includes(media.path)) {
+                galleryPaths.push(media.path);
+                document.getElementById('images-json').value = JSON.stringify(galleryPaths);
+                const wrap = document.getElementById('gallery-wrap');
+                const div  = document.createElement('div');
+                div.className    = 'relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border';
+                div.dataset.path = media.path;
+                div.innerHTML    = `<img src="${media.url}" class="w-full h-full object-contain">
+                    <button type="button" onclick="removeGalleryItem(this)"
+                        class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs flex items-center justify-center rounded-bl">×</button>`;
+                wrap.insertBefore(div, wrap.lastElementChild);
+            }
+        }
+    });
 }
 function removeGalleryItem(btn) {
     const div  = btn.parentElement;
@@ -440,67 +456,6 @@ function removeGalleryItem(btn) {
     galleryPaths = galleryPaths.filter(p => p !== path);
     document.getElementById('images-json').value = JSON.stringify(galleryPaths);
     div.remove();
-}
-
-// ── Shared media picker ────────────────────────────────────────────────────
-let _pd;
-
-function openMediaPickerModal() {
-    document.getElementById('prod-media-modal').classList.replace('hidden', 'flex') ||
-    document.getElementById('prod-media-modal').classList.add('flex');
-    document.getElementById('prod-media-modal').classList.remove('hidden');
-    loadPickerGrid('');
-}
-function closeMediaPickerModal() {
-    document.getElementById('prod-media-modal').classList.add('hidden');
-    document.getElementById('prod-media-modal').classList.remove('flex');
-    document.getElementById('prod-media-search').value = '';
-}
-function loadPickerGrid(query) {
-    clearTimeout(_pd);
-    _pd = setTimeout(async () => {
-        const grid = document.getElementById('prod-media-grid');
-        grid.innerHTML = '<div class="col-span-5 text-center py-8 text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
-        const res  = await fetch('/admin/media/search?q=' + encodeURIComponent(query));
-        const data = await res.json();
-        if (!data.length) {
-            grid.innerHTML = '<div class="col-span-5 text-center py-8 text-gray-400">No images. <a href="/admin/media" target="_blank" class="text-teal-600 underline">Upload in Media Library →</a></div>';
-            return;
-        }
-        grid.innerHTML = data.map(m =>
-            `<div onclick="pickFromModal('${m.path}','${m.url}')"
-                class="cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-teal-500 transition-colors group">
-                <div class="aspect-square bg-gray-50 overflow-hidden">
-                    <img src="${m.url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                </div>
-                <p class="text-[9px] text-gray-500 truncate px-1 pb-1">${m.filename}</p>
-            </div>`
-        ).join('');
-    }, 250);
-}
-function pickFromModal(path, url) {
-    if (window._pickerMode === 'thumb') {
-        document.getElementById('thumbnail-media-path').value = path;
-        const p = document.getElementById('thumb-preview');
-        const img = p.querySelector('img');
-        if (img) img.src = url;
-        else p.innerHTML = `<img src="${url}" class="w-full h-full object-contain">`;
-        closeMediaPickerModal();
-    } else {
-        if (!galleryPaths.includes(path)) {
-            galleryPaths.push(path);
-            document.getElementById('images-json').value = JSON.stringify(galleryPaths);
-            const wrap = document.getElementById('gallery-wrap');
-            const div  = document.createElement('div');
-            div.className    = 'relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border';
-            div.dataset.path = path;
-            div.innerHTML    = `<img src="${url}" class="w-full h-full object-contain">
-                <button type="button" onclick="removeGalleryItem(this)"
-                    class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs flex items-center justify-center rounded-bl">×</button>`;
-            wrap.insertBefore(div, wrap.lastElementChild);
-        }
-        // Stay open for multiple gallery picks
-    }
 }
 </script>
 @endpush

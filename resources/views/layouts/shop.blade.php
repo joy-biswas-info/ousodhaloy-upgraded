@@ -62,7 +62,7 @@
     @include('partials.meta-pixel')
 </head>
 
-<body>
+<body class="">
 
     {{-- Flash messages --}}
     @foreach(['success' => ['bg' => 'var(--teal)', 'icon' => 'check-circle'], 'error' => ['bg' => '#dc2626', 'icon' => 'exclamation-circle'], 'info' => ['bg' => '#2563eb', 'icon' => 'info-circle']] as $type => $cfg)
@@ -296,17 +296,29 @@
             {{-- Mobile close button --}}
             <div id="sidebar-mobile-header"
                 style="display:none;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f3f4f6">
-                <span style="font-weight:700;font-size:14px;color:#1f2937">Categories</span>
-                <button onclick="toggleSidebar()"
+                {{-- Logo --}}
+                <a href="{{ route('home') }}"
+                    style="display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none;color:#fff;">
+                    @if(\App\Models\Setting::get('site_logo'))
+                        <img src="{{ asset('storage/' . \App\Models\Setting::get('site_logo')) }}"
+                            style="height:36px;width:auto" alt="{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}">
+                    @else
+                        <div
+                            style="width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--teal);">
+                            ও</div>
+                        <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
+                            class="hidden-mobile">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
+                    @endif
+                </a> <button onclick="toggleSidebar()"
                     style="background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer;line-height:1">&times;</button>
             </div>
 
-            <div style="padding:14px 14px 6px">
+            <!-- <div style="padding:14px 14px 6px">
                 <p style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px">Shop
                     by Category</p>
-            </div>
+            </div> -->
 
-            <nav>
+            <nav class="px-1">
                 <a href="{{ route('shop.index') }}"
                     class="cat-nav-link {{ request()->routeIs('shop.index') && !request()->has('category') ? 'active' : '' }}">
                     <span class="cat-nav-icon">🏠</span>
@@ -314,7 +326,7 @@
                 </a>
                 @foreach(\App\Models\Category::active()->get() as $cat)
                     <a href="{{ route('shop.index', ['category' => $cat->slug]) }}"
-                        class="cat-nav-link {{ request('category') === $cat->slug ? 'active' : '' }}"
+                        class="border-b border-gray-100 cat-nav-link {{ request('category') === $cat->slug ? 'active' : '' }}"
                         onclick="if(window.innerWidth<1024)toggleSidebar()">
                         <span class="cat-nav-icon">{{ $cat->icon }}</span>
                         <span
@@ -341,8 +353,10 @@
         </aside>
 
         {{-- MAIN CONTENT — full remaining width --}}
-        <main style="flex:1;min-width:0;overflow-x:hidden">
-            @yield('content')
+        <main style="flex:1;overflow-x:auto">
+            <section class="container px-4 lg:px-10 full-width">
+                @yield('content')
+            </section>
             {{-- ── FOOTER ────────────────────────────────────────────────────────── --}}
 
             <footer style="background:#111827;color:#9ca3af;padding:0 0px 40px 0px;margin-top:0">

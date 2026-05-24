@@ -331,6 +331,7 @@
                     ['route' => 'admin.categories.index', 'icon' => 'th-large', 'label' => 'Categories'],
                     ['route' => 'admin.brands.index', 'icon' => 'trademark', 'label' => 'Brands'],
                     ['route' => 'admin.users.index', 'icon' => 'users', 'label' => 'Customers'],
+                    ['route' => 'admin.staff.index', 'icon' => 'user-shield', 'label' => 'Staff'],
                     ['route' => 'admin.prescriptions', 'icon' => 'file-medical', 'label' => 'Prescriptions', 'badge' => \App\Models\Prescription::where('status', 'pending')->count()],
                     ['route' => 'admin.reviews', 'icon' => 'star', 'label' => 'Reviews', 'badge' => \App\Models\ProductReview::where('is_approved', false)->count()],
                     ['route' => 'admin.customization.index', 'icon' => 'paint-brush', 'label' => 'Customization'],
@@ -344,7 +345,7 @@
             @foreach($navItems as $item)
                 <a href="{{ route($item['route']) }}"
                     class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group
-                        {{ request()->routeIs($item['route']) || request()->routeIs($item['route'] . '.*') ? 'bg-teal-700 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                            {{ request()->routeIs($item['route']) || request()->routeIs($item['route'] . '.*') ? 'bg-teal-700 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-{{ $item['icon'] }} w-4 text-center"></i>
                         {{ $item['label'] }}
@@ -450,6 +451,8 @@
             }
         });
     </script>
+    @include('partials.media-picker')
+    @include('partials.media-picker')
     @stack('scripts')
 </body>
 

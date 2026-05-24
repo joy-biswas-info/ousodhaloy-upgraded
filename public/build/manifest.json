@@ -1,16 +1,16 @@
 {
   "resources/css/admin.css": {
-    "file": "assets/admin-yiDbflEg.css",
+    "file": "assets/admin-DtojYDkC.css",
     "src": "resources/css/admin.css",
     "isEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app-RSreRzRZ.css",
+    "file": "assets/app-BKuRZvDT.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/admin.js": {
-    "file": "assets/admin-HpCK7Vmz.js",
+    "file": "assets/admin-DDHPSoiT.js",
     "name": "admin",
     "src": "resources/js/admin.js",
     "isEntry": true
@@ -19,6 +19,12 @@
     "file": "assets/app-0ZKTLrM2.js",
     "name": "app",
     "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/media-picker.js": {
+    "file": "assets/media-picker-l0sNRNKZ.js",
+    "name": "media-picker",
+    "src": "resources/js/media-picker.js",
     "isEntry": true
   }
 }

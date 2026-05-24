@@ -12,27 +12,18 @@
                 <span class="text-xs text-gray-400">{{ $order->created_at->format('d M Y, h:i A') }}</span>
             </div>
             <div class="flex gap-2 flex-wrap">
-                {{-- Invoice --}}
                 <a href="{{ route('admin.orders.invoice', $order) }}" class="btn-outline btn-sm" target="_blank">
                     <i class="fas fa-file-pdf mr-1"></i>Invoice
                 </a>
-
-                {{-- Shipping label (only if pushed to a courier) --}}
                 @if($order->pathao_consignment_id || $order->steadfast_consignment_id)
                     <a href="{{ route('admin.orders.shipping-label', $order) }}" class="btn-outline btn-sm" target="_blank">
                         <i class="fas fa-tag mr-1"></i>Print Label
                     </a>
-                    <a href="{{ route('admin.orders.label-preview', $order) }}" class="btn-outline btn-sm text-teal-700"
-                        target="_blank">
-                        <i class="fas fa-eye mr-1"></i>Preview Label
-                    </a>
                 @endif
-                
+
                 {{-- Pathao --}}
                 @if(!$order->pathao_consignment_id && !$order->steadfast_consignment_id)
-                    <button type="button" onclick="openPathaoModal()" class="btn-secondary btn-sm">
-                        🚚 Pathao
-                    </button>
+                    <button type="button" onclick="openPathaoModal()" class="btn-secondary btn-sm">🚚 Pathao</button>
                 @elseif($order->pathao_consignment_id)
                     <form action="{{ route('admin.orders.sync-pathao', $order) }}" method="POST" class="inline">
                         @csrf
@@ -41,29 +32,26 @@
                 @endif
 
                 {{-- Steadfast --}}
-            @if ($steadfastEnabled)
-                @if(!$order->steadfast_consignment_id && !$order->pathao_consignment_id)
-                    <form action="{{ route('admin.orders.steadfast', $order) }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="btn-secondary btn-sm"
-                            onclick="return confirm('Push to Steadfast courier?')">
-                            📦 Steadfast
-                        </button>
-                    </form>
-                @elseif($order->steadfast_consignment_id)
-                    <form action="{{ route('admin.orders.sync-steadfast', $order) }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="btn-outline btn-sm">↻ Sync Steadfast</button>
-                    </form>
+                @if($steadfastEnabled)
+                    @if(!$order->steadfast_consignment_id && !$order->pathao_consignment_id)
+                        <form action="{{ route('admin.orders.steadfast', $order) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="btn-secondary btn-sm"
+                                onclick="return confirm('Push to Steadfast courier?')">📦 Steadfast</button>
+                        </form>
+                    @elseif($order->steadfast_consignment_id)
+                        <form action="{{ route('admin.orders.sync-steadfast', $order) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="btn-outline btn-sm">↻ Sync Steadfast</button>
+                        </form>
+                    @endif
                 @endif
-            @endif
-
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-            {{-- Left: items + status --}}
+            {{-- Left --}}
             <div class="lg:col-span-2 space-y-5">
 
                 {{-- Items --}}
@@ -84,7 +72,7 @@
                                     <td>
                                         <p class="font-semibold text-sm">{{ $item->product_name }}</p>
                                         @if($item->product_sku)
-                                        <p class="text-xs text-gray-400">SKU: {{ $item->product_sku }}</p> @endif
+                                        <p class="text-xs text-gray-400">SKU: {{ $item->product_sku }}</p>@endif
                                     </td>
                                     <td class="text-sm">৳{{ number_format($item->price, 2) }}</td>
                                     <td class="text-sm font-bold">{{ $item->quantity }}</td>
@@ -145,8 +133,6 @@
                         </div>
                         <button type="submit" class="btn-primary btn-sm">Update Status</button>
                     </form>
-
-                    {{-- Payment status --}}
                     <div class="border-t mt-4 pt-4">
                         <form method="POST" action="{{ route('admin.orders.payment', $order) }}"
                             class="flex items-center gap-3">
@@ -182,13 +168,13 @@
                                 <div class="flex flex-col items-center">
                                     <div class="w-2.5 h-2.5 rounded-full bg-teal-500 mt-1 flex-shrink-0"></div>
                                     @if(!$loop->last)
-                                    <div class="w-0.5 flex-1 bg-gray-200 mt-1"></div> @endif
+                                    <div class="w-0.5 flex-1 bg-gray-200 mt-1"></div>@endif
                                 </div>
                                 <div class="pb-3">
                                     <p class="text-sm font-semibold text-gray-800">
                                         {{ \App\Models\Order::STATUS_LABELS[$h->status] ?? ucfirst($h->status) }}</p>
                                     @if($h->note)
-                                    <p class="text-xs text-gray-500">{{ $h->note }}</p> @endif
+                                    <p class="text-xs text-gray-500">{{ $h->note }}</p>@endif
                                     <p class="text-xs text-gray-400 mt-0.5">{{ $h->created_at->format('d M Y h:i A') }} ·
                                         {{ $h->changed_by }}</p>
                                 </div>
@@ -227,9 +213,7 @@
                         <p>{{ $order->shipping_division }} {{ $order->shipping_postcode }}</p>
                     </div>
                     @if($order->customer_note)
-                        <div class="mt-2 bg-yellow-50 rounded p-2 text-xs text-yellow-800">
-                            📝 {{ $order->customer_note }}
-                        </div>
+                        <div class="mt-2 bg-yellow-50 rounded p-2 text-xs text-yellow-800">📝 {{ $order->customer_note }}</div>
                     @endif
                 </div>
 
@@ -245,8 +229,7 @@
                         </div>
                         @if($order->ssl_transaction_id)
                             <div class="flex justify-between"><span>Txn</span><span
-                                    class="font-mono text-xs">{{ $order->ssl_transaction_id }}</span></div>
-                        @endif
+                        class="font-mono text-xs">{{ $order->ssl_transaction_id }}</span></div>@endif
                     </div>
                 </div>
 
@@ -256,7 +239,7 @@
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="font-bold text-teal-800 text-sm">🚚 Pathao</h3>
                             <a href="{{ route('admin.orders.shipping-label', $order) }}" target="_blank"
-                                class="text-xs bg-teal-600 text-white px-2 py-1 rounded-lg hover:bg-teal-700 transition-colors">
+                                class="text-xs bg-teal-600 text-white px-2 py-1 rounded-lg">
                                 <i class="fas fa-print mr-1"></i>Label
                             </a>
                         </div>
@@ -274,7 +257,7 @@
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="font-bold text-indigo-800 text-sm">📦 Steadfast</h3>
                             <a href="{{ route('admin.orders.shipping-label', $order) }}" target="_blank"
-                                class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-lg hover:bg-indigo-700 transition-colors">
+                                class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-lg">
                                 <i class="fas fa-print mr-1"></i>Label
                             </a>
                         </div>
@@ -301,7 +284,7 @@
     </div>
 @endsection
 
-{{-- ── Pathao push modal ────────────────────────────────────────────── --}}
+{{-- Pathao modal --}}
 @if(!$order->pathao_consignment_id && !$order->steadfast_consignment_id)
     <div id="pathao-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onclick="event.stopPropagation()">
@@ -310,10 +293,8 @@
                 <button onclick="closePathaoModal()"
                     class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
-
             <form action="{{ route('admin.orders.pathao', $order) }}" method="POST" class="space-y-4">
                 @csrf
-
                 <div class="bg-gray-50 rounded-xl p-3 text-xs text-gray-600 space-y-1">
                     <p><b>Order:</b> {{ $order->order_number }}</p>
                     <p><b>Recipient:</b> {{ $order->shipping_name }} · {{ $order->shipping_phone }}</p>
@@ -322,7 +303,6 @@
                         {{ $order->payment_status !== 'paid' ? '৳' . number_format($order->total, 2) : 'Prepaid — no collection' }}
                     </p>
                 </div>
-
                 <div>
                     <label class="form-label">Recipient City *</label>
                     <select name="pathao_city_id" id="pathao-city" class="form-select"
@@ -330,7 +310,6 @@
                         <option value="">Loading cities…</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="form-label">Recipient Zone *</label>
                     <select name="pathao_zone_id" id="pathao-zone" class="form-select"
@@ -338,7 +317,6 @@
                         <option value="">Select city first</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="form-label">Recipient Area <span
                             class="text-gray-400 font-normal normal-case">(optional)</span></label>
@@ -346,18 +324,13 @@
                         <option value="">Select zone first</option>
                     </select>
                 </div>
-
                 <p class="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg p-2">
-                    💡 Save your most-used city/zone IDs in
-                    <a href="{{ route('admin.settings.index') }}" class="underline font-semibold">Settings → Pathao</a>
-                    to pre-select them automatically.
+                    💡 Save default city/zone in <a href="{{ route('admin.settings.index') }}"
+                        class="underline font-semibold">Settings → Pathao</a> to pre-select automatically.
                 </p>
-
                 <div class="flex gap-3 pt-1">
                     <button type="button" onclick="closePathaoModal()" class="btn-outline flex-1">Cancel</button>
-                    <button type="submit" class="btn-primary flex-1">
-                        <i class="fas fa-truck mr-1"></i>Push Order
-                    </button>
+                    <button type="submit" class="btn-primary flex-1"><i class="fas fa-truck mr-1"></i>Push Order</button>
                 </div>
             </form>
         </div>
@@ -366,8 +339,8 @@
 
 @push('scripts')
     <script>
-        const _CSRF = document.querySelector('meta[name=csrf-token]')?.content;
-
+        // ← PHP data safely serialised to JS
+        const pathaoDefaults = @json($pathaoDefaults ?? []);
         function openPathaoModal() {
             const m = document.getElementById('pathao-modal');
             if (!m) return;
@@ -393,59 +366,92 @@
 
         async function loadPathaoCities() {
             const sel = document.getElementById('pathao-city');
-            sel.innerHTML = '<option value="">Loading…</option>';
+            sel.innerHTML = '<option value="">Loading cities…</option>';
+            sel.disabled = true;
+
             try {
                 const cities = await pathaoLookup('cities');
-                sel.innerHTML = '<option value="">Select city *</option>';
+                sel.innerHTML = '<option value="">— Select city —</option>';
+                let defaultSelected = false;
                 cities.forEach(c => {
-                    const o = new Option(c.city_name, c.city_id);
-                    if (c.city_id == $pathaoDefaults.city) o.selected = true;
-                    sel.add(o);
+                    const o = document.createElement('option');
+                    o.value = c.city_id;
+                    o.textContent = c.city_name;
+                    if (String(c.city_id) === String(pathaoDefaults.city)) {
+                        o.selected = true;
+                        defaultSelected = true;
+                    }
+                    sel.appendChild(o);
                 });
-                if ($pathaoDefaults.city) loadPathaoZones($pathaoDefaults.city);
+                sel.disabled = false;
+
+                // Auto-load zones if a default city is set
+                if (defaultSelected && pathaoDefaults.city) {
+                    await loadPathaoZones(pathaoDefaults.city);
+                }
             } catch (e) {
                 sel.innerHTML = `<option value="">⚠ ${e.message}</option>`;
+                sel.disabled = false;
             }
         }
 
         async function loadPathaoZones(cityId) {
             if (!cityId) return;
             const sel = document.getElementById('pathao-zone');
-            sel.disabled = false;
+            sel.disabled = true;
             sel.innerHTML = '<option value="">Loading zones…</option>';
+
             try {
                 const zones = await pathaoLookup('zones', { city_id: cityId });
-                sel.innerHTML = '<option value="">Select zone *</option>';
+                sel.innerHTML = '<option value="">— Select zone —</option>';
+                let defaultSelected = false;
                 zones.forEach(z => {
-                    const o = new Option(z.zone_name, z.zone_id);
-                    if (z.zone_id == $pathaoDefaults.zone) o.selected = true;
-                    sel.add(o);
+                    const o = document.createElement('option');
+                    o.value = z.zone_id;
+                    o.textContent = z.zone_name;
+                    if (String(z.zone_id) === String(pathaoDefaults.zone)) {
+                        o.selected = true;
+                        defaultSelected = true;
+                    }
+                    sel.appendChild(o);
                 });
-                if ($pathaoDefaults.zone) loadPathaoAreas($pathaoDefaults.zone);
+                sel.disabled = false;
+
+                // Auto-load areas if a default zone is set
+                if (defaultSelected && pathaoDefaults.zone) {
+                    await loadPathaoAreas(pathaoDefaults.zone);
+                }
             } catch (e) {
                 sel.innerHTML = `<option value="">⚠ ${e.message}</option>`;
+                sel.disabled = false;
             }
         }
 
         async function loadPathaoAreas(zoneId) {
             if (!zoneId) return;
             const sel = document.getElementById('pathao-area');
-            sel.disabled = false;
+            sel.disabled = true;
             sel.innerHTML = '<option value="">Loading areas…</option>';
+
             try {
                 const areas = await pathaoLookup('areas', { zone_id: zoneId });
                 sel.innerHTML = '<option value="">(Optional) Select area</option>';
                 areas.forEach(a => {
-                    const o = new Option(a.area_name, a.area_id);
-                    if (a.area_id == $pathaoDefaults.area) o.selected = true;
-                    sel.add(o);
+                    const o = document.createElement('option');
+                    o.value = a.area_id;
+                    o.textContent = a.area_name;
+                    if (String(a.area_id) === String(pathaoDefaults.area)) {
+                        o.selected = true;
+                    }
+                    sel.appendChild(o);
                 });
+                sel.disabled = false;
             } catch (e) {
                 sel.innerHTML = '<option value="">(Area lookup unavailable)</option>';
+                sel.disabled = false;
             }
         }
 
-        // Close modal when clicking backdrop
         document.getElementById('pathao-modal')?.addEventListener('click', closePathaoModal);
     </script>
 @endpush

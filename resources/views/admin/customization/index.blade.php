@@ -43,7 +43,10 @@
                     <input type="hidden" name="logo_media_path" id="logo-media-path"
                         value="{{ $settings['site_logo'] ?? '' }}">
 
-                    <button type="button" onclick="openLogoPicker()" class="btn-secondary w-full">
+                    <button type="button" onclick="openMediaPicker('logo', (path, url) => {
+                            document.getElementById('logo-media-path').value = path;
+                            document.getElementById('logo-preview').innerHTML = '<img src=\''+url+'\' class=\'max-h-full max-w-full object-contain p-4\'>';
+                        })" class="btn-secondary w-full">
                         <i class="fas fa-images mr-2"></i>Pick from Media Library
                     </button>
                     <p class="text-xs text-gray-400 text-center">
@@ -187,7 +190,11 @@
                             {{-- Media picker button --}}
                             <div id="banner-img-preview"
                                 class="w-full h-24 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center mb-2 overflow-hidden cursor-pointer"
-                                onclick="openBannerPicker()">
+                                onclick="openMediaPicker('banner', (path, url) => {
+                                    document.getElementById('banner-media-path').value = path;
+                                    document.getElementById('banner-img-preview').innerHTML = '<img src=\''+url+'\' class=\'w-full h-full object-cover\'>';
+                                    document.getElementById('banner-file-input').value = '';
+                                })">
                                 <div class="text-center text-gray-400 text-xs">
                                     <i class="fas fa-image text-xl mb-1 block"></i>
                                     Click to pick from Media Library
@@ -280,108 +287,45 @@
         </div>
     </div>
 
-    {{-- Media picker modal --}}
-    <div id="cust-media-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[80vh] flex flex-col">
-            <div class="flex items-center justify-between p-4 border-b">
-                <h3 class="font-bold text-gray-800" id="picker-title">🖼 Pick Image</h3>
-                <button onclick="closeCustomPicker()"
-                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
-            </div>
-            <div class="p-3 border-b flex gap-3 items-center">
-                <input type="text" id="cust-media-search" placeholder="Search by filename…"
-                    oninput="loadCustomPicker(this.value)" class="form-input flex-1">
-                <a href="{{ route('admin.media.index') }}" target="_blank" class="btn-secondary btn-sm flex-shrink-0">
-                    <i class="fas fa-plus mr-1"></i>Upload New
-                </a>
-            </div>
-            <div id="cust-media-grid" class="flex-1 overflow-y-auto p-4 grid grid-cols-4 sm:grid-cols-6 gap-3">
-                <div class="col-span-6 text-center py-8 text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>
-            </div>
-            <div class="p-3 border-t flex justify-between items-center">
-                <span class="text-xs text-gray-400">Click to select</span>
-                <button onclick="closeCustomPicker()" class="btn-outline btn-sm">Cancel</button>
-            </div>
-        </div>
-    </div>
+    @include('partials.media-picker')
 @endsection
 
 @push('scripts')
     <script>
-        const CSRF_C = document.querySelector('meta[name=csrf-token]').content;
-        let _custPickerMode = 'logo';
-        let _custDebounce;
-
         function openLogoPicker() {
-            _custPickerMode = 'logo';
-            document.getElementById('picker-title').textContent = '🖼 Pick Logo';
-            openCustomPicker();
+            openMediaPicker({
+                title: 'Pick Site Logo',
+                multiple: false,
+                onPick(media) {
+                    document.getElementById('logo-media-path').value = media.path;
+                    document.getElementById('logo-preview').innerHTML =
+                        `<img src="${media.url}" style="max-height:100%;max-width:100%;object-fit:contain;padding:12px">`;
+                }
+            });
         }
         function openBannerPicker() {
-            _custPickerMode = 'banner';
-            document.getElementById('picker-title').textContent = '🖼 Pick Banner Image';
-            openCustomPicker();
-        }
-        function openCustomPicker() {
-            document.getElementById('cust-media-modal').classList.remove('hidden');
-            document.getElementById('cust-media-modal').classList.add('flex');
-            loadCustomPicker('');
-        }
-        function closeCustomPicker() {
-            document.getElementById('cust-media-modal').classList.add('hidden');
-            document.getElementById('cust-media-modal').classList.remove('flex');
-            document.getElementById('cust-media-search').value = '';
-        }
-        function loadCustomPicker(query) {
-            clearTimeout(_custDebounce);
-            _custDebounce = setTimeout(async () => {
-                const grid = document.getElementById('cust-media-grid');
-                grid.innerHTML = '<div class="col-span-6 text-center py-8 text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
-                const res = await fetch('/admin/media/search?q=' + encodeURIComponent(query));
-                const data = await res.json();
-                if (!data.length) {
-                    grid.innerHTML = '<div class="col-span-6 text-center py-8 text-gray-400">No images. <a href="/admin/media" target="_blank" class="text-teal-600 underline">Upload →</a></div>';
-                    return;
+            openMediaPicker({
+                title: 'Pick Banner Image',
+                multiple: false,
+                onPick(media) {
+                    document.getElementById('banner-media-path').value = media.path;
+                    document.getElementById('banner-img-preview').innerHTML =
+                        `<img src="${media.url}" style="width:100%;height:100%;object-fit:cover">`;
+                    document.getElementById('banner-file-input').value = '';
                 }
-                grid.innerHTML = data.map(m => `
-                <div onclick="pickCustomImage('${m.path}','${m.url}')"
-                    class="cursor-pointer rounded-lg overflow-hidden border-2 border-transparent hover:border-teal-500 transition-colors group">
-                    <div class="aspect-square bg-gray-50 overflow-hidden">
-                        <img src="${m.url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                    </div>
-                    <p class="text-[9px] text-gray-500 truncate px-1 pb-1">${m.filename}</p>
-                </div>
-            `).join('');
-            }, 250);
-        }
-        function pickCustomImage(path, url) {
-            if (_custPickerMode === 'logo') {
-                document.getElementById('logo-media-path').value = path;
-                const preview = document.getElementById('logo-preview');
-                preview.innerHTML = `<img src="${url}" class="max-h-full max-w-full object-contain p-4">`;
-            } else {
-                document.getElementById('banner-media-path').value = path;
-                const preview = document.getElementById('banner-img-preview');
-                preview.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
-                // Clear file input since we're using media path
-                document.getElementById('banner-file-input').value = '';
-            }
-            closeCustomPicker();
+            });
         }
         function previewBannerFile(input) {
             if (input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    const p = document.getElementById('banner-img-preview');
-                    p.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    document.getElementById('banner-img-preview').innerHTML =
+                        `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
                 };
                 reader.readAsDataURL(input.files[0]);
-                // Clear media path since we're uploading directly
                 document.getElementById('banner-media-path').value = '';
             }
         }
-
-        // Color preview updater
         function updatePreview() {
             const primary = document.querySelector('[name=brand_primary]')?.value || '#0e7673';
             const bg = document.querySelector('[name=brand_bg]')?.value || '#e6f4f4';

@@ -66,7 +66,7 @@
     <?php echo $__env->make('partials.meta-pixel', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 </head>
 
-<body>
+<body class="">
 
     
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = ['success' => ['bg' => 'var(--teal)', 'icon' => 'check-circle'], 'error' => ['bg' => '#dc2626', 'icon' => 'exclamation-circle'], 'info' => ['bg' => '#2563eb', 'icon' => 'info-circle']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type => $cfg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -300,17 +300,29 @@
             
             <div id="sidebar-mobile-header"
                 style="display:none;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f3f4f6">
-                <span style="font-weight:700;font-size:14px;color:#1f2937">Categories</span>
-                <button onclick="toggleSidebar()"
+                
+                <a href="<?php echo e(route('home')); ?>"
+                    style="display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none;color:#fff;">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(\App\Models\Setting::get('site_logo')): ?>
+                        <img src="<?php echo e(asset('storage/' . \App\Models\Setting::get('site_logo'))); ?>"
+                            style="height:36px;width:auto" alt="<?php echo e(\App\Models\Setting::get('site_name', 'Ousodhaloy')); ?>">
+                    <?php else: ?>
+                        <div
+                            style="width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--teal);">
+                            ও</div>
+                        <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
+                            class="hidden-mobile"><?php echo e(\App\Models\Setting::get('site_name', 'Ousodhaloy')); ?></span>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </a> <button onclick="toggleSidebar()"
                     style="background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer;line-height:1">&times;</button>
             </div>
 
-            <div style="padding:14px 14px 6px">
+            <!-- <div style="padding:14px 14px 6px">
                 <p style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px">Shop
                     by Category</p>
-            </div>
+            </div> -->
 
-            <nav>
+            <nav class="px-1">
                 <a href="<?php echo e(route('shop.index')); ?>"
                     class="cat-nav-link <?php echo e(request()->routeIs('shop.index') && !request()->has('category') ? 'active' : ''); ?>">
                     <span class="cat-nav-icon">🏠</span>
@@ -318,7 +330,7 @@
                 </a>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = \App\Models\Category::active()->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <a href="<?php echo e(route('shop.index', ['category' => $cat->slug])); ?>"
-                        class="cat-nav-link <?php echo e(request('category') === $cat->slug ? 'active' : ''); ?>"
+                        class="border-b border-gray-100 cat-nav-link <?php echo e(request('category') === $cat->slug ? 'active' : ''); ?>"
                         onclick="if(window.innerWidth<1024)toggleSidebar()">
                         <span class="cat-nav-icon"><?php echo e($cat->icon); ?></span>
                         <span
@@ -345,8 +357,10 @@
         </aside>
 
         
-        <main style="flex:1;min-width:0;overflow-x:hidden">
-            <?php echo $__env->yieldContent('content'); ?>
+        <main style="flex:1;overflow-x:auto">
+            <section class="container px-4 lg:px-10 full-width">
+                <?php echo $__env->yieldContent('content'); ?>
+            </section>
             
 
             <footer style="background:#111827;color:#9ca3af;padding:0 0px 40px 0px;margin-top:0">

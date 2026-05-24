@@ -5,7 +5,8 @@ use App\Http\Controllers\Controller;
 use App\Models\{User, Otp};
 use App\Services\SmsService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\{Auth, Hash, Str};
+use Illuminate\Support\Facades\{Auth, Hash};
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -17,7 +18,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'login'    => 'required|string',
+            'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
@@ -44,21 +45,21 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name'     => 'required|string|max:100',
-            'phone'    => 'required|regex:/^01[3-9]\d{8}$/|unique:users,phone',
-            'email'    => 'nullable|email|unique:users,email',
+            'name' => 'required|string|max:100',
+            'phone' => 'required|regex:/^01[3-9]\d{8}$/|unique:users,phone',
+            'email' => 'nullable|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
         ], [
             'phone.regex' => 'Please enter a valid Bangladeshi phone number (01XXXXXXXXX)',
         ]);
 
         $user = User::create([
-            'name'           => $request->name,
-            'phone'          => $request->phone,
-            'email'          => $request->email,
-            'password'       => Hash::make($request->password),
-            'role'           => 'customer',
-            'referral_code'  => strtoupper(Str::random(8)),
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'customer',
+            'referral_code' => strtoupper(Str::random(8)),
         ]);
 
         Auth::login($user);
@@ -86,10 +87,10 @@ class AuthController extends Controller
 
         $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
         Otp::create([
-            'phone'      => $request->phone,
-            'code'       => Hash::make($code),
-            'purpose'    => 'login',
-            'expires_at' => now()->addMinutes((int)config('app.otp_expiry', 5)),
+            'phone' => $request->phone,
+            'code' => Hash::make($code),
+            'purpose' => 'login',
+            'expires_at' => now()->addMinutes((int) config('app.otp_expiry', 5)),
         ]);
 
         $sms->otp($request->phone, $code);
@@ -101,7 +102,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'phone' => 'required',
-            'code'  => 'required|digits:6',
+            'code' => 'required|digits:6',
         ]);
 
         $otp = Otp::where('phone', $request->phone)

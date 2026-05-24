@@ -960,6 +960,30 @@
       'otp' => 'আপনার Ousodhaloy OTP: {code}। {minutes} মিনিটে মেয়াদ শেষ।',
     ),
   ),
+  'sanctum' => 
+  array (
+    'stateful' => 
+    array (
+      0 => 'localhost',
+      1 => 'localhost:3000',
+      2 => '127.0.0.1',
+      3 => '127.0.0.1:8000',
+      4 => '::1',
+      5 => 'localhost:8000',
+    ),
+    'guard' => 
+    array (
+      0 => 'web',
+    ),
+    'expiration' => NULL,
+    'token_prefix' => '',
+    'middleware' => 
+    array (
+      'authenticate_session' => 'Laravel\\Sanctum\\Http\\Middleware\\AuthenticateSession',
+      'encrypt_cookies' => 'Illuminate\\Cookie\\Middleware\\EncryptCookies',
+      'validate_csrf_token' => 'Illuminate\\Foundation\\Http\\Middleware\\ValidateCsrfToken',
+    ),
+  ),
   'services' => 
   array (
     'postmark' => 
@@ -1075,30 +1099,6 @@
       'allowed_remote_hosts' => NULL,
       'font_height_ratio' => 1.1,
       'enable_html5_parser' => true,
-    ),
-  ),
-  'sanctum' => 
-  array (
-    'stateful' => 
-    array (
-      0 => 'localhost',
-      1 => 'localhost:3000',
-      2 => '127.0.0.1',
-      3 => '127.0.0.1:8000',
-      4 => '::1',
-      5 => 'localhost:8000',
-    ),
-    'guard' => 
-    array (
-      0 => 'web',
-    ),
-    'expiration' => NULL,
-    'token_prefix' => '',
-    'middleware' => 
-    array (
-      'authenticate_session' => 'Laravel\\Sanctum\\Http\\Middleware\\AuthenticateSession',
-      'encrypt_cookies' => 'Illuminate\\Cookie\\Middleware\\EncryptCookies',
-      'validate_csrf_token' => 'Illuminate\\Foundation\\Http\\Middleware\\ValidateCsrfToken',
     ),
   ),
   'livewire' => 

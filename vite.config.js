@@ -9,6 +9,7 @@ export default defineConfig({
         "resources/css/admin.css",
         "resources/js/app.js",
         "resources/js/admin.js",
+        "resources/js/media-picker.js",
       ],
       refresh: true,
     }),

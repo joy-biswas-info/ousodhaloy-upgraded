@@ -136,6 +136,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
 
+    // ── Staff Management ─────────────────────────────────────
+    Route::get('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'index'])->name('staff.index');
+    Route::post('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'store'])->name('staff.store');
+    Route::patch('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'update'])->name('staff.update');
+    Route::delete('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'destroy'])->name('staff.destroy');
+
     // ── Prescriptions ─────────────────────────────────────────
     Route::get('/prescriptions', [PrescriptionController::class, 'index'])->name('prescriptions');
     Route::patch('/prescriptions/{p}/review', [PrescriptionController::class, 'review'])->name('prescriptions.review');

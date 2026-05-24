@@ -1,9 +1,9 @@
 <div x-show="userMenu" @click.away="userMenu=false" x-cloak
-    style="position:absolute;right:0;top:calc(100% + 6px);background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.18);border:1px solid #e5e7eb;width:210px;z-index:600;overflow:hidden;padding:4px 0">
+    style="position:absolute;right:0;top:calc(100% + 6px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);border:1px solid #e5e7eb;width:200px;z-index:600;overflow:hidden;padding:4px 0">
     @auth
-        <div style="padding:12px 14px 10px;border-bottom:1px solid #f3f4f6">
-            <p style="font-weight:700;color:#1f2937;font-size:13px;margin:0">{{ auth()->user()->name }}</p>
-            <p style="font-size:11px;color:#9ca3af;margin:2px 0 0">{{ auth()->user()->phone ?? auth()->user()->email }}</p>
+        <div style="padding:10px 14px 8px;font-size:12px;color:#6b7280;border-bottom:1px solid #f3f4f6">
+            <p style="font-weight:700;color:#1f2937;margin:0">{{ auth()->user()->name }}</p>
+            <p style="margin:0">{{ auth()->user()->phone ?? auth()->user()->email }}</p>
         </div>
         @if(auth()->user()->isManager())
             <a href="{{ route('admin.dashboard') }}"
