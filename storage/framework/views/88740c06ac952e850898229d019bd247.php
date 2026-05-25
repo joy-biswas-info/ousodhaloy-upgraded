@@ -405,7 +405,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
 <?php $__env->startPush('scripts'); ?>
 <script>
-const BD_DISTRICTS = <?php echo json_encode(config('bd.districts'), 15, 512) ?>;
+const BD_DISTRICTS = <?php echo json_encode(config('bd.districts')??[], 15, 512) ?>;
 
 // Populate districts when division changes — also triggers delivery recalc
 function updateDistricts(division) {

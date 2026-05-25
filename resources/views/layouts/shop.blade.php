@@ -149,8 +149,8 @@
         </div>
     </header>
 
-    {{-- ── HEADER ───────────────────────────────────────────────────────── --}}
-    <header class="site-header hidden lg:block">
+    {{-- ── Desktop HEADER ───────────────────────────────────────────────────────── --}}
+    <header class="site-header hidden lg:block ">
         <div class="header-inner" x-data="{ userMenu: false }">
 
             {{-- Logo --}}

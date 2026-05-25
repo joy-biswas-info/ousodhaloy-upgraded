@@ -321,7 +321,7 @@
 
 @push('scripts')
 <script>
-const BD_DISTRICTS = @json(config('bd.districts'));
+const BD_DISTRICTS = @json(config('bd.districts')??[]);
 
 // Populate districts when division changes — also triggers delivery recalc
 function updateDistricts(division) {
