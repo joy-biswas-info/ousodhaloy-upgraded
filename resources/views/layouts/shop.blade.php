@@ -295,7 +295,7 @@
 
             {{-- Mobile close button --}}
             <div id="sidebar-mobile-header"
-                style="display:none;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f3f4f6">
+                style="display:none;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f3f4f6;background-color:var(--teal)">
                 {{-- Logo --}}
                 <a href="{{ route('home') }}"
                     style="display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none;color:#fff;">
@@ -309,7 +309,8 @@
                         <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
                             class="hidden-mobile">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
                     @endif
-                </a> <button onclick="toggleSidebar()"
+                </a> 
+                <button class="text-white" onclick="toggleSidebar()"
                     style="background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer;line-height:1">&times;</button>
             </div>
 

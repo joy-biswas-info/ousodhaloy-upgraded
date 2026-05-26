@@ -5,8 +5,6 @@
 
 <section x-data="heroSlider(<?php echo e($banners->count()); ?>)" style="position:relative;overflow:hidden;background:var(--teal-dark)">
     <?php $heroH = (int)\App\Models\Setting::get('hero_banner_height', 400); ?>
-    
-
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($banners->count() > 1): ?>
     <div style="position:relative;min-height:240px;height:<?php echo e($heroH); ?>px;max-height:<?php echo e($heroH); ?>px;">
 
@@ -58,8 +56,6 @@
     </div>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </section>
-
-
 
 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($promoBanners->count() > 0): ?>
 <div style="padding:16px 16px 0">

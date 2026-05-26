@@ -3,25 +3,23 @@
 @section('breadcrumb', 'Products / Bulk Import')
 
 @section('content')
-<div class="space-y-5" x-data="bulkProducts()">
-
-    {{-- Tab switcher --}}
-    <div class="bg-white rounded-xl border p-1.5 flex gap-1">
-        <button @click="tab='form'"
-            :class="tab==='form' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
-            class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-            <i class="fas fa-table mr-1.5"></i>Spreadsheet Entry
-        </button>
-        <button @click="tab='csv'"
-            :class="tab==='csv' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
-            class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-            <i class="fas fa-file-csv mr-1.5"></i>CSV Upload
-        </button>
-    </div>
-
-    {{-- ══════════════════════════════════════════════════════
+    <div class="space-y-5" x-data="bulkProducts()">
+        {{-- Tab switcher --}}
+        <div class="bg-white rounded-xl border p-1.5 flex gap-1">
+            <button @click="tab='form'"
+                :class="tab === 'form' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
+                class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                <i class="fas fa-table mr-1.5"></i>Spreadsheet Entry
+            </button>
+            <button @click="tab='csv'"
+                :class="tab === 'csv' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
+                class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                <i class="fas fa-file-csv mr-1.5"></i>CSV Upload
+            </button>
+        </div 
+        {{-- ══════════════════════════════════════════════════════
          SPREADSHEET TAB
-    ══════════════════════════════════════════════════════ --}}
+    ══════════════════════════════════════════════════════ --}} 
     <div x-show="tab==='form'">
         <form method="POST" action="{{ route('admin.products.bulk-store') }}">
             @csrf
@@ -32,25 +30,31 @@
                         <i class="fas fa-plus mr-1"></i>Add Row
                     </button>
                 </div>
-
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs" style="min-width:1200px">
                         <thead class="bg-gray-50 border-b">
                             <tr>
                                 <th class="px-2 py-2.5 text-left text-gray-500 font-semibold w-8">#</th>
-                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:190px">Name *</th>
-                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:130px">Generic Name</th>
-                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:100px">SKU</th>
-                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:120px">Brand</th>
-                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:120px">Category</th>
+                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:190px">
+                                    Name *</th>
+                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:130px">
+                                    Generic Name</th>
+                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:100px">
+                                    SKU</th>
+                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:120px">
+                                    Brand</th>
+                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:120px">
+                                    Category</th>
                                 <th class="px-2 py-2.5 text-left text-gray-500 font-semibold w-20">Price *</th>
                                 <th class="px-2 py-2.5 text-left text-gray-500 font-semibold w-20">MRP</th>
                                 <th class="px-2 py-2.5 text-left text-gray-500 font-semibold w-18">Stock *</th>
                                 <th class="px-2 py-2.5 text-left text-gray-500 font-semibold w-18">Unit</th>
                                 <th class="px-2 py-2.5 text-left text-gray-500 font-semibold w-20">Strength</th>
                                 <th class="px-2 py-2.5 text-left text-gray-500 font-semibold w-20">Form</th>
-                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:120px">Tags</th>
-                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:150px">Thumbnail</th>
+                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:120px">
+                                    Tags</th>
+                                <th class="px-2 py-2.5 text-left text-gray-500 font-semibold" style="min-width:150px">
+                                    Thumbnail</th>
                                 <th class="px-2 py-2.5 text-center text-gray-500 font-semibold w-8">Rx</th>
                                 <th class="px-2 py-2.5 w-8"></th>
                             </tr>
@@ -61,60 +65,65 @@
                                     <td class="px-2 py-1.5 text-gray-400 text-center text-xs" x-text="i+1"></td>
 
                                     <td class="px-1.5 py-1.5">
-                                        <input type="text" :name="'products['+i+'][name]'" x-model="row.name"
+                                        <input type="text" :name="'products[' + i + '][name]'" x-model="row.name"
                                             class="form-input py-1 text-xs" placeholder="Product name" required>
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="text" :name="'products['+i+'][generic_name]'" x-model="row.generic_name"
-                                            class="form-input py-1 text-xs" placeholder="e.g. Paracetamol">
+                                        <input type="text" :name="'products[' + i + '][generic_name]'"
+                                            x-model="row.generic_name" class="form-input py-1 text-xs"
+                                            placeholder="e.g. Paracetamol">
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="text" :name="'products['+i+'][sku]'" x-model="row.sku"
+                                        <input type="text" :name="'products[' + i + '][sku]'" x-model="row.sku"
                                             class="form-input py-1 text-xs" placeholder="NAP500">
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="text" :name="'products['+i+'][brand]'" x-model="row.brand"
+                                        <input type="text" :name="'products[' + i + '][brand]'" x-model="row.brand"
                                             list="brand-list" class="form-input py-1 text-xs" placeholder="Brand">
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="text" :name="'products['+i+'][category]'" x-model="row.category"
+                                        <input type="text" :name="'products[' + i + '][category]'" x-model="row.category"
                                             list="category-list" class="form-input py-1 text-xs" placeholder="Category">
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="number" :name="'products['+i+'][price]'" x-model="row.price"
-                                            step="0.01" min="0" class="form-input py-1 text-xs" placeholder="0.00" required>
+                                        <input type="number" :name="'products[' + i + '][price]'" x-model="row.price"
+                                            step="0.01" min="0" class="form-input py-1 text-xs" placeholder="0.00"
+                                            required>
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="number" :name="'products['+i+'][mrp]'" x-model="row.mrp"
-                                            step="0.01" min="0" class="form-input py-1 text-xs" placeholder="0.00">
+                                        <input type="number" :name="'products[' + i + '][mrp]'" x-model="row.mrp"
+                                            step="0.01" min="0" class="form-input py-1 text-xs"
+                                            placeholder="0.00">
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="number" :name="'products['+i+'][stock]'" x-model="row.stock"
+                                        <input type="number" :name="'products[' + i + '][stock]'" x-model="row.stock"
                                             min="0" class="form-input py-1 text-xs" placeholder="0" required>
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <select :name="'products['+i+'][unit]'" x-model="row.unit" class="form-select py-1 text-xs">
-                                            @foreach(['pcs','strip','bottle','box','pack','tube','vial','sachet','ml','gm'] as $u)
-                                            <option value="{{ $u }}">{{ $u }}</option>
+                                        <select :name="'products[' + i + '][unit]'" x-model="row.unit"
+                                            class="form-select py-1 text-xs">
+                                            @foreach (['pcs', 'strip', 'bottle', 'box', 'pack', 'tube', 'vial', 'sachet', 'ml', 'gm'] as $u)
+                                                <option value="{{ $u }}">{{ $u }}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="text" :name="'products['+i+'][strength]'" x-model="row.strength"
-                                            class="form-input py-1 text-xs" placeholder="500mg">
+                                        <input type="text" :name="'products[' + i + '][strength]'"
+                                            x-model="row.strength" class="form-input py-1 text-xs" placeholder="500mg">
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="text" :name="'products['+i+'][form]'" x-model="row.form"
+                                        <input type="text" :name="'products[' + i + '][form]'" x-model="row.form"
                                             list="form-list" class="form-input py-1 text-xs" placeholder="Tablet">
                                     </td>
                                     <td class="px-1.5 py-1.5">
-                                        <input type="text" :name="'products['+i+'][tags]'" x-model="row.tags"
+                                        <input type="text" :name="'products[' + i + '][tags]'" x-model="row.tags"
                                             class="form-input py-1 text-xs" placeholder="fever,pain">
                                     </td>
 
                                     {{-- Thumbnail cell --}}
                                     <td class="px-1.5 py-1.5">
-                                        <input type="hidden" :name="'products['+i+'][thumbnail]'" x-model="row.thumbnail">
+                                        <input type="hidden" :name="'products[' + i + '][thumbnail]'"
+                                            x-model="row.thumbnail">
                                         <div class="flex items-center gap-1.5">
                                             <div class="w-8 h-8 bg-gray-100 rounded border flex-shrink-0 overflow-hidden"
                                                 x-show="row.thumbnailUrl">
@@ -124,8 +133,7 @@
                                                 x-show="!row.thumbnailUrl">
                                                 <i class="fas fa-image text-xs"></i>
                                             </div>
-                                            <button type="button"
-                                                @click="pickRowImage(i)"
+                                            <button type="button" @click="pickRowImage(i)"
                                                 class="btn-secondary btn-sm py-1 px-2 text-xs flex-shrink-0">
                                                 Pick
                                             </button>
@@ -133,7 +141,7 @@
                                     </td>
 
                                     <td class="px-1.5 py-1.5 text-center">
-                                        <input type="checkbox" :name="'products['+i+'][requires_prescription]'"
+                                        <input type="checkbox" :name="'products[' + i + '][requires_prescription]'"
                                             value="1" x-model="row.rx" class="accent-teal-600">
                                     </td>
                                     <td class="px-1.5 py-1.5 text-center">
@@ -154,7 +162,8 @@
                             <i class="fas fa-plus mr-1"></i>Add Row
                         </button>
                         <button type="button" @click="addRows(5)" class="btn-outline btn-sm">+5 Rows</button>
-                        <button type="button" @click="clearAll()" class="btn-outline btn-sm text-red-500">Clear All</button>
+                        <button type="button" @click="clearAll()" class="btn-outline btn-sm text-red-500">Clear
+                            All</button>
                     </div>
                     <div class="flex items-center gap-3">
                         <span class="text-xs text-gray-500" x-text="rows.length + ' rows'"></span>
@@ -167,11 +176,19 @@
         </form>
 
         {{-- Autocomplete datalists --}}
-        <datalist id="brand-list">@foreach($brands as $b)<option value="{{ $b->name }}">@endforeach</datalist>
-        <datalist id="category-list">@foreach($categories as $c)<option value="{{ $c->name }}">@endforeach</datalist>
+        <datalist id="brand-list">
+            @foreach ($brands as $b)
+                <option value="{{ $b->name }}">
+            @endforeach
+        </datalist>
+        <datalist id="category-list">
+            @foreach ($categories as $c)
+                <option value="{{ $c->name }}">
+            @endforeach
+        </datalist>
         <datalist id="form-list">
-            @foreach(['Tablet','Capsule','Syrup','Cream','Ointment','Injection','Eye Drop','Ear Drop','Inhaler','Suspension','Powder','Gel','Spray'] as $f)
-            <option value="{{ $f }}">
+            @foreach (['Tablet', 'Capsule', 'Syrup', 'Cream', 'Ointment', 'Injection', 'Eye Drop', 'Ear Drop', 'Inhaler', 'Suspension', 'Powder', 'Gel', 'Spray'] as $f)
+                <option value="{{ $f }}">
             @endforeach
         </datalist>
     </div>
@@ -186,8 +203,8 @@
             <div class="bg-white rounded-xl border p-5">
                 <h2 class="font-bold text-gray-800 mb-4 pb-2 border-b">Upload CSV</h2>
 
-                <form method="POST" action="{{ route('admin.products.import-csv') }}"
-                    enctype="multipart/form-data" class="space-y-4">
+                <form method="POST" action="{{ route('admin.products.import-csv') }}" enctype="multipart/form-data"
+                    class="space-y-4">
                     @csrf
 
                     {{-- Drop zone --}}
@@ -207,7 +224,8 @@
                         <p>• Row 1 must be the header row (use the template below)</p>
                         <p>• Brand &amp; category are auto-created if they don't exist</p>
                         <p>• Matched by SKU first, then name — existing products are updated</p>
-                        <p>• Use <code class="bg-amber-100 px-1 rounded">tab:Description</code> columns for product content tabs</p>
+                        <p>• Use <code class="bg-amber-100 px-1 rounded">tab:Description</code> columns for product
+                            content tabs</p>
                     </div>
 
                     <button type="submit" class="btn-primary w-full">
@@ -222,7 +240,8 @@
                         <label class="form-label">Content tab columns (comma separated)</label>
                         <input type="text" x-model="tabs" class="form-input"
                             placeholder="Description,Usage & Dosage,Side Effects">
-                        <p class="text-xs text-gray-400">These become <code>tab:Description</code> columns in the CSV</p>
+                        <p class="text-xs text-gray-400">These become <code>tab:Description</code> columns in the CSV
+                        </p>
                         <a :href="'{{ route('admin.products.csv-template') }}?tabs=' + encodeURIComponent(tabs)"
                             class="btn-secondary w-full text-center">
                             <i class="fas fa-download mr-2"></i>Download Template
@@ -237,35 +256,21 @@
                 <div class="overflow-x-auto">
                     <table class="admin-table text-xs">
                         <thead>
-                            <tr><th>Column</th><th>Required</th><th>Example</th></tr>
+                            <tr>
+                                <th>Column</th>
+                                <th>Required</th>
+                                <th>Example</th>
+                            </tr>
                         </thead>
                         <tbody>
-                            @foreach([
-                                ['name',                   'Yes', 'Napa 500mg'],
-                                ['generic_name',            'No',  'Paracetamol'],
-                                ['sku',                     'No',  'NAP500'],
-                                ['brand',                   'No',  'Beximco Pharma'],
-                                ['category',                'No',  'Medicine'],
-                                ['price',                   'Yes', '0.90'],
-                                ['mrp',                     'No',  '1.00'],
-                                ['stock',                   'Yes', '500'],
-                                ['unit',                    'No',  'strip'],
-                                ['strength',                'No',  '500mg'],
-                                ['form',                    'No',  'Tablet'],
-                                ['pack_size',               'No',  '10 tablets/strip'],
-                                ['requires_prescription',   'No',  '0 or 1'],
-                                ['is_featured',             'No',  '0 or 1'],
-                                ['tags',                    'No',  'fever,pain'],
-                                ['thumbnail',               'No',  'media/napa.jpg'],
-                                ['low_stock_alert',         'No',  '20'],
-                                ['tab:Description',         'No',  'Free text content'],
-                                ['tab:Usage & Dosage',      'No',  'Free text content'],
-                            ] as [$col,$req,$ex])
-                            <tr>
-                                <td class="font-mono font-bold text-teal-700">{{ $col }}</td>
-                                <td><span class="text-xs font-semibold {{ $req==='Yes' ? 'text-red-500' : 'text-gray-400' }}">{{ $req }}</span></td>
-                                <td class="text-gray-500">{{ $ex }}</td>
-                            </tr>
+                            @foreach ([['name', 'Yes', 'Napa 500mg'], ['generic_name', 'No', 'Paracetamol'], ['sku', 'No', 'NAP500'], ['brand', 'No', 'Beximco Pharma'], ['category', 'No', 'Medicine'], ['price', 'Yes', '0.90'], ['mrp', 'No', '1.00'], ['stock', 'Yes', '500'], ['unit', 'No', 'strip'], ['strength', 'No', '500mg'], ['form', 'No', 'Tablet'], ['pack_size', 'No', '10 tablets/strip'], ['requires_prescription', 'No', '0 or 1'], ['is_featured', 'No', '0 or 1'], ['tags', 'No', 'fever,pain'], ['thumbnail', 'No', 'media/napa.jpg'], ['low_stock_alert', 'No', '20'], ['tab:Description', 'No', 'Free text content'], ['tab:Usage & Dosage', 'No', 'Free text content']] as [$col, $req, $ex])
+                                <tr>
+                                    <td class="font-mono font-bold text-teal-700">{{ $col }}</td>
+                                    <td><span
+                                            class="text-xs font-semibold {{ $req === 'Yes' ? 'text-red-500' : 'text-gray-400' }}">{{ $req }}</span>
+                                    </td>
+                                    <td class="text-gray-500">{{ $ex }}</td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -274,40 +279,59 @@
         </div>
     </div>
 
-</div>
+    </div>
 @endsection
 
 @push('scripts')
-<script>
-function bulkProducts() {
-    return {
-        tab: 'form',
-        rows: [newBulkRow()],
-        _pickerRowIndex: null,
+    <script>
+        function bulkProducts() {
+            return {
+                tab: 'form',
+                rows: [newBulkRow()],
+                _pickerRowIndex: null,
 
-        addRow()     { this.rows.push(newBulkRow()); },
-        addRows(n)   { for (let i = 0; i < n; i++) this.rows.push(newBulkRow()); },
-        removeRow(i) { if (this.rows.length > 1) this.rows.splice(i, 1); },
-        clearAll()   { if (confirm('Clear all rows?')) this.rows = [newBulkRow()]; },
+                addRow() {
+                    this.rows.push(newBulkRow());
+                },
+                addRows(n) {
+                    for (let i = 0; i < n; i++) this.rows.push(newBulkRow());
+                },
+                removeRow(i) {
+                    if (this.rows.length > 1) this.rows.splice(i, 1);
+                },
+                clearAll() {
+                    if (confirm('Clear all rows?')) this.rows = [newBulkRow()];
+                },
 
-        pickRowImage(rowIndex) {
-            this._pickerRowIndex = rowIndex;
-            const self = this;
-            openMediaPicker('bulk-row-' + rowIndex, (path, url) => {
-                self.rows[rowIndex].thumbnail    = path;
-                self.rows[rowIndex].thumbnailUrl = url;
-            });
-        },
-    };
-}
+                pickRowImage(rowIndex) {
+                    this._pickerRowIndex = rowIndex;
+                    const self = this;
+                    openMediaPicker('bulk-row-' + rowIndex, (path, url) => {
+                        self.rows[rowIndex].thumbnail = path;
+                        self.rows[rowIndex].thumbnailUrl = url;
+                    });
+                },
+            };
+        }
 
-function newBulkRow() {
-    return {
-        name: '', generic_name: '', sku: '', brand: '', category: '',
-        price: '', mrp: '', stock: '', unit: 'strip',
-        strength: '', form: '', tags: '',
-        thumbnail: '', thumbnailUrl: '', rx: false,
-    };
-}
-</script>
+        function newBulkRow() {
+            return {
+                name: '',
+                generic_name: '',
+                sku: '',
+                brand: '',
+                category: '',
+                price: '',
+                mrp: '',
+                stock: '',
+                unit: 'strip',
+                strength: '',
+                form: '',
+                tags: '',
+                thumbnail: '',
+                thumbnailUrl: '',
+                rx: false,
+            };
+        }
+    </script>
 @endpush
