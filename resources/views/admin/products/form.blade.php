@@ -14,9 +14,20 @@
         ? json_decode(old('tabs'), true)
         : ($product?->tabs ?? $defaultTabs);
 
-    $selectedCatIds = old('category_ids',
-        $product?->categories->pluck('id')->toArray() ?? []
-    );
+    // Safely get selected category IDs
+    $selectedCatIds = old('category_ids', (function() use ($product) {
+        if (!$product) return [];
+        try {
+            $cats = $product->relationLoaded('categories')
+                ? $product->categories
+                : $product->categories()->get();
+            return $cats instanceof \Illuminate\Support\Collection
+                ? $cats->pluck('id')->toArray()
+                : ($product->category_id ? [$product->category_id] : []);
+        } catch (\Throwable $e) {
+            return $product->category_id ? [$product->category_id] : [];
+        }
+    })());
 @endphp
 
 @section('content')

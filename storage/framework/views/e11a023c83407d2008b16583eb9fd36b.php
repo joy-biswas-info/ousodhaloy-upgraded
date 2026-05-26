@@ -50,44 +50,7 @@
                 </div>
             </div>
 
-            
-            <div class="border-t pt-4 mt-2">
-                <p class="text-sm font-bold text-gray-700 mb-3">🎨 Brand Colors</p>
-                <p class="text-xs text-gray-400 mb-3">These replace the default teal colors across the entire storefront.</p>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
-                        ['key'=>'brand_primary', 'label'=>'Primary',    'default'=>'#0e7673', 'hint'=>'Main buttons, links'],
-                        ['key'=>'brand_dark',    'label'=>'Dark',        'default'=>'#0a5250', 'hint'=>'Hover states, header'],
-                        ['key'=>'brand_light',   'label'=>'Light',       'default'=>'#13a09c', 'hint'=>'Accents, badges'],
-                        ['key'=>'brand_bg',      'label'=>'Background',  'default'=>'#e6f4f4', 'hint'=>'Subtle backgrounds'],
-                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div>
-                        <label class="form-label"><?php echo e($color['label']); ?></label>
-                        <div class="flex items-center gap-2">
-                            <input type="color" name="<?php echo e($color['key']); ?>"
-                                value="<?php echo e($settings[$color['key']] ?? $color['default']); ?>"
-                                class="w-10 h-9 rounded border cursor-pointer">
-                            <input type="text" name="<?php echo e($color['key']); ?>_hex"
-                                value="<?php echo e($settings[$color['key']] ?? $color['default']); ?>"
-                                class="form-input flex-1 font-mono text-xs py-1.5"
-                                oninput="document.querySelector('[name=<?php echo e($color['key']); ?>]').value=this.value"
-                                onchange="document.querySelector('[name=<?php echo e($color['key']); ?>]').value=this.value">
-                        </div>
-                        <p class="text-xs text-gray-400 mt-1"><?php echo e($color['hint']); ?></p>
-                    </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                </div>
-                <div class="mt-3 p-3 rounded-xl border flex items-center gap-3" id="color-preview"
-                    style="background: <?php echo e($settings['brand_bg'] ?? '#e6f4f4'); ?>">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
-                        style="background: <?php echo e($settings['brand_primary'] ?? '#0e7673'); ?>">A</div>
-                    <div>
-                        <p class="text-sm font-bold" style="color: <?php echo e($settings['brand_primary'] ?? '#0e7673'); ?>">Preview: Brand Color</p>
-                        <p class="text-xs text-gray-500">This is how your brand color looks on a background</p>
-                    </div>
-                    <button class="btn-primary btn-sm ml-auto" style="background: <?php echo e($settings['brand_primary'] ?? '#0e7673'); ?>">Button</button>
-                </div>
-            </div>
+         
 
             <button type="submit" class="btn-primary">Save General Settings</button>
         </form>

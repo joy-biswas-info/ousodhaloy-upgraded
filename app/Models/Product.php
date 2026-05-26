@@ -4,7 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany};
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
@@ -13,16 +13,41 @@ class Product extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'slug', 'sku', 'barcode', 'generic_name',
-        'brand_id', 'category_id', 'thumbnail', 'images',
-        'price', 'mrp', 'discount_percent', 'stock',
-        'low_stock_alert', 'min_order_qty', 'max_order_qty',
-        'unit', 'pack_size', 'strength', 'form',
-        'requires_prescription', 'is_active', 'is_featured',
-        'is_flash_sale', 'flash_sale_price', 'flash_sale_ends_at',
-        'express_delivery', 'tabs', 'tags',
-        'meta_title', 'meta_description', 'views', 'total_sold',
-        'average_rating', 'rating_count',
+        'name',
+        'slug',
+        'sku',
+        'barcode',
+        'generic_name',
+        'brand_id',
+        'category_id',
+        'thumbnail',
+        'images',
+        'price',
+        'mrp',
+        'discount_percent',
+        'stock',
+        'low_stock_alert',
+        'min_order_qty',
+        'max_order_qty',
+        'unit',
+        'pack_size',
+        'strength',
+        'form',
+        'requires_prescription',
+        'is_active',
+        'is_featured',
+        'is_flash_sale',
+        'flash_sale_price',
+        'flash_sale_ends_at',
+        'express_delivery',
+        'tabs',
+        'tags',
+        'meta_title',
+        'meta_description',
+        'views',
+        'total_sold',
+        'average_rating',
+        'rating_count',
     ];
 
     protected $casts = [
@@ -43,10 +68,30 @@ class Product extends Model
     ];
 
     // ── Relationships ─────────────────────────────────────────
-    public function category(): BelongsTo { return $this->belongsTo(Category::class); }
-    public function brand(): BelongsTo { return $this->belongsTo(Brand::class); }
-    public function reviews(): HasMany { return $this->hasMany(ProductReview::class); }
-    public function orderItems(): HasMany { return $this->hasMany(OrderItem::class); }
+    // Primary category (kept for backward compat — shop filters, breadcrumbs)
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    // All categories via pivot
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_product')
+            ->withPivot('is_primary');
+    }
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 
     // ── Accessors ─────────────────────────────────────────────
     public function getEffectivePriceAttribute(): float
@@ -59,17 +104,24 @@ class Product extends Model
 
     public function getDiscountAmountAttribute(): float
     {
-        return $this->mrp ? (float)($this->mrp - $this->effective_price) : 0;
+        return $this->mrp ? (float) ($this->mrp - $this->effective_price) : 0;
     }
 
     public function getDiscountPercentageAttribute(): int
     {
-        if (!$this->mrp || $this->mrp <= $this->effective_price) return 0;
-        return (int)(($this->mrp - $this->effective_price) / $this->mrp * 100);
+        if (!$this->mrp || $this->mrp <= $this->effective_price)
+            return 0;
+        return (int) (($this->mrp - $this->effective_price) / $this->mrp * 100);
     }
 
-    public function getIsInStockAttribute(): bool { return $this->stock > 0; }
-    public function getIsLowStockAttribute(): bool { return $this->stock > 0 && $this->stock <= $this->low_stock_alert; }
+    public function getIsInStockAttribute(): bool
+    {
+        return $this->stock > 0;
+    }
+    public function getIsLowStockAttribute(): bool
+    {
+        return $this->stock > 0 && $this->stock <= $this->low_stock_alert;
+    }
 
     public function getThumbnailUrlAttribute(): string
     {
@@ -78,19 +130,39 @@ class Product extends Model
 
     public function getImageUrlsAttribute(): array
     {
-        if (!$this->images) return [];
+        if (!$this->images)
+            return [];
         return array_map(fn($img) => asset('storage/' . $img), $this->images);
     }
 
     // ── Scopes ────────────────────────────────────────────────
-    public function scopeActive($q) { return $q->where('is_active', true); }
-    public function scopeFeatured($q) { return $q->where('is_featured', true)->active(); }
-    public function scopeFlashSale($q) { return $q->where('is_flash_sale', true)->active(); }
-    public function scopeInStock($q) { return $q->where('stock', '>', 0); }
-    public function scopeLowStock($q) { return $q->where('stock', '<=', \DB::raw('low_stock_alert'))->where('stock', '>', 0); }
-    public function scopeOutOfStock($q) { return $q->where('stock', 0); }
-    public function scopeSearch($q, $term) {
-        return $q->where(function($sub) use ($term) {
+    public function scopeActive($q)
+    {
+        return $q->where('is_active', true);
+    }
+    public function scopeFeatured($q)
+    {
+        return $q->where('is_featured', true)->active();
+    }
+    public function scopeFlashSale($q)
+    {
+        return $q->where('is_flash_sale', true)->active();
+    }
+    public function scopeInStock($q)
+    {
+        return $q->where('stock', '>', 0);
+    }
+    public function scopeLowStock($q)
+    {
+        return $q->where('stock', '<=', \DB::raw('low_stock_alert'))->where('stock', '>', 0);
+    }
+    public function scopeOutOfStock($q)
+    {
+        return $q->where('stock', 0);
+    }
+    public function scopeSearch($q, $term)
+    {
+        return $q->where(function ($sub) use ($term) {
             $sub->where('name', 'like', "%{$term}%")
                 ->orWhere('generic_name', 'like', "%{$term}%")
                 ->orWhere('sku', 'like', "%{$term}%")

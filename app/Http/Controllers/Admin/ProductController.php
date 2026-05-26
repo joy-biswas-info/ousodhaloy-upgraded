@@ -49,12 +49,19 @@ class ProductController extends Controller
 
         $product = Product::create($data);
         $this->handleImages($request, $product);
+        $this->syncCategories($product, $request);
 
         return redirect()->route('admin.products.edit', $product)->with('success', 'Product created successfully!');
     }
 
     public function edit(Product $product)
     {
+        $product->load('brand', 'category');
+        try {
+            $product->load('categories');
+        } catch (\Throwable $e) {
+            $product->setRelation('categories', collect());
+        }
         $categories = Category::active()->orderBy('sort_order')->get();
         $brands = Brand::where('is_active', true)->orderBy('name')->get();
         return view('admin.products.form', compact('product', 'categories', 'brands'));
@@ -69,6 +76,7 @@ class ProductController extends Controller
 
         $product->update($data);
         $this->handleImages($request, $product);
+        $this->syncCategories($product, $request);
 
         return redirect()->route('admin.products.edit', $product)->with('success', 'Product updated!');
     }
@@ -79,6 +87,13 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('admin.products.index')
             ->with('success', "Product \"{$product->name}\" moved to trash.");
+    }
+
+    public function bulkTrash(Request $request)
+    {
+        $request->validate(['ids' => 'required|array', 'ids.*' => 'integer']);
+        $count = Product::whereIn('id', $request->ids)->delete();
+        return back()->with('success', "{$count} product(s) moved to trash.");
     }
 
     public function trash()
@@ -149,6 +164,8 @@ class ProductController extends Controller
             'generic_name' => 'nullable|string|max:255',
             'brand_id' => 'nullable|exists:brands,id',
             'category_id' => 'nullable|exists:categories,id',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:categories,id',
             'price' => 'required|numeric|min:0',
             'mrp' => 'nullable|numeric|min:0',
             'discount_percent' => 'nullable|numeric|min:0|max:100',
@@ -228,6 +245,29 @@ class ProductController extends Controller
         if ($request->images_json) {
             $paths = json_decode($request->images_json, true) ?? [];
             $product->update(['images' => $paths]);
+        }
+    }
+
+    private function syncCategories(Product $product, \Illuminate\Http\Request $request): void
+    {
+        $primaryId = $request->input('category_id');
+        $allIds = $request->input('category_ids', []);
+
+        // Always include primary in the pivot
+        if ($primaryId && !in_array($primaryId, $allIds)) {
+            $allIds[] = $primaryId;
+        }
+
+        // Build pivot data: mark primary
+        $pivot = collect($allIds)->filter()->mapWithKeys(fn($id) => [
+            (int) $id => ['is_primary' => (int) $id === (int) $primaryId]
+        ])->toArray();
+
+        $product->categories()->sync($pivot);
+
+        // Keep category_id column in sync with primary
+        if ($primaryId) {
+            $product->update(['category_id' => $primaryId]);
         }
     }
 

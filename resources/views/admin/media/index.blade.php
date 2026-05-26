@@ -85,7 +85,7 @@
         </div>
 
         {{-- Filters + search --}}
-        <div class="bg-white rounded-xl border p-4">
+        <div class="bg-white rounded-xl border p-4 hidden">
             <form method="GET" class="flex flex-wrap gap-3 items-center">
                 <input type="text" name="q" value="{{ request('q') }}" class="form-input flex-1 min-w-48"
                     placeholder="Search by filename or alt text…">

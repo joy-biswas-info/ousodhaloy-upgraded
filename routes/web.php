@@ -103,6 +103,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::get('/products/csv-template', [BulkProductController::class, 'template'])->name('products.csv-template');
     Route::post('/products/upload-image', [AdminProductController::class, 'uploadImage'])->name('products.upload-image');
     Route::get('/products/trash', [AdminProductController::class, 'trash'])->name('products.trash');
+    Route::delete('/products/bulk-trash', [AdminProductController::class, 'bulkTrash'])->name('products.bulk-trash');
     Route::patch('/products/{id}/restore', [AdminProductController::class, 'restore'])->name('products.restore');
     Route::delete('/products/{id}/force', [AdminProductController::class, 'forceDelete'])->name('products.force-delete');
 
