@@ -1,4 +1,4 @@
-@extends('layouts.shop')
+@extends('layouts.checkout')
 @section('title', 'Shopping Cart')
 
 @section('content')

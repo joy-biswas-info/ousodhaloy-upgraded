@@ -64,8 +64,9 @@ class OrderService
                 }
             }
 
-            // 3. Delivery charge
-            $deliveryCharge = $this->calculateDelivery(
+            // 3. Delivery charge — respects per-product custom charges
+            $deliveryCharge = $this->calculateDeliveryForCart(
+                $data['items'],
                 $subtotal - $discount,
                 $data['shipping_division'],
                 $data['shipping_district']
@@ -92,7 +93,7 @@ class OrderService
                 'shipping_email' => $data['shipping_email'] ?? null,
                 'shipping_division' => $data['shipping_division'],
                 'shipping_district' => $data['shipping_district'],
-                'shipping_upazila' => $data['shipping_upazila'] ?? null,
+                'shipping_upazila' => $data['shipping_upazila'] ?? '',
                 'shipping_address' => $data['shipping_address'],
                 'shipping_postcode' => $data['shipping_postcode'] ?? null,
                 'customer_note' => $data['notes'] ?? null,
@@ -205,6 +206,50 @@ class OrderService
         $freeAbove = $zone ? $zone->free_delivery_above : (float) Setting::get('free_delivery_min', 500);
 
         return $orderTotal >= $freeAbove ? 0 : $charge;
+    }
+
+    /**
+     * Calculate delivery charge considering per-product custom charges.
+     * If ANY product in the cart has a custom_delivery_charge set, that
+     * overrides the global rate for those items.
+     *
+     * Logic:
+     *  - Items WITH custom charge: sum(custom_charge × qty if per_unit, else custom_charge)
+     *  - Items WITHOUT custom charge: use the global zone/setting charge (one flat fee)
+     *  - If ALL items have a custom charge, no global charge is added
+     *  - Free-delivery threshold still applies to the global-charge portion
+     */
+    public function calculateDeliveryForCart(array $cartItems, float $orderTotal, string $division, string $district): float
+    {
+        $zone = \App\Models\DeliveryZone::where('division', $division)
+            ->whereJsonContains('districts', $district)
+            ->where('is_active', true)
+            ->first();
+        $globalCharge = $zone ? $zone->delivery_charge : (float) Setting::get('delivery_charge', 60);
+        $freeAbove = $zone ? $zone->free_delivery_above : (float) Setting::get('free_delivery_min', 500);
+
+        $customTotal = 0.0;
+        $hasNonCustom = false;
+
+        foreach ($cartItems as $item) {
+            $product = \App\Models\Product::find($item['product_id'] ?? $item['id'] ?? null);
+
+            if ($product && $product->custom_delivery_charge !== null) {
+                // Per-unit or flat custom charge
+                $customTotal += $product->delivery_charge_per_unit
+                    ? (float) $product->custom_delivery_charge * ($item['qty'] ?? $item['quantity'] ?? 1)
+                    : (float) $product->custom_delivery_charge;
+            } else {
+                $hasNonCustom = true;
+            }
+        }
+
+        // Global charge for non-custom items (respects free delivery threshold)
+        $globalPart = $hasNonCustom
+            ? ($orderTotal >= $freeAbove ? 0 : $globalCharge)
+            : 0;
+
+        return $customTotal + $globalPart;
     }
 
     /**

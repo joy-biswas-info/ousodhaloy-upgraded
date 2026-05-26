@@ -5,7 +5,6 @@
     <div class="max-w-7xl mx-auto px-4 py-5">
         {{-- Product listing --}}
         <div>
-
             {{-- Toolbar --}}
             <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>
@@ -16,7 +15,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <select
-                        onchange="window.location='{{ route('shop.index') }}?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(window.location.search)),...{sort:this.value}}).toString()"
+                        onchange="window.location='{{ route('shop.index')}}?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(window.location.search)),...{sort:this.value}}).toString()"
                         class="border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-teal-500">
                         @foreach(['newest' => 'Newest', 'price_asc' => 'Price: Low to High', 'price_desc' => 'Price: High to Low', 'discount' => 'Best Discount', 'top_selling' => 'Top Selling', 'rating' => 'Top Rated'] as $val => $label)
                             <option value="{{ $val }}" @selected($sort === $val)>{{ $label }}</option>

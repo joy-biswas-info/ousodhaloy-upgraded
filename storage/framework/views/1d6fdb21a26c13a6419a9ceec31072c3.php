@@ -177,4 +177,4 @@
         }
     </script>
 <?php $__env->stopPush(); ?>
-<?php echo $__env->make('layouts.shop', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/cart/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.checkout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/cart/index.blade.php ENDPATH**/ ?>

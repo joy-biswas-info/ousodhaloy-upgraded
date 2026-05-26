@@ -5,6 +5,9 @@
 
 <section x-data="heroSlider(<?php echo e($banners->count()); ?>)" style="position:relative;overflow:hidden;background:var(--teal-dark)">
     <?php $heroH = (int)\App\Models\Setting::get('hero_banner_height', 400); ?>
+    
+
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($banners->count() > 1): ?>
     <div style="position:relative;min-height:240px;height:<?php echo e($heroH); ?>px;max-height:<?php echo e($heroH); ?>px;">
 
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $banners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $banner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
@@ -40,8 +43,6 @@
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
-
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($banners->count() > 1): ?>
     <button @click="prev()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.3);color:#fff;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s" onmouseover="this.style.background='rgba(0,0,0,.55)'" onmouseout="this.style.background='rgba(0,0,0,.3)'">
         <i class="fas fa-chevron-left" style="font-size:12px"></i>
     </button>
@@ -58,27 +59,6 @@
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 </section>
 
-
-<!-- <div style="background:#fff;border-bottom:1px solid #e5e7eb">
-    <div style="max-width:900px;margin:0 auto;padding:10px 16px">
-        <div style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px">
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
-                ['fas fa-certificate','100% Genuine','DGDA Licensed'],
-                ['fas fa-truck','Fast Delivery','24-48hrs'],
-                ['fas fa-headset','24/7 Support','Always here'],
-                ['fas fa-shield-alt','Secure Pay','bKash · Card'],
-            ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$icon, $text, $sub]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
-                <i class="<?php echo e($icon); ?>" style="color:var(--teal);font-size:15px"></i>
-                <div>
-                    <p style="font-size:12px;font-weight:700;color:#1f2937;margin:0"><?php echo e($text); ?></p>
-                    <p style="font-size:10px;color:#9ca3af;margin:0"><?php echo e($sub); ?></p>
-                </div>
-            </div>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-        </div>
-    </div>
-</div> -->
 
 
 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($promoBanners->count() > 0): ?>

@@ -259,15 +259,30 @@ function productPage() {
         addToCartWithQty(id, qty) {
             fetch('/cart/add', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                },
                 body: JSON.stringify({ product_id: id, qty })
-            }).then(r => r.json()).then(data => {
+            })
+            .then(r => {
+                if (!r.ok && r.status !== 422) throw new Error('Server error ' + r.status);
+                return r.json();
+            })
+            .then(data => {
                 if (data.success) {
-                    const count = document.getElementById('cart-count');
-                    if (count) { count.textContent = data.count; count.classList.remove('hidden'); }
-                    showToast(data.message);
-                } else showToast(data.message, 'error');
-            });
+                    // Update ALL cart count badges (desktop + mobile)
+                    document.querySelectorAll('#cart-count, #cart-count-mobile').forEach(el => {
+                        el.textContent = data.count;
+                        el.style.display = 'flex';
+                    });
+                    showToast(data.message || 'Added to cart!');
+                } else {
+                    showToast(data.message || 'Could not add to cart', 'error');
+                }
+            })
+            .catch(err => showToast('Network error — please try again', 'error'));
         }
     };
 }

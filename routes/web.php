@@ -165,6 +165,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::delete('/settings/promos/{promo}', [SettingsController::class, 'destroyPromo'])->name('settings.promos.destroy');
     Route::get('/settings/banners', [SettingsController::class, 'banners'])->name('settings.banners');
     Route::post('/settings/banners', [SettingsController::class, 'storeBanner'])->name('settings.banners.store');
+    Route::patch('/settings/banners/{banner}', [SettingsController::class, 'updateBanner'])->name('settings.banners.update');
     Route::delete('/settings/banners/{banner}', [SettingsController::class, 'destroyBanner'])->name('settings.banners.destroy');
     Route::post('/settings/delivery-zones', [SettingsController::class, 'storeDeliveryZone'])->name('settings.delivery-zones.store');
     Route::put('/settings/delivery-zones/{zone}', [SettingsController::class, 'updateDeliveryZone'])->name('settings.delivery-zones.update');

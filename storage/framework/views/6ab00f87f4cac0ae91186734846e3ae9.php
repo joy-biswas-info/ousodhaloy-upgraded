@@ -4,7 +4,6 @@
     <div class="max-w-7xl mx-auto px-4 py-5">
         
         <div>
-
             
             <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <div>

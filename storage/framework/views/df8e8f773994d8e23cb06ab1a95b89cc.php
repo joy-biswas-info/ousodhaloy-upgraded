@@ -249,22 +249,34 @@
                         try {
                             const res = await fetch('<?php echo e(route('admin.media.store')); ?>', {
                                 method: 'POST',
-                                headers: { 'X-CSRF-TOKEN': CSRF },
+                                headers: {
+                                    'X-CSRF-TOKEN': CSRF,
+                                    'Accept': 'application/json',
+                                },
                                 body: fd,
                             });
+
+                            if (!res.ok && res.status !== 422) {
+                                throw new Error('Server error ' + res.status);
+                            }
+
                             const data = await res.json();
 
-                            // Mark each item as done/error based on response
-                            batch.forEach((item, j) => {
-                                if (data.uploaded?.[j]) {
-                                    item.status = 'done';
-                                    item.seoName = data.uploaded[j].filename;
-                                    totalUploaded++;
-                                } else {
-                                    item.status = 'error';
-                                    totalErrors++;
-                                }
-                            });
+                            if (data.success === false && data.errors) {
+                                // Laravel validation errors
+                                batch.forEach(item => { item.status = 'error'; totalErrors++; });
+                            } else {
+                                batch.forEach((item, j) => {
+                                    if (data.uploaded?.[j]) {
+                                        item.status = 'done';
+                                        item.seoName = data.uploaded[j].filename;
+                                        totalUploaded++;
+                                    } else {
+                                        item.status = 'error';
+                                        totalErrors++;
+                                    }
+                                });
+                            }
                         } catch (e) {
                             batch.forEach(item => { item.status = 'error'; totalErrors++; });
                         }

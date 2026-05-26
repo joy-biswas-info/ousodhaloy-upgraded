@@ -44,9 +44,9 @@
                         value="{{ $settings['site_logo'] ?? '' }}">
 
                     <button type="button" onclick="openMediaPicker('logo', (path, url) => {
-                            document.getElementById('logo-media-path').value = path;
-                            document.getElementById('logo-preview').innerHTML = '<img src=\''+url+'\' class=\'max-h-full max-w-full object-contain p-4\'>';
-                        })" class="btn-secondary w-full">
+                                                                                document.getElementById('logo-media-path').value = path;
+                                                                                document.getElementById('logo-preview').innerHTML = '<img src=\''+url+'\' class=\'max-h-full max-w-full object-contain p-4\'>';
+                                                                            })" class="btn-secondary w-full">
                         <i class="fas fa-images mr-2"></i>Pick from Media Library
                     </button>
                     <p class="text-xs text-gray-400 text-center">
@@ -163,6 +163,11 @@
                                     @csrf @method('DELETE')
                                     <button type="submit" class="btn-danger btn-sm">Delete</button>
                                 </form>
+                                <form method="POST" action="{{ route('admin.settings.banners.update', $banner) }}"
+                                    onsubmit="return confirm('Update?')">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" class="btn-success btn-sm">Update</button>
+                                </form>
                             </div>
                         @empty
                             <div class="p-8 text-center text-gray-400 text-sm">No banners yet. Add one →</div>
@@ -186,15 +191,14 @@
                         </div>
                         <div>
                             <label class="form-label">Image</label>
-
                             {{-- Media picker button --}}
                             <div id="banner-img-preview"
                                 class="w-full h-24 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center mb-2 overflow-hidden cursor-pointer"
                                 onclick="openMediaPicker('banner', (path, url) => {
-                                    document.getElementById('banner-media-path').value = path;
-                                    document.getElementById('banner-img-preview').innerHTML = '<img src=\''+url+'\' class=\'w-full h-full object-cover\'>';
-                                    document.getElementById('banner-file-input').value = '';
-                                })">
+                                                                                        document.getElementById('banner-media-path').value = path;
+                                                                                        document.getElementById('banner-img-preview').innerHTML = '<img src=\''+url+'\' class=\'w-full h-full object-cover\'>';
+                                                                                        document.getElementById('banner-file-input').value = '';
+                                                                                    })">
                                 <div class="text-center text-gray-400 text-xs">
                                     <i class="fas fa-image text-xl mb-1 block"></i>
                                     Click to pick from Media Library

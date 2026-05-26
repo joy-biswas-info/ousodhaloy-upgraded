@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany};
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Product extends Model
@@ -40,6 +41,8 @@ class Product extends Model
         'flash_sale_price',
         'flash_sale_ends_at',
         'express_delivery',
+        'custom_delivery_charge',
+        'delivery_charge_per_unit',
         'tabs',
         'tags',
         'meta_title',
@@ -59,6 +62,8 @@ class Product extends Model
         'is_featured' => 'boolean',
         'is_flash_sale' => 'boolean',
         'express_delivery' => 'boolean',
+        'custom_delivery_charge' => 'decimal:2',
+        'delivery_charge_per_unit' => 'boolean',
         'flash_sale_ends_at' => 'datetime',
         'price' => 'decimal:2',
         'mrp' => 'decimal:2',
@@ -154,7 +159,7 @@ class Product extends Model
     }
     public function scopeLowStock($q)
     {
-        return $q->where('stock', '<=', \DB::raw('low_stock_alert'))->where('stock', '>', 0);
+        return $q->where('stock', '<=', DB::raw('low_stock_alert'))->where('stock', '>', 0);
     }
     public function scopeOutOfStock($q)
     {

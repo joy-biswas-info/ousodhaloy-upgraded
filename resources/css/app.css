@@ -179,3 +179,6 @@ label, label *, .payment-method-label, .payment-method-label * { text-decoration
 @media(min-width:1024px) {
     .messenger-fab { bottom: 24px; right: 24px; }
 }
+.border{
+  border: 1px solid #fefefe !important;
+}

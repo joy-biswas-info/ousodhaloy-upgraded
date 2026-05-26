@@ -223,11 +223,30 @@ class SettingsController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'required|image|max:5120',
             'position' => 'required|in:hero,promo,sidebar,popup',
         ]);
 
-        $path = $request->file('image')->store('banners', 'public');
+        $path = null;
+
+        // Image from media library picker (path stored in hidden input)
+        if ($request->filled('image_media_path')) {
+            $path = $request->image_media_path;
+        } elseif ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $seoName = \App\Models\Media::seoFilename($file->getClientOriginalName(), 'media');
+            $path = $file->storeAs('media', $seoName, 'public');
+            \App\Models\Media::create([
+                'filename' => $seoName,
+                'original_name' => $file->getClientOriginalName(),
+                'path' => $path,
+                'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(),
+                'alt_text' => $request->title,
+                'folder' => 'media',
+                'uploaded_by' => auth()->id(),
+            ]);
+        }
+
         Banner::create([
             ...$request->only(['title', 'subtitle', 'link_url', 'button_text', 'badge_text', 'bg_color', 'position', 'sort_order']),
             'image' => $path,
@@ -237,9 +256,34 @@ class SettingsController extends Controller
         return back()->with('success', 'Banner added!');
     }
 
+    public function updateBanner(Request $request, Banner $banner)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'position' => 'required|in:hero,promo,sidebar,popup',
+        ]);
+
+        $path = $banner->image; // keep existing image by default
+
+        if ($request->filled('image_media_path')) {
+            $path = $request->image_media_path;
+        } elseif ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $seoName = \App\Models\Media::seoFilename($file->getClientOriginalName(), 'media');
+            $path = $file->storeAs('media', $seoName, 'public');
+        }
+
+        $banner->update([
+            ...$request->only(['title', 'subtitle', 'link_url', 'button_text', 'badge_text', 'bg_color', 'position', 'sort_order']),
+            'image' => $path,
+            'is_active' => $request->boolean('is_active', true),
+        ]);
+
+        return back()->with('success', 'Banner updated!');
+    }
+
     public function destroyBanner(Banner $banner)
     {
-        Storage::disk('public')->delete($banner->image);
         $banner->delete();
         return back()->with('success', 'Banner deleted.');
     }

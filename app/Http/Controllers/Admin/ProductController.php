@@ -192,6 +192,8 @@ class ProductController extends Controller
             'is_featured' => $request->boolean('is_featured'),
             'is_flash_sale' => $request->boolean('is_flash_sale'),
             'express_delivery' => $request->boolean('express_delivery'),
+            'custom_delivery_charge' => $request->filled('custom_delivery_charge') ? (float) $request->custom_delivery_charge : null,
+            'delivery_charge_per_unit' => $request->boolean('delivery_charge_per_unit'),
             'flash_sale_price' => $request->is_flash_sale ? $request->flash_sale_price : null,
             'flash_sale_ends_at' => $request->is_flash_sale ? $request->flash_sale_ends_at : null,
             'tabs' => $request->tabs ? json_decode($request->tabs, true) : [],

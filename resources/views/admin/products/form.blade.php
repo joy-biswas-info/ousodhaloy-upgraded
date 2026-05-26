@@ -275,6 +275,43 @@
         {{-- Right column --}}
         <div class="space-y-5">
 
+            {{-- Custom Delivery Charge --}}
+            <div class="bg-white rounded-xl border p-5">
+                <h3 class="font-bold text-gray-800 mb-3">
+                    <i class="fas fa-truck text-teal-600 mr-1.5"></i>Custom Delivery Charge
+                </h3>
+                <p class="text-xs text-gray-400 mb-3">
+                    Leave blank to use the global delivery charge from Settings. Set a value to override it for this product only.
+                </p>
+                <div class="space-y-3">
+                    <div>
+                        <label class="form-label">Custom Charge (৳)</label>
+                        <input type="number" name="custom_delivery_charge" step="0.01" min="0"
+                            value="{{ old('custom_delivery_charge', $product?->custom_delivery_charge) }}"
+                            class="form-input" placeholder="e.g. 120 — leave blank for global rate">
+                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" name="delivery_charge_per_unit" value="1"
+                                {{ old('delivery_charge_per_unit', $product?->delivery_charge_per_unit ?? false) ? 'checked' : '' }}
+                                class="sr-only peer">
+                            <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-teal-600 peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+                        </div>
+                        <div>
+                            <span class="text-sm text-gray-700">Multiply by quantity</span>
+                            <p class="text-xs text-gray-400">If on: charge × qty. If off: flat charge regardless of quantity.</p>
+                        </div>
+                    </label>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-700">
+                        <p class="font-semibold mb-1">How it works:</p>
+                        <p>• If blank → global delivery charge applies</p>
+                        <p>• If set to <strong>0</strong> → free delivery for this product</p>
+                        <p>• If set to <strong>120</strong> → ৳120 regardless of zone</p>
+                        <p>• When cart has mixed products, charges are summed</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- Actions --}}
             <div class="bg-white rounded-xl border p-5 space-y-3">
                 <button type="submit" class="w-full btn-primary py-3 text-base">

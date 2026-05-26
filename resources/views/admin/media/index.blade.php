@@ -85,7 +85,7 @@
         </div>
 
         {{-- Filters + search --}}
-        <div class="bg-white rounded-xl border p-4 hidden">
+        <div class="bg-white rounded-xl border p-4">
             <form method="GET" class="flex flex-wrap gap-3 items-center">
                 <input type="text" name="q" value="{{ request('q') }}" class="form-input flex-1 min-w-48"
                     placeholder="Search by filename or alt text…">
@@ -249,22 +249,34 @@
                         try {
                             const res = await fetch('{{ route('admin.media.store') }}', {
                                 method: 'POST',
-                                headers: { 'X-CSRF-TOKEN': CSRF },
+                                headers: {
+                                    'X-CSRF-TOKEN': CSRF,
+                                    'Accept': 'application/json',
+                                },
                                 body: fd,
                             });
+
+                            if (!res.ok && res.status !== 422) {
+                                throw new Error('Server error ' + res.status);
+                            }
+
                             const data = await res.json();
 
-                            // Mark each item as done/error based on response
-                            batch.forEach((item, j) => {
-                                if (data.uploaded?.[j]) {
-                                    item.status = 'done';
-                                    item.seoName = data.uploaded[j].filename;
-                                    totalUploaded++;
-                                } else {
-                                    item.status = 'error';
-                                    totalErrors++;
-                                }
-                            });
+                            if (data.success === false && data.errors) {
+                                // Laravel validation errors
+                                batch.forEach(item => { item.status = 'error'; totalErrors++; });
+                            } else {
+                                batch.forEach((item, j) => {
+                                    if (data.uploaded?.[j]) {
+                                        item.status = 'done';
+                                        item.seoName = data.uploaded[j].filename;
+                                        totalUploaded++;
+                                    } else {
+                                        item.status = 'error';
+                                        totalErrors++;
+                                    }
+                                });
+                            }
                         } catch (e) {
                             batch.forEach(item => { item.status = 'error'; totalErrors++; });
                         }

@@ -6,6 +6,7 @@
 {{-- ── Hero Slider ──────────────────────────────────────────────────────── --}}
 <section x-data="heroSlider({{ $banners->count() }})" style="position:relative;overflow:hidden;background:var(--teal-dark)">
     @php $heroH = (int)\App\Models\Setting::get('hero_banner_height', 400); @endphp
+    @if($banners->count() > 1)
     <div style="position:relative;min-height:240px;height:{{ $heroH }}px;max-height:{{ $heroH }}px;">
 
         @forelse($banners as $i => $banner)
@@ -41,8 +42,6 @@
         @empty
         @endforelse
     </div>
-
-    @if($banners->count() > 1)
     <button @click="prev()" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.3);color:#fff;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s" onmouseover="this.style.background='rgba(0,0,0,.55)'" onmouseout="this.style.background='rgba(0,0,0,.3)'">
         <i class="fas fa-chevron-left" style="font-size:12px"></i>
     </button>
@@ -58,29 +57,6 @@
     </div>
     @endif
 </section>
-
-{{-- ── Trust strip ─────────────────────────────────────────────────────── --}}
-<!-- <div style="background:#fff;border-bottom:1px solid #e5e7eb">
-    <div style="max-width:900px;margin:0 auto;padding:10px 16px">
-        <div style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px">
-            @foreach([
-                ['fas fa-certificate','100% Genuine','DGDA Licensed'],
-                ['fas fa-truck','Fast Delivery','24-48hrs'],
-                ['fas fa-headset','24/7 Support','Always here'],
-                ['fas fa-shield-alt','Secure Pay','bKash · Card'],
-            ] as [$icon, $text, $sub])
-            <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
-                <i class="{{ $icon }}" style="color:var(--teal);font-size:15px"></i>
-                <div>
-                    <p style="font-size:12px;font-weight:700;color:#1f2937;margin:0">{{ $text }}</p>
-                    <p style="font-size:10px;color:#9ca3af;margin:0">{{ $sub }}</p>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</div> -->
-
 {{-- ── Promo banners ───────────────────────────────────────────────────── --}}
 @if($promoBanners->count() > 0)
 <div style="padding:16px 16px 0">

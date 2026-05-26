@@ -124,7 +124,11 @@ class CheckoutController extends Controller
         $division = $request->division ?? '';
         $district = $request->district ?? '';
 
-        $charge = $this->orderService->calculateDelivery($subtotal, $division, $district);
+        // Use cart items for per-product custom delivery charge calculation
+        $cart = session('cart', []);
+        $charge = !empty($cart)
+            ? $this->orderService->calculateDeliveryForCart($cart, $subtotal, $division, $district)
+            : $this->orderService->calculateDelivery($subtotal, $division, $district);
 
         $freeAbove = (float) \App\Models\Setting::get('free_delivery_min', 500);
         $zone = \App\Models\DeliveryZone::where('division', $division)
