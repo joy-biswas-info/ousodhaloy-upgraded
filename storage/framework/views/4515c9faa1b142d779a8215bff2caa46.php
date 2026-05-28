@@ -2,7 +2,6 @@
 <?php $__env->startSection('page-title', $product ? 'Edit Product' : 'Add New Product'); ?>
 <?php $__env->startSection('breadcrumb', 'Products / ' . ($product ? 'Edit' : 'New')); ?>
 
-
 <?php
     $defaultTabs = [
         ['id' => 'desc',  'label' => 'Description',   'content' => ''],
@@ -13,7 +12,6 @@
         ? json_decode(old('tabs'), true)
         : ($product?->tabs ?? $defaultTabs);
 
-    // Safely get selected category IDs
     $selectedCatIds = old('category_ids', (function() use ($product) {
         if (!$product) return [];
         try {
@@ -28,6 +26,7 @@
         }
     })());
 ?>
+<?php echo $__env->make('partials.media-picker', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <?php $__env->startSection('content'); ?>
 <form method="POST" action="<?php echo e($product ? route('admin.products.update', $product) : route('admin.products.store')); ?>"
@@ -67,7 +66,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     </div>
                     <div>
                         <label class="form-label">SKU</label>
-                        <input type="text" name="sku" value="<?php echo e(old('sku', $product?->sku)); ?>" class="form-input" placeholder="NAP500">
+                        <input type="text" name="sku" value="<?php echo e(old('sku', $product?->sku)); ?>"
+                            class="form-input" placeholder="NAP500">
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['sku'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -79,18 +79,25 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     </div>
                     <div>
                         <label class="form-label">Generic Name / INN</label>
-                        <input type="text" name="generic_name" value="<?php echo e(old('generic_name', $product?->generic_name)); ?>" class="form-input" placeholder="Paracetamol">
+                        <input type="text" name="generic_name"
+                            value="<?php echo e(old('generic_name', $product?->generic_name)); ?>"
+                            class="form-input" placeholder="Paracetamol">
                     </div>
                     <div>
                         <label class="form-label">Barcode</label>
-                        <input type="text" name="barcode" value="<?php echo e(old('barcode', $product?->barcode)); ?>" class="form-input" placeholder="Optional">
+                        <input type="text" name="barcode"
+                            value="<?php echo e(old('barcode', $product?->barcode)); ?>"
+                            class="form-input" placeholder="Optional">
                     </div>
                     <div>
                         <label class="form-label">Brand / Manufacturer</label>
                         <select name="brand_id" class="form-select">
                             <option value="">Select brand</option>
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($brand->id); ?>" <?php if(old('brand_id', $product?->brand_id) == $brand->id): echo 'selected'; endif; ?>><?php echo e($brand->name); ?></option>
+                                <option value="<?php echo e($brand->id); ?>" <?php if(old('brand_id', $product?->brand_id) == $brand->id): echo 'selected'; endif; ?>>
+                                    <?php echo e($brand->name); ?>
+
+                                </option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </select>
                     </div>
@@ -99,14 +106,17 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <select name="category_id" class="form-select">
                             <option value="">Select primary category</option>
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($cat->id); ?>" <?php if(old('category_id', $product?->category_id) == $cat->id): echo 'selected'; endif; ?>><?php echo e($cat->icon); ?> <?php echo e($cat->name); ?></option>
+                                <option value="<?php echo e($cat->id); ?>" <?php if(old('category_id', $product?->category_id) == $cat->id): echo 'selected'; endif; ?>>
+                                    <?php echo e($cat->icon); ?> <?php echo e($cat->name); ?>
+
+                                </option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </select>
                         <p class="text-xs text-gray-400 mt-1">Used for breadcrumbs & main filter</p>
                     </div>
                     <div class="col-span-2">
                         <label class="form-label">Additional Categories
-                            <span class="font-normal text-gray-400 normal-case">(hold Ctrl/Cmd to select multiple)</span>
+                            <span class="font-normal text-gray-400 normal-case text-xs">(hold Ctrl/Cmd to select multiple)</span>
                         </label>
                         <select name="category_ids[]" multiple class="form-select" style="height:110px">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -142,23 +152,25 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             oninput="calcDiscount()">
                     </div>
                     <div>
-                        <label class="form-label">
-                            Discount %
+                        <label class="form-label">Discount %
                             <span class="text-gray-400 font-normal normal-case text-xs ml-1">(auto-calculated)</span>
                         </label>
                         <input type="number" name="discount_percent" id="field-discount"
                             step="0.01" max="100"
                             value="<?php echo e(old('discount_percent', $product?->discount_percent ?? 0)); ?>"
-                            class="form-input bg-gray-50" placeholder="0"
-                            readonly>
+                            class="form-input bg-gray-50" placeholder="0" readonly>
                     </div>
                     <div>
                         <label class="form-label">Stock Quantity *</label>
-                        <input type="number" name="stock" value="<?php echo e(old('stock', $product?->stock ?? 0)); ?>" class="form-input" required>
+                        <input type="number" name="stock"
+                            value="<?php echo e(old('stock', $product?->stock ?? 0)); ?>"
+                            class="form-input" required>
                     </div>
                     <div>
                         <label class="form-label">Low Stock Alert At</label>
-                        <input type="number" name="low_stock_alert" value="<?php echo e(old('low_stock_alert', $product?->low_stock_alert ?? 10)); ?>" class="form-input">
+                        <input type="number" name="low_stock_alert"
+                            value="<?php echo e(old('low_stock_alert', $product?->low_stock_alert ?? 10)); ?>"
+                            class="form-input">
                     </div>
                     <div>
                         <label class="form-label">Unit</label>
@@ -170,11 +182,15 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     </div>
                     <div>
                         <label class="form-label">Min Order Qty</label>
-                        <input type="number" name="min_order_qty" value="<?php echo e(old('min_order_qty', $product?->min_order_qty ?? 1)); ?>" class="form-input">
+                        <input type="number" name="min_order_qty"
+                            value="<?php echo e(old('min_order_qty', $product?->min_order_qty ?? 1)); ?>"
+                            class="form-input">
                     </div>
                     <div>
                         <label class="form-label">Max Order Qty</label>
-                        <input type="number" name="max_order_qty" value="<?php echo e(old('max_order_qty', $product?->max_order_qty ?? 100)); ?>" class="form-input">
+                        <input type="number" name="max_order_qty"
+                            value="<?php echo e(old('max_order_qty', $product?->max_order_qty ?? 100)); ?>"
+                            class="form-input">
                     </div>
                 </div>
             </div>
@@ -187,19 +203,27 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label class="form-label">Strength</label>
-                        <input type="text" name="strength" value="<?php echo e(old('strength', $product?->strength)); ?>" class="form-input" placeholder="500mg">
+                        <input type="text" name="strength"
+                            value="<?php echo e(old('strength', $product?->strength)); ?>"
+                            class="form-input" placeholder="500mg">
                     </div>
                     <div>
                         <label class="form-label">Dosage Form</label>
-                        <input type="text" name="form" value="<?php echo e(old('form', $product?->form)); ?>" class="form-input" placeholder="Tablet, Syrup, Cream...">
+                        <input type="text" name="form"
+                            value="<?php echo e(old('form', $product?->form)); ?>"
+                            class="form-input" placeholder="Tablet, Syrup, Cream...">
                     </div>
                     <div>
                         <label class="form-label">Pack Size</label>
-                        <input type="text" name="pack_size" value="<?php echo e(old('pack_size', $product?->pack_size)); ?>" class="form-input" placeholder="10 tablets/strip">
+                        <input type="text" name="pack_size"
+                            value="<?php echo e(old('pack_size', $product?->pack_size)); ?>"
+                            class="form-input" placeholder="10 tablets/strip">
                     </div>
                     <div class="col-span-3">
                         <label class="form-label">Tags (comma separated)</label>
-                        <input type="text" name="tags" value="<?php echo e(old('tags', $product ? implode(', ', $product->tags ?? []) : '')); ?>" class="form-input" placeholder="fever, pain, paracetamol">
+                        <input type="text" name="tags"
+                            value="<?php echo e(old('tags', $product ? implode(', ', $product->tags ?? []) : '')); ?>"
+                            class="form-input" placeholder="fever, pain, paracetamol">
                     </div>
                 </div>
             </div>
@@ -212,7 +236,9 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="form-label">Flash Sale Price (৳)</label>
-                        <input type="number" name="flash_sale_price" step="0.01" value="<?php echo e(old('flash_sale_price', $product?->flash_sale_price)); ?>" class="form-input">
+                        <input type="number" name="flash_sale_price" step="0.01"
+                            value="<?php echo e(old('flash_sale_price', $product?->flash_sale_price)); ?>"
+                            class="form-input">
                     </div>
                     <div>
                         <label class="form-label">Flash Sale Ends At</label>
@@ -238,7 +264,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <div class="flex items-center">
                             <button type="button" @click="activeTab = i"
                                 :class="activeTab === i ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                                class="px-3 py-1.5 text-xs font-semibold rounded-l-lg transition-colors" x-text="tab.label">
+                                class="px-3 py-1.5 text-xs font-semibold rounded-l-lg transition-colors"
+                                x-text="tab.label">
                             </button>
                             <button type="button" @click="removeTab(i)" x-show="tabs.length > 1"
                                 class="bg-red-100 text-red-500 hover:bg-red-200 px-1.5 py-1.5 rounded-r-lg text-xs border-l border-red-200 transition-colors">
@@ -289,11 +316,14 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <div class="space-y-3">
                     <div>
                         <label class="form-label">Meta Title</label>
-                        <input type="text" name="meta_title" value="<?php echo e(old('meta_title', $product?->meta_title)); ?>" class="form-input" placeholder="Leave blank to use product name">
+                        <input type="text" name="meta_title"
+                            value="<?php echo e(old('meta_title', $product?->meta_title)); ?>"
+                            class="form-input" placeholder="Leave blank to use product name">
                     </div>
                     <div>
                         <label class="form-label">Meta Description</label>
-                        <textarea name="meta_description" rows="2" class="form-input resize-none" placeholder="Leave blank to auto-generate"><?php echo e(old('meta_description', $product?->meta_description)); ?></textarea>
+                        <textarea name="meta_description" rows="2" class="form-input resize-none"
+                            placeholder="Leave blank to auto-generate"><?php echo e(old('meta_description', $product?->meta_description)); ?></textarea>
                     </div>
                 </div>
             </div>
@@ -307,15 +337,13 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <h3 class="font-bold text-gray-800 mb-3">
                     <i class="fas fa-truck text-teal-600 mr-1.5"></i>Custom Delivery Charge
                 </h3>
-                <p class="text-xs text-gray-400 mb-3">
-                    Leave blank to use the global delivery charge from Settings. Set a value to override it for this product only.
-                </p>
+                <p class="text-xs text-gray-400 mb-3">Leave blank to use the global delivery charge from Settings.</p>
                 <div class="space-y-3">
                     <div>
                         <label class="form-label">Custom Charge (৳)</label>
                         <input type="number" name="custom_delivery_charge" step="0.01" min="0"
                             value="<?php echo e(old('custom_delivery_charge', $product?->custom_delivery_charge)); ?>"
-                            class="form-input" placeholder="e.g. 120 — leave blank for global rate">
+                            class="form-input" placeholder="Leave blank for global rate">
                     </div>
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
@@ -327,15 +355,14 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         </div>
                         <div>
                             <span class="text-sm text-gray-700">Multiply by quantity</span>
-                            <p class="text-xs text-gray-400">If on: charge × qty. If off: flat charge regardless of quantity.</p>
+                            <p class="text-xs text-gray-400">charge × qty ordered</p>
                         </div>
                     </label>
-                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-700">
-                        <p class="font-semibold mb-1">How it works:</p>
-                        <p>• If blank → global delivery charge applies</p>
-                        <p>• If set to <strong>0</strong> → free delivery for this product</p>
-                        <p>• If set to <strong>120</strong> → ৳120 regardless of zone</p>
-                        <p>• When cart has mixed products, charges are summed</p>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-700 space-y-0.5">
+                        <p class="font-semibold">How it works:</p>
+                        <p>• Blank → global delivery charge</p>
+                        <p>• 0 → free delivery for this product</p>
+                        <p>• 120 → ৳120 regardless of zone</p>
                     </div>
                 </div>
             </div>
@@ -352,7 +379,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <i class="fas fa-external-link-alt mr-1"></i> View on Store
                 </a>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                <a href="<?php echo e(route('admin.products.index')); ?>" class="w-full btn-outline py-2.5 text-sm text-center block">Cancel</a>
+                <a href="<?php echo e(route('admin.products.index')); ?>"
+                    class="w-full btn-outline py-2.5 text-sm text-center block">Cancel</a>
             </div>
 
             
@@ -364,28 +392,26 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <img src="<?php echo e($product->thumbnail_url); ?>" class="w-full h-full object-contain">
                     <?php else: ?>
                         <div class="text-center text-gray-400">
-                            <i class="fas fa-image text-3xl mb-2"></i>
+                            <i class="fas fa-image text-3xl mb-2 block"></i>
                             <p class="text-xs">Pick from media library</p>
                         </div>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                <input type="hidden" name="thumbnail_media_path" id="thumbnail-media-path" value="<?php echo e($product?->thumbnail); ?>">
-                <button type="button"
-                    onclick="openMediaPicker('thumbnail', (path, url) => {
-                        document.getElementById('thumbnail-media-path').value = path;
-                        const p = document.getElementById('thumb-preview');
-                        p.innerHTML = '<img src=\''+url+'\' class=\'w-full h-full object-contain\'>';
-                    })"
+                <input type="hidden" name="thumbnail_media_path" id="thumbnail-media-path"
+                    value="<?php echo e($product?->thumbnail); ?>">
+                <button type="button" onclick="openThumbPicker()"
                     class="w-full btn-secondary py-2 text-sm">
                     <i class="fas fa-images mr-2"></i>Pick from Media Library
                 </button>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product?->thumbnail): ?>
-                <button type="button" onclick="clearThumb()" class="w-full btn-outline py-2 text-sm mt-2 text-red-500">
+                <button type="button" onclick="clearThumb()"
+                    class="w-full btn-outline py-2 text-sm mt-2 text-red-500">
                     <i class="fas fa-times mr-1"></i>Remove thumbnail
                 </button>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 <p class="text-xs text-gray-400 mt-2 text-center">
-                    Upload images in <a href="<?php echo e(route('admin.media.index')); ?>" target="_blank" class="text-teal-600 underline">Media Library</a> first
+                    Upload in <a href="<?php echo e(route('admin.media.index')); ?>" target="_blank"
+                        class="text-teal-600 underline">Media Library</a> first
                 </p>
             </div>
 
@@ -394,7 +420,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <h3 class="font-bold text-gray-800 mb-3">Gallery Images</h3>
                 <div id="gallery-wrap" class="flex flex-wrap gap-2 mb-3">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $product?->images ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $path): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border" data-path="<?php echo e($path); ?>">
+                    <div class="relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border"
+                        data-path="<?php echo e($path); ?>">
                         <img src="<?php echo e(asset('storage/'.$path)); ?>" class="w-full h-full object-contain">
                         <button type="button" onclick="removeGalleryItem(this)"
                             class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs flex items-center justify-center rounded-bl">×</button>
@@ -405,10 +432,10 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <i class="fas fa-plus text-xl mb-1"></i> Add
                     </button>
                 </div>
-                <input type="hidden" name="images_json" id="images-json" value="<?php echo e(json_encode($product?->images ?? [])); ?>">
+                <input type="hidden" name="images_json" id="images-json"
+                    value="<?php echo e(json_encode($product?->images ?? [])); ?>">
                 <p class="text-xs text-gray-400">Pick images already uploaded in Media Library</p>
             </div>
-
             
             <div class="bg-white rounded-xl border p-5 space-y-3">
                 <h3 class="font-bold text-gray-800 mb-3">Product Status</h3>
@@ -437,21 +464,19 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 </form>
 
 
-
-
 <script>
+// ── Discount auto-calculation ──────────────────────────────────────────────
 function calcDiscount() {
-    var price = parseFloat(document.getElementById('field-price')?.value) || 0;
-    var mrp   = parseFloat(document.getElementById('field-mrp')?.value)   || 0;
+    var price = parseFloat(document.getElementById('field-price').value) || 0;
+    var mrp   = parseFloat(document.getElementById('field-mrp').value)   || 0;
     var disc  = document.getElementById('field-discount');
     if (!disc) return;
-    if (mrp > 0 && price > 0 && mrp > price) {
-        disc.value = ((mrp - price) / mrp * 100).toFixed(2);
-    } else {
-        disc.value = '0';
-    }
+    disc.value = (mrp > 0 && price > 0 && mrp > price)
+        ? ((mrp - price) / mrp * 100).toFixed(2)
+        : '0';
 }
 
+// ── Alpine component ───────────────────────────────────────────────────────
 function productForm() {
     return {
         slug:        '<?php echo e(old('slug', $product?->slug ?? '')); ?>',
@@ -483,48 +508,49 @@ function productForm() {
     };
 }
 
-// ── Thumbnail picker ───────────────────────────────────────────────────────
+// ── Thumbnail ──────────────────────────────────────────────────────────────
 function openThumbPicker() {
     openMediaPicker('product-thumb', function(path, url) {
         document.getElementById('thumbnail-media-path').value = path;
-        var p = document.getElementById('thumb-preview');
-        p.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:contain">';
+        document.getElementById('thumb-preview').innerHTML =
+            '<img src="' + url + '" style="width:100%;height:100%;object-fit:contain">';
     });
 }
 function clearThumb() {
     document.getElementById('thumbnail-media-path').value = '';
     document.getElementById('thumb-preview').innerHTML =
-        '<div style="text-align:center;color:#9ca3af"><i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:6px"></i><p style="font-size:12px">Pick from media library</p></div>';
+        '<div style="text-align:center;color:#9ca3af">'
+        + '<i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:6px"></i>'
+        + '<p style="font-size:12px">Pick from media library</p></div>';
 }
 
-// ── Gallery picker ──────────────────────────────────────────────────────────
-let galleryPaths = JSON.parse(document.getElementById('images-json').value || '[]');
+// ── Gallery ────────────────────────────────────────────────────────────────
+var galleryPaths = JSON.parse(document.getElementById('images-json').value || '[]');
 
 function pickGalleryImage() {
     openMediaPicker('product-gallery', function(path, url) {
-        if (!galleryPaths.includes(path)) {
-            galleryPaths.push(path);
-            document.getElementById('images-json').value = JSON.stringify(galleryPaths);
-            var wrap = document.getElementById('gallery-wrap');
-            var div  = document.createElement('div');
-            div.className    = 'relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border';
-            div.dataset.path = path;
-            div.innerHTML    = '<img src="' + url + '" class="w-full h-full object-contain">'
-                             + '<button type="button" onclick="removeGalleryItem(this)"'
-                             + ' class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs flex items-center justify-center rounded-bl">×</button>';
-            wrap.insertBefore(div, wrap.lastElementChild);
-        }
+        if (galleryPaths.includes(path)) return;
+        galleryPaths.push(path);
+        document.getElementById('images-json').value = JSON.stringify(galleryPaths);
+        var wrap = document.getElementById('gallery-wrap');
+        var div  = document.createElement('div');
+        div.className    = 'relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border';
+        div.dataset.path = path;
+        div.innerHTML    = '<img src="' + url + '" class="w-full h-full object-contain">'
+                         + '<button type="button" onclick="removeGalleryItem(this)"'
+                         + ' class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs'
+                         + ' flex items-center justify-center rounded-bl">×</button>';
+        wrap.insertBefore(div, wrap.lastElementChild);
     });
 }
 function removeGalleryItem(btn) {
-    const div  = btn.parentElement;
-    const path = div.dataset.path;
-    galleryPaths = galleryPaths.filter(p => p !== path);
+    var div  = btn.parentElement;
+    var path = div.dataset.path;
+    galleryPaths = galleryPaths.filter(function(p) { return p !== path; });
     document.getElementById('images-json').value = JSON.stringify(galleryPaths);
     div.remove();
 }
 </script>
 
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/admin/products/form.blade.php ENDPATH**/ ?>

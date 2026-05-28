@@ -3,7 +3,6 @@
 @section('page-title', $product ? 'Edit Product' : 'Add New Product')
 @section('breadcrumb', 'Products / ' . ($product ? 'Edit' : 'New'))
 
-{{-- ── Prepare PHP data BEFORE @section('content') so it's available everywhere ── --}}
 @php
     $defaultTabs = [
         ['id' => 'desc',  'label' => 'Description',   'content' => ''],
@@ -14,7 +13,6 @@
         ? json_decode(old('tabs'), true)
         : ($product?->tabs ?? $defaultTabs);
 
-    // Safely get selected category IDs
     $selectedCatIds = old('category_ids', (function() use ($product) {
         if (!$product) return [];
         try {
@@ -29,6 +27,7 @@
         }
     })());
 @endphp
+@include('partials.media-picker')
 
 @section('content')
 <form method="POST" action="{{ $product ? route('admin.products.update', $product) : route('admin.products.store') }}"
@@ -38,7 +37,7 @@
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
 
-        {{-- Left column --}}
+        {{-- ── LEFT COLUMN ───────────────────────────────────────────── --}}
         <div class="xl:col-span-2 space-y-5">
 
             {{-- Basic Info --}}
@@ -61,23 +60,30 @@
                     </div>
                     <div>
                         <label class="form-label">SKU</label>
-                        <input type="text" name="sku" value="{{ old('sku', $product?->sku) }}" class="form-input" placeholder="NAP500">
+                        <input type="text" name="sku" value="{{ old('sku', $product?->sku) }}"
+                            class="form-input" placeholder="NAP500">
                         @error('sku') <p class="form-error">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="form-label">Generic Name / INN</label>
-                        <input type="text" name="generic_name" value="{{ old('generic_name', $product?->generic_name) }}" class="form-input" placeholder="Paracetamol">
+                        <input type="text" name="generic_name"
+                            value="{{ old('generic_name', $product?->generic_name) }}"
+                            class="form-input" placeholder="Paracetamol">
                     </div>
                     <div>
                         <label class="form-label">Barcode</label>
-                        <input type="text" name="barcode" value="{{ old('barcode', $product?->barcode) }}" class="form-input" placeholder="Optional">
+                        <input type="text" name="barcode"
+                            value="{{ old('barcode', $product?->barcode) }}"
+                            class="form-input" placeholder="Optional">
                     </div>
                     <div>
                         <label class="form-label">Brand / Manufacturer</label>
                         <select name="brand_id" class="form-select">
                             <option value="">Select brand</option>
                             @foreach($brands as $brand)
-                                <option value="{{ $brand->id }}" @selected(old('brand_id', $product?->brand_id) == $brand->id)>{{ $brand->name }}</option>
+                                <option value="{{ $brand->id }}" @selected(old('brand_id', $product?->brand_id) == $brand->id)>
+                                    {{ $brand->name }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -86,14 +92,16 @@
                         <select name="category_id" class="form-select">
                             <option value="">Select primary category</option>
                             @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" @selected(old('category_id', $product?->category_id) == $cat->id)>{{ $cat->icon }} {{ $cat->name }}</option>
+                                <option value="{{ $cat->id }}" @selected(old('category_id', $product?->category_id) == $cat->id)>
+                                    {{ $cat->icon }} {{ $cat->name }}
+                                </option>
                             @endforeach
                         </select>
                         <p class="text-xs text-gray-400 mt-1">Used for breadcrumbs & main filter</p>
                     </div>
                     <div class="col-span-2">
                         <label class="form-label">Additional Categories
-                            <span class="font-normal text-gray-400 normal-case">(hold Ctrl/Cmd to select multiple)</span>
+                            <span class="font-normal text-gray-400 normal-case text-xs">(hold Ctrl/Cmd to select multiple)</span>
                         </label>
                         <select name="category_ids[]" multiple class="form-select" style="height:110px">
                             @foreach($categories as $cat)
@@ -128,23 +136,25 @@
                             oninput="calcDiscount()">
                     </div>
                     <div>
-                        <label class="form-label">
-                            Discount %
+                        <label class="form-label">Discount %
                             <span class="text-gray-400 font-normal normal-case text-xs ml-1">(auto-calculated)</span>
                         </label>
                         <input type="number" name="discount_percent" id="field-discount"
                             step="0.01" max="100"
                             value="{{ old('discount_percent', $product?->discount_percent ?? 0) }}"
-                            class="form-input bg-gray-50" placeholder="0"
-                            readonly>
+                            class="form-input bg-gray-50" placeholder="0" readonly>
                     </div>
                     <div>
                         <label class="form-label">Stock Quantity *</label>
-                        <input type="number" name="stock" value="{{ old('stock', $product?->stock ?? 0) }}" class="form-input" required>
+                        <input type="number" name="stock"
+                            value="{{ old('stock', $product?->stock ?? 0) }}"
+                            class="form-input" required>
                     </div>
                     <div>
                         <label class="form-label">Low Stock Alert At</label>
-                        <input type="number" name="low_stock_alert" value="{{ old('low_stock_alert', $product?->low_stock_alert ?? 10) }}" class="form-input">
+                        <input type="number" name="low_stock_alert"
+                            value="{{ old('low_stock_alert', $product?->low_stock_alert ?? 10) }}"
+                            class="form-input">
                     </div>
                     <div>
                         <label class="form-label">Unit</label>
@@ -156,11 +166,15 @@
                     </div>
                     <div>
                         <label class="form-label">Min Order Qty</label>
-                        <input type="number" name="min_order_qty" value="{{ old('min_order_qty', $product?->min_order_qty ?? 1) }}" class="form-input">
+                        <input type="number" name="min_order_qty"
+                            value="{{ old('min_order_qty', $product?->min_order_qty ?? 1) }}"
+                            class="form-input">
                     </div>
                     <div>
                         <label class="form-label">Max Order Qty</label>
-                        <input type="number" name="max_order_qty" value="{{ old('max_order_qty', $product?->max_order_qty ?? 100) }}" class="form-input">
+                        <input type="number" name="max_order_qty"
+                            value="{{ old('max_order_qty', $product?->max_order_qty ?? 100) }}"
+                            class="form-input">
                     </div>
                 </div>
             </div>
@@ -173,24 +187,32 @@
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label class="form-label">Strength</label>
-                        <input type="text" name="strength" value="{{ old('strength', $product?->strength) }}" class="form-input" placeholder="500mg">
+                        <input type="text" name="strength"
+                            value="{{ old('strength', $product?->strength) }}"
+                            class="form-input" placeholder="500mg">
                     </div>
                     <div>
                         <label class="form-label">Dosage Form</label>
-                        <input type="text" name="form" value="{{ old('form', $product?->form) }}" class="form-input" placeholder="Tablet, Syrup, Cream...">
+                        <input type="text" name="form"
+                            value="{{ old('form', $product?->form) }}"
+                            class="form-input" placeholder="Tablet, Syrup, Cream...">
                     </div>
                     <div>
                         <label class="form-label">Pack Size</label>
-                        <input type="text" name="pack_size" value="{{ old('pack_size', $product?->pack_size) }}" class="form-input" placeholder="10 tablets/strip">
+                        <input type="text" name="pack_size"
+                            value="{{ old('pack_size', $product?->pack_size) }}"
+                            class="form-input" placeholder="10 tablets/strip">
                     </div>
                     <div class="col-span-3">
                         <label class="form-label">Tags (comma separated)</label>
-                        <input type="text" name="tags" value="{{ old('tags', $product ? implode(', ', $product->tags ?? []) : '') }}" class="form-input" placeholder="fever, pain, paracetamol">
+                        <input type="text" name="tags"
+                            value="{{ old('tags', $product ? implode(', ', $product->tags ?? []) : '') }}"
+                            class="form-input" placeholder="fever, pain, paracetamol">
                     </div>
                 </div>
             </div>
 
-            {{-- Flash Sale (shown only when toggle is on) --}}
+            {{-- Flash Sale --}}
             <div class="bg-white rounded-xl border p-5" x-show="isFlashSale" x-cloak>
                 <h2 class="font-bold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2">
                     <i class="fas fa-bolt text-orange-500"></i> Flash Sale Settings
@@ -198,7 +220,9 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="form-label">Flash Sale Price (৳)</label>
-                        <input type="number" name="flash_sale_price" step="0.01" value="{{ old('flash_sale_price', $product?->flash_sale_price) }}" class="form-input">
+                        <input type="number" name="flash_sale_price" step="0.01"
+                            value="{{ old('flash_sale_price', $product?->flash_sale_price) }}"
+                            class="form-input">
                     </div>
                     <div>
                         <label class="form-label">Flash Sale Ends At</label>
@@ -224,7 +248,8 @@
                         <div class="flex items-center">
                             <button type="button" @click="activeTab = i"
                                 :class="activeTab === i ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-                                class="px-3 py-1.5 text-xs font-semibold rounded-l-lg transition-colors" x-text="tab.label">
+                                class="px-3 py-1.5 text-xs font-semibold rounded-l-lg transition-colors"
+                                x-text="tab.label">
                             </button>
                             <button type="button" @click="removeTab(i)" x-show="tabs.length > 1"
                                 class="bg-red-100 text-red-500 hover:bg-red-200 px-1.5 py-1.5 rounded-r-lg text-xs border-l border-red-200 transition-colors">
@@ -275,17 +300,20 @@
                 <div class="space-y-3">
                     <div>
                         <label class="form-label">Meta Title</label>
-                        <input type="text" name="meta_title" value="{{ old('meta_title', $product?->meta_title) }}" class="form-input" placeholder="Leave blank to use product name">
+                        <input type="text" name="meta_title"
+                            value="{{ old('meta_title', $product?->meta_title) }}"
+                            class="form-input" placeholder="Leave blank to use product name">
                     </div>
                     <div>
                         <label class="form-label">Meta Description</label>
-                        <textarea name="meta_description" rows="2" class="form-input resize-none" placeholder="Leave blank to auto-generate">{{ old('meta_description', $product?->meta_description) }}</textarea>
+                        <textarea name="meta_description" rows="2" class="form-input resize-none"
+                            placeholder="Leave blank to auto-generate">{{ old('meta_description', $product?->meta_description) }}</textarea>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Right column --}}
+        {{-- ── RIGHT COLUMN ──────────────────────────────────────────── --}}
         <div class="space-y-5">
 
             {{-- Custom Delivery Charge --}}
@@ -293,15 +321,13 @@
                 <h3 class="font-bold text-gray-800 mb-3">
                     <i class="fas fa-truck text-teal-600 mr-1.5"></i>Custom Delivery Charge
                 </h3>
-                <p class="text-xs text-gray-400 mb-3">
-                    Leave blank to use the global delivery charge from Settings. Set a value to override it for this product only.
-                </p>
+                <p class="text-xs text-gray-400 mb-3">Leave blank to use the global delivery charge from Settings.</p>
                 <div class="space-y-3">
                     <div>
                         <label class="form-label">Custom Charge (৳)</label>
                         <input type="number" name="custom_delivery_charge" step="0.01" min="0"
                             value="{{ old('custom_delivery_charge', $product?->custom_delivery_charge) }}"
-                            class="form-input" placeholder="e.g. 120 — leave blank for global rate">
+                            class="form-input" placeholder="Leave blank for global rate">
                     </div>
                     <label class="flex items-center gap-2 cursor-pointer">
                         <div class="relative">
@@ -312,15 +338,14 @@
                         </div>
                         <div>
                             <span class="text-sm text-gray-700">Multiply by quantity</span>
-                            <p class="text-xs text-gray-400">If on: charge × qty. If off: flat charge regardless of quantity.</p>
+                            <p class="text-xs text-gray-400">charge × qty ordered</p>
                         </div>
                     </label>
-                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-700">
-                        <p class="font-semibold mb-1">How it works:</p>
-                        <p>• If blank → global delivery charge applies</p>
-                        <p>• If set to <strong>0</strong> → free delivery for this product</p>
-                        <p>• If set to <strong>120</strong> → ৳120 regardless of zone</p>
-                        <p>• When cart has mixed products, charges are summed</p>
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-xs text-amber-700 space-y-0.5">
+                        <p class="font-semibold">How it works:</p>
+                        <p>• Blank → global delivery charge</p>
+                        <p>• 0 → free delivery for this product</p>
+                        <p>• 120 → ৳120 regardless of zone</p>
                     </div>
                 </div>
             </div>
@@ -336,7 +361,8 @@
                     <i class="fas fa-external-link-alt mr-1"></i> View on Store
                 </a>
                 @endif
-                <a href="{{ route('admin.products.index') }}" class="w-full btn-outline py-2.5 text-sm text-center block">Cancel</a>
+                <a href="{{ route('admin.products.index') }}"
+                    class="w-full btn-outline py-2.5 text-sm text-center block">Cancel</a>
             </div>
 
             {{-- Thumbnail --}}
@@ -348,28 +374,26 @@
                         <img src="{{ $product->thumbnail_url }}" class="w-full h-full object-contain">
                     @else
                         <div class="text-center text-gray-400">
-                            <i class="fas fa-image text-3xl mb-2"></i>
+                            <i class="fas fa-image text-3xl mb-2 block"></i>
                             <p class="text-xs">Pick from media library</p>
                         </div>
                     @endif
                 </div>
-                <input type="hidden" name="thumbnail_media_path" id="thumbnail-media-path" value="{{ $product?->thumbnail }}">
-                <button type="button"
-                    onclick="openMediaPicker('thumbnail', (path, url) => {
-                        document.getElementById('thumbnail-media-path').value = path;
-                        const p = document.getElementById('thumb-preview');
-                        p.innerHTML = '<img src=\''+url+'\' class=\'w-full h-full object-contain\'>';
-                    })"
+                <input type="hidden" name="thumbnail_media_path" id="thumbnail-media-path"
+                    value="{{ $product?->thumbnail }}">
+                <button type="button" onclick="openThumbPicker()"
                     class="w-full btn-secondary py-2 text-sm">
                     <i class="fas fa-images mr-2"></i>Pick from Media Library
                 </button>
                 @if($product?->thumbnail)
-                <button type="button" onclick="clearThumb()" class="w-full btn-outline py-2 text-sm mt-2 text-red-500">
+                <button type="button" onclick="clearThumb()"
+                    class="w-full btn-outline py-2 text-sm mt-2 text-red-500">
                     <i class="fas fa-times mr-1"></i>Remove thumbnail
                 </button>
                 @endif
                 <p class="text-xs text-gray-400 mt-2 text-center">
-                    Upload images in <a href="{{ route('admin.media.index') }}" target="_blank" class="text-teal-600 underline">Media Library</a> first
+                    Upload in <a href="{{ route('admin.media.index') }}" target="_blank"
+                        class="text-teal-600 underline">Media Library</a> first
                 </p>
             </div>
 
@@ -378,7 +402,8 @@
                 <h3 class="font-bold text-gray-800 mb-3">Gallery Images</h3>
                 <div id="gallery-wrap" class="flex flex-wrap gap-2 mb-3">
                     @foreach($product?->images ?? [] as $path)
-                    <div class="relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border" data-path="{{ $path }}">
+                    <div class="relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border"
+                        data-path="{{ $path }}">
                         <img src="{{ asset('storage/'.$path) }}" class="w-full h-full object-contain">
                         <button type="button" onclick="removeGalleryItem(this)"
                             class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs flex items-center justify-center rounded-bl">×</button>
@@ -389,10 +414,10 @@
                         <i class="fas fa-plus text-xl mb-1"></i> Add
                     </button>
                 </div>
-                <input type="hidden" name="images_json" id="images-json" value="{{ json_encode($product?->images ?? []) }}">
+                <input type="hidden" name="images_json" id="images-json"
+                    value="{{ json_encode($product?->images ?? []) }}">
                 <p class="text-xs text-gray-400">Pick images already uploaded in Media Library</p>
             </div>
-
             {{-- Status toggles --}}
             <div class="bg-white rounded-xl border p-5 space-y-3">
                 <h3 class="font-bold text-gray-800 mb-3">Product Status</h3>
@@ -419,22 +444,20 @@
     </div>
 </form>
 
-
-
-{{-- ── Scripts inline so Alpine finds productForm() before processing x-data ── --}}
+{{-- Scripts must be INLINE (not @push) so Alpine finds productForm() before processing x-data --}}
 <script>
+// ── Discount auto-calculation ──────────────────────────────────────────────
 function calcDiscount() {
-    var price = parseFloat(document.getElementById('field-price')?.value) || 0;
-    var mrp   = parseFloat(document.getElementById('field-mrp')?.value)   || 0;
+    var price = parseFloat(document.getElementById('field-price').value) || 0;
+    var mrp   = parseFloat(document.getElementById('field-mrp').value)   || 0;
     var disc  = document.getElementById('field-discount');
     if (!disc) return;
-    if (mrp > 0 && price > 0 && mrp > price) {
-        disc.value = ((mrp - price) / mrp * 100).toFixed(2);
-    } else {
-        disc.value = '0';
-    }
+    disc.value = (mrp > 0 && price > 0 && mrp > price)
+        ? ((mrp - price) / mrp * 100).toFixed(2)
+        : '0';
 }
 
+// ── Alpine component ───────────────────────────────────────────────────────
 function productForm() {
     return {
         slug:        '{{ old('slug', $product?->slug ?? '') }}',
@@ -466,43 +489,45 @@ function productForm() {
     };
 }
 
-// ── Thumbnail picker ───────────────────────────────────────────────────────
+// ── Thumbnail ──────────────────────────────────────────────────────────────
 function openThumbPicker() {
     openMediaPicker('product-thumb', function(path, url) {
         document.getElementById('thumbnail-media-path').value = path;
-        var p = document.getElementById('thumb-preview');
-        p.innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:contain">';
+        document.getElementById('thumb-preview').innerHTML =
+            '<img src="' + url + '" style="width:100%;height:100%;object-fit:contain">';
     });
 }
 function clearThumb() {
     document.getElementById('thumbnail-media-path').value = '';
     document.getElementById('thumb-preview').innerHTML =
-        '<div style="text-align:center;color:#9ca3af"><i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:6px"></i><p style="font-size:12px">Pick from media library</p></div>';
+        '<div style="text-align:center;color:#9ca3af">'
+        + '<i class="fas fa-image" style="font-size:2rem;display:block;margin-bottom:6px"></i>'
+        + '<p style="font-size:12px">Pick from media library</p></div>';
 }
 
-// ── Gallery picker ──────────────────────────────────────────────────────────
-let galleryPaths = JSON.parse(document.getElementById('images-json').value || '[]');
+// ── Gallery ────────────────────────────────────────────────────────────────
+var galleryPaths = JSON.parse(document.getElementById('images-json').value || '[]');
 
 function pickGalleryImage() {
     openMediaPicker('product-gallery', function(path, url) {
-        if (!galleryPaths.includes(path)) {
-            galleryPaths.push(path);
-            document.getElementById('images-json').value = JSON.stringify(galleryPaths);
-            var wrap = document.getElementById('gallery-wrap');
-            var div  = document.createElement('div');
-            div.className    = 'relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border';
-            div.dataset.path = path;
-            div.innerHTML    = '<img src="' + url + '" class="w-full h-full object-contain">'
-                             + '<button type="button" onclick="removeGalleryItem(this)"'
-                             + ' class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs flex items-center justify-center rounded-bl">×</button>';
-            wrap.insertBefore(div, wrap.lastElementChild);
-        }
+        if (galleryPaths.includes(path)) return;
+        galleryPaths.push(path);
+        document.getElementById('images-json').value = JSON.stringify(galleryPaths);
+        var wrap = document.getElementById('gallery-wrap');
+        var div  = document.createElement('div');
+        div.className    = 'relative w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border';
+        div.dataset.path = path;
+        div.innerHTML    = '<img src="' + url + '" class="w-full h-full object-contain">'
+                         + '<button type="button" onclick="removeGalleryItem(this)"'
+                         + ' class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 text-xs'
+                         + ' flex items-center justify-center rounded-bl">×</button>';
+        wrap.insertBefore(div, wrap.lastElementChild);
     });
 }
 function removeGalleryItem(btn) {
-    const div  = btn.parentElement;
-    const path = div.dataset.path;
-    galleryPaths = galleryPaths.filter(p => p !== path);
+    var div  = btn.parentElement;
+    var path = div.dataset.path;
+    galleryPaths = galleryPaths.filter(function(p) { return p !== path; });
     document.getElementById('images-json').value = JSON.stringify(galleryPaths);
     div.remove();
 }
