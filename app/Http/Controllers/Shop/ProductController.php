@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Product, Category, Brand};
+use App\Models\{Product, Category, Brand, ProductReview};
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -16,8 +16,13 @@ class ProductController extends Controller
         }
         if ($cat = $request->category) {
             $category = Category::where('slug', $cat)->first();
-            if ($category)
-                $query->where('category_id', $category->id);
+            if ($category) {
+                // Match products where this is the primary category OR any additional category
+                $query->where(function ($q) use ($category) {
+                    $q->where('category_id', $category->id)
+                        ->orWhereHas('categories', fn($c) => $c->where('categories.id', $category->id));
+                });
+            }
         }
         if ($brand = $request->brand) {
             $b = Brand::where('slug', $brand)->first();
@@ -64,13 +69,29 @@ class ProductController extends Controller
 
         $product->incrementViews();
 
-        // Related products
+        // Related products — same generic name first, then same category
         $related = Product::active()
-            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->inStock()
-            ->take(5)
+            ->when(
+                $product->generic_name,
+                fn($q) =>
+                $q->where('generic_name', $product->generic_name)
+            )
+            ->take(8)
             ->get();
+
+        // If fewer than 3 by generic name, backfill from same category
+        if ($related->count() < 3 && $product->category_id) {
+            $existingIds = $related->pluck('id')->push($product->id);
+            $backfill = Product::active()
+                ->where('category_id', $product->category_id)
+                ->whereNotIn('id', $existingIds)
+                ->inStock()
+                ->take(8 - $related->count())
+                ->get();
+            $related = $related->merge($backfill);
+        }
 
         // Same brand
         $sameBrand = Product::active()
@@ -81,6 +102,37 @@ class ProductController extends Controller
             ->get();
 
         return view('shop.products.show', compact('product', 'related', 'sameBrand'));
+    }
+
+    public function storeReview(Request $request, string $slug)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'title' => 'nullable|string|max:120',
+            'body' => 'required|string|max:2000',
+        ]);
+
+        $product = Product::where('slug', $slug)->firstOrFail();
+
+        // Prevent duplicate reviews
+        $existing = ProductReview::where('product_id', $product->id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if ($existing) {
+            return back()->with('error', 'You have already reviewed this product.');
+        }
+
+        ProductReview::create([
+            'product_id' => $product->id,
+            'user_id' => auth()->id(),
+            'rating' => $request->rating,
+            'title' => $request->title,
+            'body' => $request->body,
+            'is_approved' => false, // admin approval required
+        ]);
+
+        return back()->with('review_success', 'Your review has been submitted and is pending approval. Thank you!');
     }
 
     // Live search endpoint (AJAX)

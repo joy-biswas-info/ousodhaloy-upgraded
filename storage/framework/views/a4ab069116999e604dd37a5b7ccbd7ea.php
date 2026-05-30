@@ -6,7 +6,7 @@
     
     <div class="lg:col-span-2">
         <div class="bg-white rounded-xl border overflow-hidden">
-            <div class="px-5 py-4 border-b font-bold text-gray-800 flex justify-between items-center">
+            <div class="px-5 py-4 border-b border-teal-100 font-bold text-gray-800 flex justify-between items-center">
                 <span>All Brands (<?php echo e($brands->total()); ?>)</span>
             </div>
             <table class="admin-table">

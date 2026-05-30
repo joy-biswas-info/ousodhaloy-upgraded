@@ -29,6 +29,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::prefix('shop')->name('shop.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product');
+    Route::post('/product/{slug}/review', [ProductController::class, 'storeReview'])->name('product.review')->middleware('auth');
 });
 
 Route::get('/search', [ProductController::class, 'search'])->name('search');
@@ -149,8 +150,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
 
     // ── Reviews ──────────────────────────────────────────────
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews');
-    Route::patch('/reviews/{r}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
-    Route::delete('/reviews/{r}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::patch('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::patch('/reviews/{review}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // ── Customization ────────────────────────────────────────────
     Route::get('/customization', [\App\Http\Controllers\Admin\SettingsController::class, 'customization'])->name('customization.index');

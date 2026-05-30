@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -28,8 +29,8 @@
             },
         }
     </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @php
@@ -308,7 +309,7 @@
                         <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
                             class="hidden-mobile">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
                     @endif
-                </a> 
+                </a>
                 <button class="text-white" onclick="toggleSidebar()"
                     style="background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer;line-height:1">&times;</button>
             </div>
@@ -354,7 +355,7 @@
 
         {{-- MAIN CONTENT — full remaining width --}}
         <main style="flex:1;overflow-x:auto">
-            <section class="container px-4 lg:px-10 full-width">
+            <section class="container sm:px-1 md:px-3 lg:px-4 full-width">
                 @yield('content')
             </section>
             {{-- ── FOOTER ────────────────────────────────────────────────────────── --}}
@@ -438,7 +439,7 @@
     @if($messengerUrl)
         <a href="{{ $messengerUrl }}" target="_blank" rel="noopener" class="messenger-fab" aria-label="Chat on Messenger">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="24" cy="24" r="24" fill="#0084FF" />
+                <circle cx="34" cy="34" r="34" fill="#0084FF" />
                 <path
                     d="M24 10C16.268 10 10 15.82 10 23c0 3.876 1.748 7.354 4.558 9.826V37l4.242-2.334A15.16 15.16 0 0024 35c7.732 0 14-5.82 14-12S31.732 10 24 10z"
                     fill="white" />
