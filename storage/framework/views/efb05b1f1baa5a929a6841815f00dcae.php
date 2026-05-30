@@ -258,8 +258,8 @@
                     </div>
                     <?php echo $__env->make('shop.partials.review-card', [$product], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
-                
+            </div>
+            
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($related->count() > 0): ?>
                     <div class="lg:col-span-1">
                         <div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:sticky lg:top-4">
@@ -291,116 +291,115 @@
                         </div>
                     </div>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-            </div>
         </div>
-            
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->is_in_stock): ?>
-                <div class="pdp-sticky-bar" id="pdp-sticky" x-data>
-                    <div class="flex items-center gap-3 flex-1 min-w-0">
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->thumbnail_url): ?>
-                            <img src="<?php echo e($product->thumbnail_url); ?>"
-                                class="w-10 h-10 rounded-lg object-contain bg-gray-50 border flex-shrink-0">
-                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                        <div class="min-w-0">
-                            <p class="text-sm font-bold text-gray-800 truncate"><?php echo e(Str::limit($product->name, 30)); ?></p>
-                            <p class="text-sm font-black" style="color:var(--teal)">
-                                ৳<?php echo e(number_format($product->effective_price, 2)); ?></p>
-                        </div>
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->is_in_stock): ?>
+            <div class="pdp-sticky-bar" id="pdp-sticky" x-data>
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->thumbnail_url): ?>
+                        <img src="<?php echo e($product->thumbnail_url); ?>"
+                            class="w-10 h-10 rounded-lg object-contain bg-gray-50 border flex-shrink-0">
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-gray-800 truncate"><?php echo e(Str::limit($product->name, 30)); ?></p>
+                        <p class="text-sm font-black" style="color:var(--teal)">
+                            ৳<?php echo e(number_format($product->effective_price, 2)); ?></p>
                     </div>
-                    <button onclick="addToCart(<?php echo e($product->id); ?>)"
-                        class="flex-shrink-0 py-2.5 px-5 rounded-xl text-white text-sm font-bold flex items-center gap-2"
-                        style="background:var(--teal)">
-                        <i class="fas fa-cart-plus"></i>
-                        <span class="hidden sm:inline">Add to Cart</span>
-                    </button>
                 </div>
-            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
-            
-            <div class="pdp-lightbox" :class="lightboxOpen ? 'open' : ''" @click="lightboxOpen = false">
-                <img :src="activeImg" class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl">
-                <button @click="lightboxOpen = false"
-                    class="absolute top-4 right-4 text-white text-3xl leading-none">&times;</button>
+                <button onclick="addToCart(<?php echo e($product->id); ?>)"
+                    class="flex-shrink-0 py-2.5 px-5 rounded-xl text-white text-sm font-bold flex items-center gap-2"
+                    style="background:var(--teal)">
+                    <i class="fas fa-cart-plus"></i>
+                    <span class="hidden sm:inline">Add to Cart</span>
+                </button>
             </div>
-        <?php $__env->stopSection(); ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        <?php $__env->startPush('scripts'); ?>
-            <script>
-                function productPage() {
-                    return {
-                        qty: <?php echo e($product->min_order_qty); ?>,
-                        activeImg: '<?php echo e($product->thumbnail_url); ?>',
-                        lightboxOpen: false,
-                        added: false,
+        
+        <div class="pdp-lightbox" :class="lightboxOpen ? 'open' : ''" @click="lightboxOpen = false">
+            <img :src="activeImg" class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl">
+            <button @click="lightboxOpen = false"
+                class="absolute top-4 right-4 text-white text-3xl leading-none">&times;</button>
+        </div>
+    <?php $__env->stopSection(); ?>
 
-                        setImg(url) {
-                            this.activeImg = url;
-                        },
+    <?php $__env->startPush('scripts'); ?>
+        <script>
+            function productPage() {
+                return {
+                    qty: <?php echo e($product->min_order_qty); ?>,
+                    activeImg: '<?php echo e($product->thumbnail_url); ?>',
+                    lightboxOpen: false,
+                    added: false,
 
-                        addToCartWithQty(id, qty) {
-                            var self = this;
-                            fetch('/cart/add', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Accept': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                    },
-                                    body: JSON.stringify({
-                                        product_id: id,
-                                        qty: qty
-                                    })
+                    setImg(url) {
+                        this.activeImg = url;
+                    },
+
+                    addToCartWithQty(id, qty) {
+                        var self = this;
+                        fetch('/cart/add', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                },
+                                body: JSON.stringify({
+                                    product_id: id,
+                                    qty: qty
                                 })
-                                .then(function(r) {
-                                    if (!r.ok && r.status !== 422) throw new Error('Server error');
-                                    return r.json();
-                                })
-                                .then(function(data) {
-                                    if (data.success) {
-                                        document.querySelectorAll('#cart-count, #cart-count-mobile').forEach(function(el) {
-                                            el.textContent = data.count;
-                                            el.style.display = 'flex';
-                                        });
-                                        self.added = true;
-                                        setTimeout(function() {
-                                            self.added = false;
-                                        }, 2500);
-                                        showToast(data.message || 'Added to cart!');
-                                    } else {
-                                        showToast(data.message || 'Could not add to cart', 'error');
-                                    }
-                                })
-                                .catch(function() {
-                                    showToast('Network error — please try again', 'error');
-                                });
-                        }
-                    };
-                }
-
-                (function() {
-                    var bar = document.getElementById('pdp-sticky');
-                    if (!bar) return;
-                    window.addEventListener('scroll', function() {
-                        bar.classList.toggle('visible', window.scrollY > 400);
-                    }, {
-                        passive: true
-                    });
-                })();
-
-                <?php if($pixelViewContent ?? false): ?>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        if (window.fbTrack) {
-                            window.fbTrack('ViewContent', {
-                                content_ids: ['<?php echo e($product->id); ?>'],
-                                content_name: '<?php echo e(addslashes($product->name)); ?>',
-                                content_type: 'product',
-                                value: <?php echo e($product->effective_price); ?>,
-                                currency: 'BDT'
+                            })
+                            .then(function(r) {
+                                if (!r.ok && r.status !== 422) throw new Error('Server error');
+                                return r.json();
+                            })
+                            .then(function(data) {
+                                if (data.success) {
+                                    document.querySelectorAll('#cart-count, #cart-count-mobile').forEach(function(el) {
+                                        el.textContent = data.count;
+                                        el.style.display = 'flex';
+                                    });
+                                    self.added = true;
+                                    setTimeout(function() {
+                                        self.added = false;
+                                    }, 2500);
+                                    showToast(data.message || 'Added to cart!');
+                                } else {
+                                    showToast(data.message || 'Could not add to cart', 'error');
+                                }
+                            })
+                            .catch(function() {
+                                showToast('Network error — please try again', 'error');
                             });
-                        }
-                    });
-                <?php endif; ?>
-            </script>
-        <?php $__env->stopPush(); ?>
+                    }
+                };
+            }
+
+            (function() {
+                var bar = document.getElementById('pdp-sticky');
+                if (!bar) return;
+                window.addEventListener('scroll', function() {
+                    bar.classList.toggle('visible', window.scrollY > 400);
+                }, {
+                    passive: true
+                });
+            })();
+
+            <?php if($pixelViewContent ?? false): ?>
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (window.fbTrack) {
+                        window.fbTrack('ViewContent', {
+                            content_ids: ['<?php echo e($product->id); ?>'],
+                            content_name: '<?php echo e(addslashes($product->name)); ?>',
+                            content_type: 'product',
+                            value: <?php echo e($product->effective_price); ?>,
+                            currency: 'BDT'
+                        });
+                    }
+                });
+            <?php endif; ?>
+        </script>
+    <?php $__env->stopPush(); ?>
 
 <?php echo $__env->make('layouts.shop', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/products/show.blade.php ENDPATH**/ ?>

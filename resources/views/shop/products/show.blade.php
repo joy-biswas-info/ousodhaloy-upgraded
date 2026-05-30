@@ -252,8 +252,8 @@
                     </div>
                     @include('shop.partials.review-card', [$product])
                 @endif
-
-                {{-- Related Products — 1/3 width sticky sidebar --}}
+            </div>
+            {{-- Related Products — 1/3 width sticky sidebar --}}
                 @if ($related->count() > 0)
                     <div class="lg:col-span-1">
                         <div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:sticky lg:top-4">
@@ -284,114 +284,113 @@
                         </div>
                     </div>
                 @endif
-            </div>
         </div>
-            {{-- Sticky ATC bar --}}
-            @if ($product->is_in_stock)
-                <div class="pdp-sticky-bar" id="pdp-sticky" x-data>
-                    <div class="flex items-center gap-3 flex-1 min-w-0">
-                        @if ($product->thumbnail_url)
-                            <img src="{{ $product->thumbnail_url }}"
-                                class="w-10 h-10 rounded-lg object-contain bg-gray-50 border flex-shrink-0">
-                        @endif
-                        <div class="min-w-0">
-                            <p class="text-sm font-bold text-gray-800 truncate">{{ Str::limit($product->name, 30) }}</p>
-                            <p class="text-sm font-black" style="color:var(--teal)">
-                                ৳{{ number_format($product->effective_price, 2) }}</p>
-                        </div>
+        {{-- Sticky ATC bar --}}
+        @if ($product->is_in_stock)
+            <div class="pdp-sticky-bar" id="pdp-sticky" x-data>
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                    @if ($product->thumbnail_url)
+                        <img src="{{ $product->thumbnail_url }}"
+                            class="w-10 h-10 rounded-lg object-contain bg-gray-50 border flex-shrink-0">
+                    @endif
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-gray-800 truncate">{{ Str::limit($product->name, 30) }}</p>
+                        <p class="text-sm font-black" style="color:var(--teal)">
+                            ৳{{ number_format($product->effective_price, 2) }}</p>
                     </div>
-                    <button onclick="addToCart({{ $product->id }})"
-                        class="flex-shrink-0 py-2.5 px-5 rounded-xl text-white text-sm font-bold flex items-center gap-2"
-                        style="background:var(--teal)">
-                        <i class="fas fa-cart-plus"></i>
-                        <span class="hidden sm:inline">Add to Cart</span>
-                    </button>
                 </div>
-            @endif
-
-            {{-- Lightbox --}}
-            <div class="pdp-lightbox" :class="lightboxOpen ? 'open' : ''" @click="lightboxOpen = false">
-                <img :src="activeImg" class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl">
-                <button @click="lightboxOpen = false"
-                    class="absolute top-4 right-4 text-white text-3xl leading-none">&times;</button>
+                <button onclick="addToCart({{ $product->id }})"
+                    class="flex-shrink-0 py-2.5 px-5 rounded-xl text-white text-sm font-bold flex items-center gap-2"
+                    style="background:var(--teal)">
+                    <i class="fas fa-cart-plus"></i>
+                    <span class="hidden sm:inline">Add to Cart</span>
+                </button>
             </div>
-        @endsection
+        @endif
 
-        @push('scripts')
-            <script>
-                function productPage() {
-                    return {
-                        qty: {{ $product->min_order_qty }},
-                        activeImg: '{{ $product->thumbnail_url }}',
-                        lightboxOpen: false,
-                        added: false,
+        {{-- Lightbox --}}
+        <div class="pdp-lightbox" :class="lightboxOpen ? 'open' : ''" @click="lightboxOpen = false">
+            <img :src="activeImg" class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl">
+            <button @click="lightboxOpen = false"
+                class="absolute top-4 right-4 text-white text-3xl leading-none">&times;</button>
+        </div>
+    @endsection
 
-                        setImg(url) {
-                            this.activeImg = url;
-                        },
+    @push('scripts')
+        <script>
+            function productPage() {
+                return {
+                    qty: {{ $product->min_order_qty }},
+                    activeImg: '{{ $product->thumbnail_url }}',
+                    lightboxOpen: false,
+                    added: false,
 
-                        addToCartWithQty(id, qty) {
-                            var self = this;
-                            fetch('/cart/add', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Accept': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                    },
-                                    body: JSON.stringify({
-                                        product_id: id,
-                                        qty: qty
-                                    })
+                    setImg(url) {
+                        this.activeImg = url;
+                    },
+
+                    addToCartWithQty(id, qty) {
+                        var self = this;
+                        fetch('/cart/add', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                },
+                                body: JSON.stringify({
+                                    product_id: id,
+                                    qty: qty
                                 })
-                                .then(function(r) {
-                                    if (!r.ok && r.status !== 422) throw new Error('Server error');
-                                    return r.json();
-                                })
-                                .then(function(data) {
-                                    if (data.success) {
-                                        document.querySelectorAll('#cart-count, #cart-count-mobile').forEach(function(el) {
-                                            el.textContent = data.count;
-                                            el.style.display = 'flex';
-                                        });
-                                        self.added = true;
-                                        setTimeout(function() {
-                                            self.added = false;
-                                        }, 2500);
-                                        showToast(data.message || 'Added to cart!');
-                                    } else {
-                                        showToast(data.message || 'Could not add to cart', 'error');
-                                    }
-                                })
-                                .catch(function() {
-                                    showToast('Network error — please try again', 'error');
-                                });
-                        }
-                    };
-                }
-
-                (function() {
-                    var bar = document.getElementById('pdp-sticky');
-                    if (!bar) return;
-                    window.addEventListener('scroll', function() {
-                        bar.classList.toggle('visible', window.scrollY > 400);
-                    }, {
-                        passive: true
-                    });
-                })();
-
-                @if ($pixelViewContent ?? false)
-                    document.addEventListener('DOMContentLoaded', function() {
-                        if (window.fbTrack) {
-                            window.fbTrack('ViewContent', {
-                                content_ids: ['{{ $product->id }}'],
-                                content_name: '{{ addslashes($product->name) }}',
-                                content_type: 'product',
-                                value: {{ $product->effective_price }},
-                                currency: 'BDT'
+                            })
+                            .then(function(r) {
+                                if (!r.ok && r.status !== 422) throw new Error('Server error');
+                                return r.json();
+                            })
+                            .then(function(data) {
+                                if (data.success) {
+                                    document.querySelectorAll('#cart-count, #cart-count-mobile').forEach(function(el) {
+                                        el.textContent = data.count;
+                                        el.style.display = 'flex';
+                                    });
+                                    self.added = true;
+                                    setTimeout(function() {
+                                        self.added = false;
+                                    }, 2500);
+                                    showToast(data.message || 'Added to cart!');
+                                } else {
+                                    showToast(data.message || 'Could not add to cart', 'error');
+                                }
+                            })
+                            .catch(function() {
+                                showToast('Network error — please try again', 'error');
                             });
-                        }
-                    });
-                @endif
-            </script>
-        @endpush
+                    }
+                };
+            }
+
+            (function() {
+                var bar = document.getElementById('pdp-sticky');
+                if (!bar) return;
+                window.addEventListener('scroll', function() {
+                    bar.classList.toggle('visible', window.scrollY > 400);
+                }, {
+                    passive: true
+                });
+            })();
+
+            @if ($pixelViewContent ?? false)
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (window.fbTrack) {
+                        window.fbTrack('ViewContent', {
+                            content_ids: ['{{ $product->id }}'],
+                            content_name: '{{ addslashes($product->name) }}',
+                            content_type: 'product',
+                            value: {{ $product->effective_price }},
+                            currency: 'BDT'
+                        });
+                    }
+                });
+            @endif
+        </script>
+    @endpush

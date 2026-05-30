@@ -921,9 +921,6 @@ label *,
 .pdp-sticky-bar.visible {
   transform: translateY(0);
 }
-
-
-
 .qty-btn {
   width: 36px;
   height: 36px;
