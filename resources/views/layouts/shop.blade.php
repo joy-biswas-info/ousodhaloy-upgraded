@@ -7,8 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="{{ \App\Models\Setting::get('brand_primary', '#0e7673') }}">
     <title>@yield('title', config('app.name', 'Ousodhaloy')) – Bangladesh's Trusted Online Pharmacy</title>
-    <meta name="description"
-        content="@yield('meta_description', 'Buy genuine medicine, healthcare and wellness products online. Fast delivery across Bangladesh.')">
+    <meta name="description" content="@yield('meta_description', 'Buy genuine medicine, healthcare and wellness products online. Fast delivery across Bangladesh.')">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -20,9 +19,16 @@
                 extend: {
                     colors: {
                         teal: {
-                            50: '#f0fafa', 100: '#e6f4f4', 200: '#c4e8e8',
-                            300: '#93d5d5', 400: '#5bbebe', 500: '#35a5a5',
-                            600: '#13a09c', 700: '#0e7673', 800: '#0a5250', 900: '#073f3d',
+                            50: '#f0fafa',
+                            100: '#e6f4f4',
+                            200: '#c4e8e8',
+                            300: '#93d5d5',
+                            400: '#5bbebe',
+                            500: '#35a5a5',
+                            600: '#13a09c',
+                            700: '#0e7673',
+                            800: '#0a5250',
+                            900: '#073f3d',
                         },
                     },
                 },
@@ -45,17 +51,13 @@
     <style>
         :root {
             --teal:
-                {{ $bp }}
-            ;
+                {{ $bp }};
             --teal-dark:
-                {{ $bd }}
-            ;
+                {{ $bd }};
             --teal-light:
-                {{ $bl }}
-            ;
+                {{ $bl }};
             --teal-bg:
-                {{ $bbg }}
-            ;
+                {{ $bbg }};
         }
     </style>
     @stack('styles')
@@ -65,8 +67,8 @@
 <body class="">
 
     {{-- Flash messages --}}
-    @foreach(['success' => ['bg' => 'var(--teal)', 'icon' => 'check-circle'], 'error' => ['bg' => '#dc2626', 'icon' => 'exclamation-circle'], 'info' => ['bg' => '#2563eb', 'icon' => 'info-circle']] as $type => $cfg)
-        @if(session($type))
+    @foreach (['success' => ['bg' => 'var(--teal)', 'icon' => 'check-circle'], 'error' => ['bg' => '#dc2626', 'icon' => 'exclamation-circle'], 'info' => ['bg' => '#2563eb', 'icon' => 'info-circle']] as $type => $cfg)
+        @if (session($type))
             <div id="flash-{{ $type }}" class="animate-slide-in"
                 style="position:fixed;top:16px;right:16px;z-index:9999;background:{{ $cfg['bg'] }};color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;max-width:340px">
                 <i class="fas fa-{{ $cfg['icon'] }}"></i>
@@ -92,21 +94,29 @@
                     style="background:rgba(255,255,255,.18);border:none;color:#fff;width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
                     <i class="fas fa-bars" style="font-size:16px"></i>
                 </button>
-
                 {{-- Logo --}}
-                <a href="{{ route('home') }}"
-                    style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;flex:1;min-width:0">
-                    @if(\App\Models\Setting::get('site_logo'))
+                {{-- <a href="{{ route('home') }}"
+                    style="display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none;color:#fff;">
+                    @if (\App\Models\Setting::get('site_logo'))
                         <img src="{{ asset('storage/' . \App\Models\Setting::get('site_logo')) }}"
-                            style="max-height:50px;height:auto; width:auto;object-fit:contain;flex-shrink:0"
+                            style="height:60px;width:auto"
                             alt="{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}">
                     @else
                         <div
-                            style="width:32px;height:32px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:var(--teal);flex-shrink:0">
+                            style="width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--teal);">
                             ও</div>
-                        <span
-                            style="font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
+                        <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
+                            class="hidden-mobile">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
                     @endif
+                </a> --}}
+                {{-- Logo --}}
+                {{-- Logo --}}
+                <a href="{{ route('home') }}"
+                    style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
+                    <div
+                        style="width:84px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:900;font-size:16px">
+                        ঔষধালয়
+                    </div>
                 </a>
 
                 {{-- Cart --}}
@@ -150,22 +160,16 @@
     </header>
 
     {{-- ── Desktop HEADER ───────────────────────────────────────────────────────── --}}
-    <header class="site-header hidden lg:block ">
+    <header class="site-header hidden lg:block px-4 my-auto">
         <div class="header-inner" x-data="{ userMenu: false }">
 
             {{-- Logo --}}
             <a href="{{ route('home') }}"
-                style="display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none;color:#fff;">
-                @if(\App\Models\Setting::get('site_logo'))
-                    <img src="{{ asset('storage/' . \App\Models\Setting::get('site_logo')) }}"
-                        style="height:60PX;width:auto" alt="{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}">
-                @else
-                    <div
-                        style="width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--teal);">
-                        ও</div>
-                    <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
-                        class="hidden-mobile">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
-                @endif
+                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;flex:1;min-width:0">
+                <div
+                    style="width:110px;height:42px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:900;font-size:24px">
+                    ঔষধালয়
+                </div>
             </a>
 
             {{-- Search bar — centred --}}
@@ -182,13 +186,13 @@
                 {{-- Search dropdown --}}
                 <div x-show="open && results.length" x-cloak
                     style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid #e5e7eb;z-index:500;max-height:380px;overflow-y:auto;">
-                    <template x-for="p in results" :key="p . id">
-                        <a :href="'/shop/product/' + p . slug"
+                    <template x-for="p in results" :key="p.id">
+                        <a :href="'/shop/product/' + p.slug"
                             style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #f3f4f6;text-decoration:none;transition:background .12s"
                             @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
                             <div
                                 style="width:40px;height:40px;background:#f8fafb;border-radius:8px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-                                <img x-show="p.thumbnail_url" :src="p . thumbnail_url"
+                                <img x-show="p.thumbnail_url" :src="p.thumbnail_url"
                                     style="width:100%;height:100%;object-fit:contain;">
                                 <span x-show="!p.thumbnail_url" style="font-size:20px;">💊</span>
                             </div>
@@ -245,22 +249,24 @@
                     <div x-show="userMenu" @click.away="userMenu=false" x-cloak
                         style="position:absolute;right:0;top:calc(100%+4px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid #e5e7eb;width:200px;z-index:500;overflow:hidden;padding:4px 0">
                         @auth
-                            <div style="padding:10px 14px 8px;font-size:12px;color:#6b7280;border-bottom:1px solid #f3f4f6">
+                            <div
+                                style="padding:10px 14px 8px;font-size:12px;color:#6b7280;border-bottom:1px solid #f3f4f6">
                                 <p style="font-weight:700;color:#1f2937">{{ auth()->user()->name }}</p>
                                 <p>{{ auth()->user()->phone ?? auth()->user()->email }}</p>
                             </div>
-                            @if(auth()->user()->isManager())
+                            @if (auth()->user()->isManager())
                                 <a href="{{ route('admin.dashboard') }}"
                                     style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
                                     @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
                                     <i class="fas fa-tachometer-alt" style="color:var(--teal);width:14px"></i> Admin Panel
                                 </a>
                             @endif
-                            @foreach([['account.orders', 'fa-box', 'My Orders'], ['account.profile', 'fa-user-cog', 'Account'], ['account.wishlist', 'fa-heart', 'Wishlist']] as [$rt, $ic, $lb])
+                            @foreach ([['account.orders', 'fa-box', 'My Orders'], ['account.profile', 'fa-user-cog', 'Account'], ['account.wishlist', 'fa-heart', 'Wishlist']] as [$rt, $ic, $lb])
                                 <a href="{{ route($rt) }}"
                                     style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
                                     @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
-                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i> {{ $lb }}
+                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i>
+                                    {{ $lb }}
                                 </a>
                             @endforeach
                             <div style="border-top:1px solid #f3f4f6;margin-top:2px">
@@ -273,11 +279,12 @@
                                 </form>
                             </div>
                         @else
-                            @foreach([['auth.login', 'fa-sign-in-alt', 'Login'], ['auth.register', 'fa-user-plus', 'Register'], ['auth.otp', 'fa-mobile-alt', 'Login with OTP']] as [$rt, $ic, $lb])
+                            @foreach ([['auth.login', 'fa-sign-in-alt', 'Login'], ['auth.register', 'fa-user-plus', 'Register'], ['auth.otp', 'fa-mobile-alt', 'Login with OTP']] as [$rt, $ic, $lb])
                                 <a href="{{ route($rt) }}"
                                     style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
                                     @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
-                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i> {{ $lb }}
+                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i>
+                                    {{ $lb }}
                                 </a>
                             @endforeach
                         @endauth
@@ -297,11 +304,12 @@
             <div id="sidebar-mobile-header"
                 style="display:none;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f3f4f6;background-color:var(--teal)">
                 {{-- Logo --}}
-                <a href="{{ route('home') }}"
+                {{-- <a href="{{ route('home') }}"
                     style="display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none;color:#fff;">
-                    @if(\App\Models\Setting::get('site_logo'))
+                    @if (\App\Models\Setting::get('site_logo'))
                         <img src="{{ asset('storage/' . \App\Models\Setting::get('site_logo')) }}"
-                            style="height:60px;width:auto" alt="{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}">
+                            style="height:60px;width:auto"
+                            alt="{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}">
                     @else
                         <div
                             style="width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--teal);">
@@ -309,6 +317,14 @@
                         <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
                             class="hidden-mobile">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
                     @endif
+                </a> --}}
+                {{-- Logo --}}
+                <a href="{{ route('home') }}"
+                    style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
+                    <div
+                        style="width:84px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:900;font-size:16px">
+                        ঔষধালয়
+                    </div>
                 </a>
                 <button class="text-white" onclick="toggleSidebar()"
                     style="background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer;line-height:1">&times;</button>
@@ -325,14 +341,14 @@
                     <span class="cat-nav-icon">🏠</span>
                     <span style="flex:1">All Products</span>
                 </a>
-                @foreach(\App\Models\Category::active()->get() as $cat)
+                @foreach (\App\Models\Category::active()->get() as $cat)
                     <a href="{{ route('shop.index', ['category' => $cat->slug]) }}"
                         class="border-b border-gray-100 cat-nav-link {{ request('category') === $cat->slug ? 'active' : '' }}"
                         onclick="if(window.innerWidth<1024)toggleSidebar()">
                         <span class="cat-nav-icon">{{ $cat->icon }}</span>
                         <span
                             style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $cat->name }}</span>
-                        @if($cat->product_count > 0)
+                        @if ($cat->product_count > 0)
                             <span
                                 style="font-size:10px;color:#9ca3af;flex-shrink:0;margin-left:4px">{{ $cat->product_count }}</span>
                         @endif
@@ -365,11 +381,12 @@
                     <div style="margin:0 auto;padding:10px 16px">
                         <div
                             style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px">
-                            @foreach([['fas fa-truck', 'Fast Delivery', '24-48hrs'], ['fas fa-headset', '24/7 Support', 'Always here'], ['fas fa-shield-alt', 'Secure Pay', 'bKash · Card'],] as [$icon, $text, $sub])
+                            @foreach ([['fas fa-truck', 'Fast Delivery', '24-48hrs'], ['fas fa-headset', '24/7 Support', 'Always here'], ['fas fa-shield-alt', 'Secure Pay', 'bKash · Card']] as [$icon, $text, $sub])
                                 <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
                                     <i class="{{ $icon }}" style="color:var(--teal);font-size:10px"></i>
                                     <div>
-                                        <p style="font-size:10px;font-weight:700;color:#1f2937;margin:0">{{ $text }}</p>
+                                        <p style="font-size:10px;font-weight:700;color:#1f2937;margin:0">
+                                            {{ $text }}</p>
                                         <p style="font-size:10px;color:#9ca3af;margin:0">{{ $sub }}</p>
                                     </div>
                                 </div>
@@ -382,18 +399,16 @@
                         <div style="grid-column:1/-1">
                             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
                                 <div
-                                    style="width:34px;height:34px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
-                                    ও</div>
-                                <span
-                                    style="color:#fff;font-weight:700;font-size:16px">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
+                                    style="width:64px;height:34px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
+                                    ঔষধালয়
+                                </div>
                             </div>
-                            <p style="font-size:12px;line-height:1.7;margin-bottom:8px">বাংলাদেশের বিশ্বস্ত অনলাইন
-                                ফার্মেসি। আসল
-                                ওষুধ, দ্রুত ডেলিভারি।</p>
+                            <p style="font-size:12px;line-height:1.7;margin-bottom:8px">Trusted Health and Wellness
+                                Shop in Bangladesh</p>
                         </div>
                         <div>
                             <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
-                            @foreach([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account']] as [$rt, $lb])
+                            @foreach ([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account']] as [$rt, $lb])
                                 <a href="{{ route($rt) }}"
                                     style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
                                     @mouseenter="$el.style.color='#fff'"
@@ -406,8 +421,8 @@
                                     style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_phone', '09610016778') }}
                             </p>
                             <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-envelope"
-                                    style="color:var(--teal-light);margin-right:6px"></i>{{
-                                \App\Models\Setting::get('site_email','info@ousodhaloy.com') }}</p>
+                                    style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_email', 'info@ousodhaloy.com') }}
+                            </p>
                             <p style="font-size:12px"><i class="fas fa-map-marker-alt"
                                     style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_address', 'Dhaka, Bangladesh') }}
                             </p>
@@ -415,7 +430,8 @@
                     </div>
                     <div
                         style="border-top:1px solid #1f2937;padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px">
-                        <p>© {{ date('Y') }} {{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }} Ltd. All rights
+                        <p>© {{ date('Y') }} {{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }} Ltd. All
+                            rights
                             reserved.
                         </p>
                         <div style="display:flex;gap:14px">
@@ -436,8 +452,9 @@
         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199"></div>
 
     {{-- ── MESSENGER FAB ────────────────────────────────────────────────── --}}
-    @if($messengerUrl)
-        <a href="{{ $messengerUrl }}" target="_blank" rel="noopener" class="messenger-fab" aria-label="Chat on Messenger">
+    @if ($messengerUrl)
+        <a href="{{ $messengerUrl }}" target="_blank" rel="noopener" class="messenger-fab"
+            aria-label="Chat on Messenger">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="34" cy="34" r="34" fill="#0084FF" />
                 <path
@@ -459,7 +476,7 @@
             <a href="{{ route('cart.index') }}"
                 class="nav-item cart-btn {{ request()->routeIs('cart.*') ? 'active' : '' }}">
                 <i class="fas fa-shopping-cart"></i>
-                @if(\App\Http\Controllers\Shop\CartController::getCount() > 0)
+                @if (\App\Http\Controllers\Shop\CartController::getCount() > 0)
                     <span class="badge">{{ \App\Http\Controllers\Shop\CartController::getCount() }}</span>
                 @endif
                 <span>Cart</span>
@@ -500,9 +517,15 @@
 
         function liveSearch() {
             return {
-                query: '', results: [], open: false,
+                query: '',
+                results: [],
+                open: false,
                 async search() {
-                    if (this.query.length < 2) { this.results = []; this.open = false; return; }
+                    if (this.query.length < 2) {
+                        this.results = [];
+                        this.open = false;
+                        return;
+                    }
                     const r = await fetch('/search?q=' + encodeURIComponent(this.query));
                     this.results = await r.json();
                     this.open = this.results.length > 0;
@@ -515,11 +538,21 @@
         }
 
         function addToCart(productId, qty = 1) {
-            if (window.fbTrack) window.fbTrack('AddToCart', { content_ids: [productId], content_type: 'product', num_items: qty });
+            if (window.fbTrack) window.fbTrack('AddToCart', {
+                content_ids: [productId],
+                content_type: 'product',
+                num_items: qty
+            });
             fetch('/cart/add', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content },
-                body: JSON.stringify({ product_id: productId, qty })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    qty
+                })
             }).then(r => r.json()).then(data => {
                 if (data.success) {
                     // Update both desktop and mobile cart counts
@@ -528,13 +561,16 @@
                         el.style.display = 'flex';
                     });
                     showToast(data.message, 'success');
-                } else { showToast(data.message || 'Error', 'error'); }
+                } else {
+                    showToast(data.message || 'Error', 'error');
+                }
             });
         }
 
         function showToast(msg, type = 'success') {
             const el = document.createElement('div');
-            el.style.cssText = `position:fixed;bottom:72px;left:50%;transform:translateX(-50%);z-index:9999;background:${type === 'success' ? 'var(--teal)' : '#dc2626'};color:#fff;padding:10px 20px;border-radius:25px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)`;
+            el.style.cssText =
+                `position:fixed;bottom:72px;left:50%;transform:translateX(-50%);z-index:9999;background:${type === 'success' ? 'var(--teal)' : '#dc2626'};color:#fff;padding:10px 20px;border-radius:25px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)`;
             el.textContent = msg;
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 2500);
