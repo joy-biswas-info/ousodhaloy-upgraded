@@ -53,7 +53,11 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        $category->update(['is_active' => false]);
-        return back()->with('success', 'Category deactivated.');
+        if ($category->products()->exists()) {
+            return back()->with('error', 'Cannot delete a category that has products.');
+        }
+
+        $category->delete();
+        return back()->with('success', 'Category deleted.');
     }
 }
