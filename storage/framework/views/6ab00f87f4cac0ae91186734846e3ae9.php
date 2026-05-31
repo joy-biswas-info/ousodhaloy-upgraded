@@ -11,7 +11,6 @@
                         <?php echo e($currentCat ? $currentCat->icon . ' ' . $currentCat->name : 'All Products'); ?>
 
                     </h1>
-                    <p class="text-xs text-gray-500"><?php echo e($products->total()); ?> products found</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <select

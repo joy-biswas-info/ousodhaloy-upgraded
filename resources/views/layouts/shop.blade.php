@@ -371,7 +371,7 @@
 
         {{-- MAIN CONTENT — full remaining width --}}
         <main style="flex:1;overflow-x:auto">
-            <section class="container sm:px-1 md:px-3 lg:px-4 full-width">
+            <section class="container sm:px-1 md:px-3 lg:px-4 full-width" style="min-height: 90vh">
                 @yield('content')
             </section>
             {{-- ── FOOTER ────────────────────────────────────────────────────────── --}}
