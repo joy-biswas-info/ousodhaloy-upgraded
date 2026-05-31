@@ -38,10 +38,7 @@
                         <template x-if="!activeImg">
                             <span class="text-8xl select-none">💊</span>
                         </template>
-                        <div
-                            class="absolute bottom-3 right-3 bg-black/30 text-white text-[10px] px-2 py-1 rounded-lg backdrop-blur-sm">
-                            <i class="fas fa-search-plus mr-1"></i>Click to zoom
-                        </div>
+                        
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->mrp && $product->mrp > $product->effective_price): ?>
                             <div
                                 class="absolute top-3 left-3 bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-lg shadow">
@@ -194,23 +191,8 @@
                         </div>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                    
-                    <div class="mt-3 bg-teal-50 rounded-xl p-2 text-xs text-teal-700 space-y-1">
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->category): ?>
-                            <div class="flex gap-2"><span
-                                    class="font-semibold text-gray-600 w-20 flex-shrink-0">Category:</span>
-                                <a href="<?php echo e(route('shop.index', ['category' => $product->category->slug])); ?>"
-                                    class="hover:underline" style="color:var(--teal)"><?php echo e($product->category->name); ?></a>
-                            </div>
-                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->pack_size): ?>
-                            <div class="flex gap-2"><span class="font-semibold text-gray-600 w-20 flex-shrink-0">Pack
-                                    Size:</span><span><?php echo e($product->pack_size); ?></span></div>
-                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                        <div class="flex gap-2"><span
-                                class="font-semibold text-gray-600 w-20 flex-shrink-0">Views:</span><span><?php echo e(number_format($product->views)); ?></span>
-                        </div>
                         
+                    <div class="mt-3 bg-teal-50 rounded-xl p-2 text-xs text-teal-700 space-y-1">
                         <div class="grid grid-cols-3 gap-1 my-4">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['fas fa-truck', 'Fast Delivery', '24–48 hrs'], ['fas fa-undo', 'Easy Returns', 'Policy'], ['fas fa-lock', 'Secure Pay', 'bKash · Card']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$icon, $title, $sub]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="flex items-center gap-1 rounded-xl px-1 py-1">

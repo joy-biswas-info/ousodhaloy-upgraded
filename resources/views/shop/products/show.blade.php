@@ -39,10 +39,7 @@
                         <template x-if="!activeImg">
                             <span class="text-8xl select-none">💊</span>
                         </template>
-                        <div
-                            class="absolute bottom-3 right-3 bg-black/30 text-white text-[10px] px-2 py-1 rounded-lg backdrop-blur-sm">
-                            <i class="fas fa-search-plus mr-1"></i>Click to zoom
-                        </div>
+                        
                         @if ($product->mrp && $product->mrp > $product->effective_price)
                             <div
                                 class="absolute top-3 left-3 bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-lg shadow">
@@ -190,23 +187,8 @@
                         </div>
                     @endif
 
-                    {{-- Meta --}}
-                    <div class="mt-3 bg-teal-50 rounded-xl p-2 text-xs text-teal-700 space-y-1">
-                        @if ($product->category)
-                            <div class="flex gap-2"><span
-                                    class="font-semibold text-gray-600 w-20 flex-shrink-0">Category:</span>
-                                <a href="{{ route('shop.index', ['category' => $product->category->slug]) }}"
-                                    class="hover:underline" style="color:var(--teal)">{{ $product->category->name }}</a>
-                            </div>
-                        @endif
-                        @if ($product->pack_size)
-                            <div class="flex gap-2"><span class="font-semibold text-gray-600 w-20 flex-shrink-0">Pack
-                                    Size:</span><span>{{ $product->pack_size }}</span></div>
-                        @endif
-                        <div class="flex gap-2"><span
-                                class="font-semibold text-gray-600 w-20 flex-shrink-0">Views:</span><span>{{ number_format($product->views) }}</span>
-                        </div>
                         {{-- Trust strip --}}
+                    <div class="mt-3 bg-teal-50 rounded-xl p-2 text-xs text-teal-700 space-y-1">
                         <div class="grid grid-cols-3 gap-1 my-4">
                             @foreach ([['fas fa-truck', 'Fast Delivery', '24–48 hrs'], ['fas fa-undo', 'Easy Returns', 'Policy'], ['fas fa-lock', 'Secure Pay', 'bKash · Card']] as [$icon, $title, $sub])
                                 <div class="flex items-center gap-1 rounded-xl px-1 py-1">

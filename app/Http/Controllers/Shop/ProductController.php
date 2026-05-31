@@ -78,7 +78,7 @@ class ProductController extends Controller
                 fn($q) =>
                 $q->where('generic_name', $product->generic_name)
             )
-            ->take(8)
+            ->take(5)
             ->get();
 
         // If fewer than 3 by generic name, backfill from same category

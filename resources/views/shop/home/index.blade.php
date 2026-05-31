@@ -100,7 +100,7 @@
         </div>
         <div class="scrollbar-hide" style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 16px">
             @foreach($flashSale as $product)
-            @include('shop.partials.product-card', ['product' => $product])
+            @include('shop.partials.product-card-grid', ['product' => $product])
             @endforeach
         </div>
     </div>
@@ -116,7 +116,7 @@
     </div>
     <div class="products-grid">
         @foreach($featured->take(10) as $product)
-        @include('shop.partials.product-card', ['product' => $product])
+        @include('shop.partials.product-card-grid', ['product' => $product])
         @endforeach
     </div>
 </div>
@@ -131,7 +131,7 @@
     </div>
     <div class="products-grid">
         @foreach($newArrivals->take(10) as $product)
-        @include('shop.partials.product-card', ['product' => $product])
+        @include('shop.partials.product-card-grid', ['product' => $product])
         @endforeach
     </div>
 </div>
