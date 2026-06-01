@@ -98,7 +98,7 @@
             </div>
             <a href="{{ route('shop.index', ['flash_sale' => 1]) }}" style="color:#fff;font-size:12px;font-weight:600;text-decoration:none">See all →</a>
         </div>
-        <div class="scrollbar-hide" style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 16px">
+        <div class="scrollbar-hide products-grid" style="overflow-x:auto;padding:0 16px 16px">
             @foreach($flashSale as $product)
             @include('shop.partials.product-card-grid', ['product' => $product])
             @endforeach

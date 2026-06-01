@@ -97,7 +97,7 @@
             </div>
             <a href="<?php echo e(route('shop.index', ['flash_sale' => 1])); ?>" style="color:#fff;font-size:12px;font-weight:600;text-decoration:none">See all →</a>
         </div>
-        <div class="scrollbar-hide" style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 16px">
+        <div class="scrollbar-hide products-grid" style="overflow-x:auto;padding:0 16px 16px">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $flashSale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <?php echo $__env->make('shop.partials.product-card-grid', ['product' => $product], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>

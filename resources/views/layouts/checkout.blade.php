@@ -92,21 +92,29 @@
                     style="background:rgba(255,255,255,.18);border:none;color:#fff;width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
                     <i class="fas fa-bars" style="font-size:16px"></i>
                 </button>
-
                 {{-- Logo --}}
-                <a href="{{ route('home') }}"
-                    style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;flex:1;min-width:0">
-                    @if(\App\Models\Setting::get('site_logo'))
+                {{-- <a href="{{ route('home') }}"
+                    style="display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none;color:#fff;">
+                    @if (\App\Models\Setting::get('site_logo'))
                         <img src="{{ asset('storage/' . \App\Models\Setting::get('site_logo')) }}"
-                            style="max-height:50px;height:auto; width:auto;object-fit:contain;flex-shrink:0"
+                            style="height:60px;width:auto"
                             alt="{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}">
                     @else
                         <div
-                            style="width:32px;height:32px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:var(--teal);flex-shrink:0">
+                            style="width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--teal);">
                             ও</div>
-                        <span
-                            style="font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
+                        <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
+                            class="hidden-mobile">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
                     @endif
+                </a> --}}
+                {{-- Logo --}}
+                {{-- Logo --}}
+                <a href="{{ route('home') }}"
+                    style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
+                    <div
+                        style="width:84px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:900;font-size:16px">
+                        ঔষধালয়
+                    </div>
                 </a>
 
                 {{-- Cart --}}
@@ -150,22 +158,16 @@
     </header>
 
     {{-- ── Desktop HEADER ───────────────────────────────────────────────────────── --}}
-    <header class="site-header hidden lg:block ">
+    <header class="site-header hidden lg:block px-4 my-auto">
         <div class="header-inner" x-data="{ userMenu: false }">
 
             {{-- Logo --}}
             <a href="{{ route('home') }}"
-                style="display:flex;align-items:center;gap:8px;flex-shrink:0;text-decoration:none;color:#fff;">
-                @if(\App\Models\Setting::get('site_logo'))
-                    <img src="{{ asset('storage/' . \App\Models\Setting::get('site_logo')) }}"
-                        style="height:60PX;width:auto" alt="{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}">
-                @else
-                    <div
-                        style="width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--teal);">
-                        ও</div>
-                    <span style="font-weight:800;font-size:18px;letter-spacing:-.3px;"
-                        class="hidden-mobile">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
-                @endif
+                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;flex:1;min-width:0">
+                <div
+                    style="width:110px;height:42px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:900;font-size:24px">
+                    ঔষধালয়
+                </div>
             </a>
 
             {{-- Search bar — centred --}}
@@ -182,13 +184,13 @@
                 {{-- Search dropdown --}}
                 <div x-show="open && results.length" x-cloak
                     style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid #e5e7eb;z-index:500;max-height:380px;overflow-y:auto;">
-                    <template x-for="p in results" :key="p . id">
-                        <a :href="'/shop/product/' + p . slug"
+                    <template x-for="p in results" :key="p.id">
+                        <a :href="'/shop/product/' + p.slug"
                             style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #f3f4f6;text-decoration:none;transition:background .12s"
                             @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
                             <div
                                 style="width:40px;height:40px;background:#f8fafb;border-radius:8px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-                                <img x-show="p.thumbnail_url" :src="p . thumbnail_url"
+                                <img x-show="p.thumbnail_url" :src="p.thumbnail_url"
                                     style="width:100%;height:100%;object-fit:contain;">
                                 <span x-show="!p.thumbnail_url" style="font-size:20px;">💊</span>
                             </div>
@@ -245,22 +247,24 @@
                     <div x-show="userMenu" @click.away="userMenu=false" x-cloak
                         style="position:absolute;right:0;top:calc(100%+4px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid #e5e7eb;width:200px;z-index:500;overflow:hidden;padding:4px 0">
                         @auth
-                            <div style="padding:10px 14px 8px;font-size:12px;color:#6b7280;border-bottom:1px solid #f3f4f6">
+                            <div
+                                style="padding:10px 14px 8px;font-size:12px;color:#6b7280;border-bottom:1px solid #f3f4f6">
                                 <p style="font-weight:700;color:#1f2937">{{ auth()->user()->name }}</p>
                                 <p>{{ auth()->user()->phone ?? auth()->user()->email }}</p>
                             </div>
-                            @if(auth()->user()->isManager())
+                            @if (auth()->user()->isManager())
                                 <a href="{{ route('admin.dashboard') }}"
                                     style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
                                     @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
                                     <i class="fas fa-tachometer-alt" style="color:var(--teal);width:14px"></i> Admin Panel
                                 </a>
                             @endif
-                            @foreach([['account.orders', 'fa-box', 'My Orders'], ['account.profile', 'fa-user-cog', 'Account'], ['account.wishlist', 'fa-heart', 'Wishlist']] as [$rt, $ic, $lb])
+                            @foreach ([['account.orders', 'fa-box', 'My Orders'], ['account.profile', 'fa-user-cog', 'Account'], ['account.wishlist', 'fa-heart', 'Wishlist']] as [$rt, $ic, $lb])
                                 <a href="{{ route($rt) }}"
                                     style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
                                     @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
-                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i> {{ $lb }}
+                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i>
+                                    {{ $lb }}
                                 </a>
                             @endforeach
                             <div style="border-top:1px solid #f3f4f6;margin-top:2px">
@@ -273,11 +277,12 @@
                                 </form>
                             </div>
                         @else
-                            @foreach([['auth.login', 'fa-sign-in-alt', 'Login'], ['auth.register', 'fa-user-plus', 'Register'], ['auth.otp', 'fa-mobile-alt', 'Login with OTP']] as [$rt, $ic, $lb])
+                            @foreach ([['auth.login', 'fa-sign-in-alt', 'Login'], ['auth.register', 'fa-user-plus', 'Register'], ['auth.otp', 'fa-mobile-alt', 'Login with OTP']] as [$rt, $ic, $lb])
                                 <a href="{{ route($rt) }}"
                                     style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
                                     @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
-                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i> {{ $lb }}
+                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i>
+                                    {{ $lb }}
                                 </a>
                             @endforeach
                         @endauth
@@ -286,6 +291,7 @@
             </div>
         </div>
     </header>
+
     {{-- MAIN CONTENT — full remaining width --}}
     <main style="flex:1;overflow-x:auto">
         <section class="container px-4 lg:px-10 full-width">
@@ -311,53 +317,54 @@
             </div>
         </div>
         <div style="max-width:1400px;margin:0 auto;padding:16px">
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-bottom:32px">
-                <div style="grid-column:1/-1">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-                        <div
-                            style="width:34px;height:34px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
-                            ও</div>
-                        <span
-                            style="color:#fff;font-weight:700;font-size:16px">{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}</span>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-bottom:32px">
+                        <div style="grid-column:1/-1">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                                <div
+                                    style="width:64px;height:34px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
+                                    ঔষধালয়
+                                </div>
+                            </div>
+                            <p style="font-size:12px;line-height:1.7;margin-bottom:8px">Trusted Health and Wellness
+                                Shop in Bangladesh</p>
+                        </div>
+                        <div>
+                            <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
+                            @foreach ([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account']] as [$rt, $lb])
+                                <a href="{{ route($rt) }}"
+                                    style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
+                                    @mouseenter="$el.style.color='#fff'"
+                                    @mouseleave="$el.style.color='#9ca3af'">{{ $lb }}</a>
+                            @endforeach
+                        </div>
+                        <div>
+                            <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Contact</p>
+                            <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-phone"
+                                    style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_phone', '09610016778') }}
+                            </p>
+                            <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-envelope"
+                                    style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_email', 'info@ousodhaloy.com') }}
+                            </p>
+                            <p style="font-size:12px"><i class="fas fa-map-marker-alt"
+                                    style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_address', 'Dhaka, Bangladesh') }}
+                            </p>
+                        </div>
                     </div>
-                    <p style="font-size:12px;line-height:1.7;margin-bottom:8px">বাংলাদেশের বিশ্বস্ত অনলাইন
-                        ফার্মেসি। আসল
-                        ওষুধ, দ্রুত ডেলিভারি।</p>
+                    <div
+                        style="border-top:1px solid #1f2937;padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px">
+                        <p>© {{ date('Y') }} {{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }} Ltd. All
+                            rights
+                            reserved.
+                        </p>
+                        <div style="display:flex;gap:14px">
+                            <span><i class="fas fa-certificate"
+                                    style="color:var(--teal-light);margin-right:4px"></i>DGDA
+                                Licensed</span>
+                            <span><i class="fas fa-lock" style="color:var(--teal-light);margin-right:4px"></i>SSL
+                                Secured</span>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
-                    @foreach([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account']] as [$rt, $lb])
-                        <a href="{{ route($rt) }}"
-                            style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
-                            @mouseenter="$el.style.color='#fff'" @mouseleave="$el.style.color='#9ca3af'">{{ $lb }}</a>
-                    @endforeach
-                </div>
-                <div>
-                    <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Contact</p>
-                    <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-phone"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_phone', '09610016778') }}
-                    </p>
-                    <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-envelope"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{
-                        \App\Models\Setting::get('site_email','info@ousodhaloy.com') }}</p>
-                    <p style="font-size:12px"><i class="fas fa-map-marker-alt"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_address', 'Dhaka, Bangladesh') }}
-                    </p>
-                </div>
-            </div>
-            <div
-                style="border-top:1px solid #1f2937;padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px">
-                <p>© {{ date('Y') }} {{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }} Ltd. All rights
-                    reserved.
-                </p>
-                <div style="display:flex;gap:14px">
-                    <span><i class="fas fa-certificate" style="color:var(--teal-light);margin-right:4px"></i>DGDA
-                        Licensed</span>
-                    <span><i class="fas fa-lock" style="color:var(--teal-light);margin-right:4px"></i>SSL
-                        Secured</span>
-                </div>
-            </div>
-        </div>
     </footer>
     {{-- ── MESSENGER FAB ────────────────────────────────────────────────── --}}
     @if($messengerUrl)
