@@ -273,7 +273,7 @@
                 <input type="checkbox" name="pathao_is_live" value="true" {{ ($settings['pathao_is_live'] ?? '') === 'true' ? 'checked' : '' }} class="accent-teal-600">
                 <span class="text-sm text-gray-700">Live Mode</span>
             </label>
-            <p class="text-xs text-gray-400">Credentials: <a href="https://merchant.pathao.com/api-information" target="_blank" class="text-teal-600 underline">merchant.pathao.com</a></p>
+            <p class="text-xs text-gray-400">Credentials: <a href="https://merchant.pathao.com" target="_blank" class="text-teal-600 underline">merchant.pathao.com</a></p>
 
             <div class="border-t pt-4">
                 <p class="text-sm font-bold text-gray-700 mb-3">Default City / Zone / Area</p>
@@ -317,7 +317,7 @@
             </h2>
             <p class="text-xs text-gray-500 mb-4">
                 Get your API credentials from
-                <a href="https://portal.steadfast.com.bd" target="_blank" class="text-teal-600 underline font-semibold">portal.steadfast.com.bd</a>
+                <a href="https://steadfast.com.bd/" target="_blank" class="text-teal-600 underline font-semibold">portal.steadfast.com.bd</a>
                 → Account → API Credentials
             </p>
             <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-4">

@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Models\{Order, OrderItem, OrderStatusHistory, Product, PromoCode, Setting, LoyaltyPoint};
+use App\Models\{DeliveryZone, Order, OrderItem, OrderStatusHistory, Product, PromoCode, Setting, LoyaltyPoint};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -197,7 +197,7 @@ class OrderService
      */
     public function calculateDelivery(float $orderTotal, string $division, string $district): float
     {
-        $zone = \App\Models\DeliveryZone::where('division', $division)
+        $zone = DeliveryZone::where('division', $division)
             ->whereJsonContains('districts', $district)
             ->where('is_active', true)
             ->first();
@@ -221,7 +221,7 @@ class OrderService
      */
     public function calculateDeliveryForCart(array $cartItems, float $orderTotal, string $division, string $district): float
     {
-        $zone = \App\Models\DeliveryZone::where('division', $division)
+        $zone = DeliveryZone::where('division', $division)
             ->whereJsonContains('districts', $district)
             ->where('is_active', true)
             ->first();
@@ -232,7 +232,7 @@ class OrderService
         $hasNonCustom = false;
 
         foreach ($cartItems as $item) {
-            $product = \App\Models\Product::find($item['product_id'] ?? $item['id'] ?? null);
+            $product = Product::find($item['product_id'] ?? $item['id'] ?? null);
 
             if ($product && $product->custom_delivery_charge !== null) {
                 // Per-unit or flat custom charge

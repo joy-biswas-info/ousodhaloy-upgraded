@@ -54,7 +54,7 @@ class SmsService
     {
         if (Setting::get('sms_order_confirm', 'true') !== 'true')
             return false;
-        $msg = "প্রিয় {$order->shipping_name}, আপনার অর্ডার #{$order->order_number} নিশ্চিত হয়েছে। মোট: ৳{$order->total}। ধন্যবাদ - Ousodhaloy";
+        $msg = "Dear {$order->shipping_name}, Your Order #{$order->order_number} has been confirmed. Total TK {$order->total} Thank you -Ousodhaloy";
         return $this->send($order->shipping_phone, $msg, 'order_confirm', $order->id);
     }
 
@@ -63,19 +63,19 @@ class SmsService
         if (Setting::get('sms_status_update', 'true') !== 'true')
             return false;
         $msgs = [
-            'confirmed' => "আপনার অর্ডার #{$order->order_number} কনফার্ম হয়েছে। শীঘ্রই প্রেরণ করা হবে।",
-            'shipped' => "আপনার অর্ডার #{$order->order_number} পাঠানো হয়েছে। ট্র্যাকিং: ousodhaloy.com/track",
-            'out_for_delivery' => "সুখবর! আপনার অর্ডার #{$order->order_number} আজ ডেলিভারি হবে।",
-            'delivered' => "আপনার অর্ডার #{$order->order_number} সফলভাবে ডেলিভারি হয়েছে। ধন্যবাদ!",
-            'cancelled' => "আপনার অর্ডার #{$order->order_number} বাতিল করা হয়েছে।",
+            'confirmed' => "Your Order #{$order->order_number} has been confirmed. is comfirmed. Track https://ousodhaloy.com/track Thank you -Ousodhaloy",
+            'shipped' => "Your Order #{$order->order_number} has been shipped",
+            'out_for_delivery' => "Good news! Your Order #{$order->order_number} will delivered today",
+            'delivered' => "Your Order #{$order->order_number} Has been successfully delivered. Thank you",
+            'cancelled' => "Your Order #{$order->order_number} has been cancled",
         ];
-        $msg = $msgs[$status] ?? "অর্ডার #{$order->order_number} আপডেট: " . (Order::STATUS_LABELS[$status] ?? $status);
+        $msg = $msgs[$status] ?? "Order #{$order->order_number} Updated" . (Order::STATUS_LABELS[$status] ?? $status);
         return $this->send($order->shipping_phone, $msg, 'status_update', $order->id);
     }
 
     public function otp(string $phone, string $code): bool
     {
-        $msg = "আপনার Ousodhaloy OTP: {$code}। " . config('app.otp_expiry', 5) . " মিনিটের মধ্যে মেয়াদ শেষ হবে।";
+        $msg = "Your Ousodhaloy OTP: {$code}। " . config('app.otp_expiry', 5) . " Will expire";
         return $this->send($phone, $msg, 'otp');
     }
 
