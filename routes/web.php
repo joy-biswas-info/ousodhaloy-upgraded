@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Shop\LegalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     Auth\AuthController,
@@ -31,6 +32,9 @@ Route::prefix('shop')->name('shop.')->group(function () {
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product');
     Route::post('/product/{slug}/review', [ProductController::class, 'storeReview'])->name('product.review')->middleware('auth');
 });
+Route::get('/privacy-policy', [LegalController::class, 'privacy'])->name('legal.privacy');
+Route::get('/terms-of-use', [LegalController::class, 'terms'])->name('legal.terms');
+Route::get('/return-policy', [LegalController::class, 'returns'])->name('legal.returns');
 
 Route::get('/search', [ProductController::class, 'search'])->name('search');
 
@@ -156,8 +160,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // ── Customization ────────────────────────────────────────────
-    Route::get('/customization', [\App\Http\Controllers\Admin\SettingsController::class, 'customization'])->name('customization.index');
-    Route::post('/customization', [\App\Http\Controllers\Admin\SettingsController::class, 'saveCustomization'])->name('customization.save');
+    Route::get('/customization', [SettingsController::class, 'customization'])->name('customization.index');
+    Route::post('/customization', [SettingsController::class, 'saveCustomization'])->name('customization.save');
 
     // ── Settings — specific before wildcards ─────────────────
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

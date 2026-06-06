@@ -408,7 +408,7 @@
                         </div>
                         <div>
                             <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
-                            @foreach ([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account']] as [$rt, $lb])
+                            @foreach ([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account'],['legal.privacy', 'Privacy Policy'],['legal.terms',"Terms"],['legal.returns','Return Policy']] as [$rt, $lb])
                                 <a href="{{ route($rt) }}"
                                     style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
                                     @mouseenter="$el.style.color='#fff'"
@@ -464,6 +464,7 @@
             </svg>
         </a>
     @endif
+    
     {{-- ── MOBILE BOTTOM NAV ────────────────────────────────────────────── --}}
     <nav class="mobile-bottom-nav">
         <div class="nav-items">
@@ -496,6 +497,8 @@
         style="display:none;position:fixed;bottom:80px;right:16px;background:var(--teal);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:90;align-items:center;justify-content:center;transition:background .15s">
         <i class="fas fa-arrow-up" style="font-size:13px"></i>
     </button>
+    @include('partials.cookie-banner')
+
 
     <script>
         setTimeout(() => document.querySelectorAll('[id^=flash-]').forEach(el => el.remove()), 4000);

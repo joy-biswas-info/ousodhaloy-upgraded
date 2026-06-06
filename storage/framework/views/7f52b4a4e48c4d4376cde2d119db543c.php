@@ -382,7 +382,7 @@
                         </div>
                         <div>
                             <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$rt, $lb]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account'],['legal.privacy', 'Privacy Policy'],['legal.terms',"Terms"],['legal.returns','Return Policy']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$rt, $lb]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <a href="<?php echo e(route($rt)); ?>"
                                     style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
                                     @mouseenter="$el.style.color='#fff'"
@@ -442,6 +442,7 @@
         </a>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     
+    
     <nav class="mobile-bottom-nav">
         <div class="nav-items">
             <a href="<?php echo e(route('home')); ?>" class="nav-item <?php echo e(request()->routeIs('home') ? 'active' : ''); ?>">
@@ -473,6 +474,8 @@
         style="display:none;position:fixed;bottom:80px;right:16px;background:var(--teal);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:90;align-items:center;justify-content:center;transition:background .15s">
         <i class="fas fa-arrow-up" style="font-size:13px"></i>
     </button>
+    <?php echo $__env->make('partials.cookie-banner', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
 
     <script>
         setTimeout(() => document.querySelectorAll('[id^=flash-]').forEach(el => el.remove()), 4000);
