@@ -109,7 +109,7 @@ class CheckoutController extends Controller
 
     private function upazilaRequired(): bool
     {
-        $cf = json_decode(\App\Models\Setting::get('checkout_fields', '{}'), true) ?: [];
+        $cf = json_decode(Setting::get('checkout_fields', '{}'), true) ?: [];
         // Default: visible and required unless admin explicitly turned it off
         return ($cf['shipping_upazila']['visible'] ?? true)
             && ($cf['shipping_upazila']['required'] ?? true);
@@ -130,7 +130,7 @@ class CheckoutController extends Controller
             ? $this->orderService->calculateDeliveryForCart($cart, $subtotal, $division, $district)
             : $this->orderService->calculateDelivery($subtotal, $division, $district);
 
-        $freeAbove = (float) \App\Models\Setting::get('free_delivery_min', 500);
+        $freeAbove = (float) Setting::get('free_delivery_min', 1000);
         $zone = \App\Models\DeliveryZone::where('division', $division)
             ->whereJsonContains('districts', $district)
             ->where('is_active', true)
@@ -144,6 +144,7 @@ class CheckoutController extends Controller
             'total' => $subtotal + $charge,
         ]);
     }
+
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -260,4 +261,5 @@ class PaymentController extends Controller
         $this->ssl->handleIpn($request->all());
         return response('OK', 200);
     }
+    
 }

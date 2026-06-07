@@ -202,8 +202,8 @@ class OrderService
             ->where('is_active', true)
             ->first();
 
-        $charge = $zone ? $zone->delivery_charge : (float) Setting::get('delivery_charge', 60);
-        $freeAbove = $zone ? $zone->free_delivery_above : (float) Setting::get('free_delivery_min', 500);
+        $charge = $zone ? $zone->delivery_charge : (float) Setting::get('delivery_charge', 0);
+        $freeAbove = $zone ? $zone->free_delivery_above : (float) Setting::get('free_delivery_min', 1000);
 
         return $orderTotal >= $freeAbove ? 0 : $charge;
     }
@@ -225,8 +225,8 @@ class OrderService
             ->whereJsonContains('districts', $district)
             ->where('is_active', true)
             ->first();
-        $globalCharge = $zone ? $zone->delivery_charge : (float) Setting::get('delivery_charge', 60);
-        $freeAbove = $zone ? $zone->free_delivery_above : (float) Setting::get('free_delivery_min', 500);
+        $globalCharge = $zone ? $zone->delivery_charge : (float) Setting::get('delivery_charge', 0);
+        $freeAbove = $zone ? $zone->free_delivery_above : (float) Setting::get('free_delivery_min', 1000);
 
         $customTotal = 0.0;
         $hasNonCustom = false;

@@ -175,11 +175,19 @@
                             </div>
                         @endif
 
-                        <a href="{{ route('checkout.index') }}" onclick="addToCart({{ $product->id }}); return true;"
+                        {{-- <a href="{{ route('checkout.index') }}" onclick="addToCart({{ $product->id }}); return true;"
                             class="w-full py-3 rounded-xl text-center font-bold text-sm mb-4 block transition-all text-white"
                             style="background:var(--orange, #f97316)">
                             <i class="fas fa-bolt mr-1.5"></i>Buy Now — Fast Checkout
-                        </a>
+                        </a> --}}
+                        {{-- ── BUY NOW — direct checkout, skips cart ── --}}
+                        <button
+                            @click="buyNow({{ $product->id }}, qty)"
+                            class="w-full py-3 rounded-xl font-bold text-sm mb-4 transition-all text-white active:scale-95 cursor-pointer"
+                            style="background:var(--orange, #f97316)">
+                            <i class="fas fa-bolt mr-1.5"></i>Buy Now — Fast Checkout
+                        </button>
+                       
                     @else
                         <div
                             class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center text-red-600 font-semibold text-sm">
@@ -309,6 +317,27 @@
 
                     setImg(url) {
                         this.activeImg = url;
+                    },
+                    buyNow(id, qty) {
+                        var self = this;
+                        fetch('/cart/add', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                            },
+                            body: JSON.stringify({ product_id: id, qty: qty })
+                        })
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            // Navigate to checkout regardless of response
+                            window.location.href = '{{ route("checkout.index") }}';
+                        })
+                        .catch(function() {
+                            // Even on network error, go to checkout
+                            window.location.href = '{{ route("checkout.index") }}';
+                        });
                     },
 
                     addToCartWithQty(id, qty) {

@@ -1,9 +1,9 @@
 <?php
     $cart   = session('cart', []);
     $sub    = collect($cart)->sum(fn($i) => $i['price'] * $i['qty']);
-    $charge = $sub >= (float)\App\Models\Setting::get('free_delivery_min', 500)
+    $charge = $sub >= (float)\App\Models\Setting::get('free_delivery_min', 1000)
                 ? 0
-                : (float)\App\Models\Setting::get('delivery_charge', 60);
+                : (float)\App\Models\Setting::get('delivery_charge', 0);
 
     // Checkout field settings
     $cf = json_decode(\App\Models\Setting::get('checkout_fields', '{}'), true) ?: [];

@@ -148,7 +148,7 @@ class CartController extends Controller
     private function calcTotals(array $items, float $discount = 0): array
     {
         $subtotal = array_sum(array_column($items, 'subtotal'));
-        $charge = $subtotal >= (float) Setting::get('free_delivery_min', 500) ? 0 : (float) Setting::get('delivery_charge', 60);
+        $charge = $subtotal >= (float) Setting::get('free_delivery_min', 1000) ? 0 : (float) Setting::get('delivery_charge', 0);
         $total = $subtotal + $charge - $discount;
         return [
             'subtotal' => $subtotal,
