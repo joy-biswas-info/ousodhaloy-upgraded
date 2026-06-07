@@ -40,7 +40,6 @@ class SteadfastService
         if (!$this->isConfigured()) {
             return ['success' => false, 'error' => 'Steadfast credentials not configured. Go to Settings → Steadfast.'];
         }
-
         // Normalise phone: must be exactly 11 digits (01XXXXXXXXX)
         $phone = preg_replace('/\D/', '', $order->shipping_phone);
         if (str_starts_with($phone, '880'))
@@ -84,8 +83,8 @@ class SteadfastService
         // Steadfast returns {"status": 200, "consignment": {...}} on success
         if ($res->successful() && (int) $res->json('status') === 200) {
             $consignment = $res->json('consignment') ?? [];
-
             $consignmentId = $consignment['consignment_id'] ?? null;
+
             $trackingCode = $consignment['tracking_code'] ?? null;
 
             $order->update([
