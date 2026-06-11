@@ -1734,13 +1734,43 @@
                 if (!open) item.classList.add("open");
             });
         });
-        btn.addEventListener('click', function() {
+        const product = {
+
+            id: {{ $product->id }},
+
+            name: @json($product->name),
+
+            price: {{ $product->effective_price }}
+
+        };
+
+        function trackAddToCart(product, qty = 1) {
+
             if (window.fbTrack) {
+
                 window.fbTrack('AddToCart', {
-                    ...
+
+                    content_ids: [product.id],
+
+                    content_name: product.name,
+
+                    content_type: 'product',
+
+                    num_items: qty,
+
+                    value: product.price,
+
+                    currency: 'BDT'
+
                 });
+
             }
+
+        }
+        document.getElementById('buynow-btn').addEventListener('click', function() {
+            trackAddToCart(product, qty);
         });
+        
         @if ($pixelViewContent ?? false)
             document.addEventListener('DOMContentLoaded', function() {
                 if (window.fbTrack) {
