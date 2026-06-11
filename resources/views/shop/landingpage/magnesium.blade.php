@@ -1159,6 +1159,7 @@
 @php
     $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
 @endphp
+
 <body>
     <!-- TOPBAR -->
     <div class="topbar">
@@ -1685,7 +1686,6 @@
         const productId = 13;
 
         function updateQty() {
-
             document.getElementById('qty-num').textContent = qty;
 
             document.getElementById('buynow-btn').href =
@@ -1737,17 +1737,23 @@
         btn.addEventListener('click', function() {
             if (window.fbTrack) {
                 window.fbTrack('AddToCart', {
-                    content_ids: ['{{ $product->id }}'],
-                    content_name: '{{ addslashes($product->name) }}',
-                    content_type: 'product',
-                    value: {{ $product->effective_price }},
-                    currency: 'BDT',
-                    num_items: qty
+                    ...
                 });
-
-                setTimeout(() => {}, 150);
             }
         });
+        @if ($pixelViewContent ?? false)
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.fbTrack) {
+                    window.fbTrack('ViewContent', {
+                        content_ids: ['{{ $product->id }}'],
+                        content_name: '{{ addslashes($product->name) }}',
+                        content_type: 'product',
+                        value: {{ $product->effective_price }},
+                        currency: 'BDT'
+                    });
+                }
+            });
+        @endif
     </script>
 </body>
 

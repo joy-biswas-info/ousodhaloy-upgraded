@@ -30,9 +30,7 @@ class LandingController extends Controller
         if ($product->stock < $qty) {
             return back()->with('error', 'Insufficient stock');
         }
-
         $cart = [];
-
         $cart[$product->id] = [
             'product_id' => $product->id,
             'name' => $product->name,
@@ -41,9 +39,7 @@ class LandingController extends Controller
             'thumbnail' => $product->thumbnail_url,
             'requires_rx' => $product->requires_prescription,
         ];
-
         $this->saveCart($cart);
-
         return redirect()->route('checkout.index');
     }
 
