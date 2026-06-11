@@ -2,7 +2,7 @@
 namespace App\Http\Controllers\Shop;
 
 use App\Http\Controllers\Controller;
-use App\Models\{Order, Setting};
+use App\Models\{DeliveryZone, Order, Setting};
 use App\Services\{OrderService, SslCommerzService, PathaoService};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -131,7 +131,7 @@ class CheckoutController extends Controller
             : $this->orderService->calculateDelivery($subtotal, $division, $district);
 
         $freeAbove = (float) Setting::get('free_delivery_min', 1000);
-        $zone = \App\Models\DeliveryZone::where('division', $division)
+        $zone = DeliveryZone::where('division', $division)
             ->whereJsonContains('districts', $district)
             ->where('is_active', true)
             ->first();

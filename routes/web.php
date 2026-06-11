@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Shop\LandingController;
 use App\Http\Controllers\Shop\LegalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
@@ -26,12 +27,14 @@ use App\Http\Controllers\{
 // ── Public shop routes ─────────────────────────────────────────────────────
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
+Route::get('/magnesium', [LandingController::class, 'show']);
 Route::prefix('shop')->name('shop.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product');
     Route::post('/product/{slug}/review', [ProductController::class, 'storeReview'])->name('product.review')->middleware('auth');
 });
+Route::get('/buy-now/{product}/{qty}', [LandingController::class, 'buyNow'])
+    ->name('buy.now');
 Route::get('/privacy-policy', [LegalController::class, 'privacy'])->name('legal.privacy');
 Route::get('/terms-of-use', [LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/return-policy', [LegalController::class, 'returns'])->name('legal.returns');
