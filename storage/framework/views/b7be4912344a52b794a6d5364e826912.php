@@ -1156,7 +1156,9 @@
     </style>
     <?php echo $__env->make('partials.meta-pixel', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 </head>
-
+<?php
+    $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
+?>
 <body>
     <!-- TOPBAR -->
     <div class="topbar">
@@ -1731,6 +1733,20 @@
                 });
                 if (!open) item.classList.add("open");
             });
+        });
+        btn.addEventListener('click', function() {
+            if (window.fbTrack) {
+                window.fbTrack('AddToCart', {
+                    content_ids: ['<?php echo e($product->id); ?>'],
+                    content_name: '<?php echo e(addslashes($product->name)); ?>',
+                    content_type: 'product',
+                    value: <?php echo e($product->effective_price); ?>,
+                    currency: 'BDT',
+                    num_items: qty
+                });
+
+                setTimeout(() => {}, 150);
+            }
         });
     </script>
 </body>

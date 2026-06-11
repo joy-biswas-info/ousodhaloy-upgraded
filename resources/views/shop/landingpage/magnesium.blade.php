@@ -1156,7 +1156,9 @@
     </style>
     @include('partials.meta-pixel')
 </head>
-
+@php
+    $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
+@endphp
 <body>
     <!-- TOPBAR -->
     <div class="topbar">

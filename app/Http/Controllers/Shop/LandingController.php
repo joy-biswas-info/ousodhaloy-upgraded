@@ -17,8 +17,10 @@ class LandingController extends Controller
 
     public function show()
     {
-        return view('shop.landingpage.magnesium');
-
+        $product = Product::with('brand', 'category')
+            ->where('id', 13)
+            ->first();
+        return view('shop.landingpage.magnesium', compact('product'));
     }
 
     public function buyNow(Product $product, int $qty = 1)
