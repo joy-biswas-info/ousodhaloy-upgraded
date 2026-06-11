@@ -133,7 +133,7 @@ class PathaoService
             'item_type' => 2,
             'special_instruction' => (string) ($order->customer_note ?? ''),
             'item_quantity' => $totalQty,
-            'item_weight' => (float) max(0.5, round($totalQty * 0.1, 1)),
+            'item_weight' => (float) max(0.2, round($totalQty * 0.1, 1)),
             'amount_to_collect' => $order->payment_status !== 'paid' ? (int) $order->total : 0,
             'item_description' => $items->pluck('product_name')->implode(', '),
         ];
