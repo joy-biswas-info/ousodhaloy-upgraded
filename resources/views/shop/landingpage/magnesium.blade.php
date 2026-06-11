@@ -25,11 +25,11 @@
             --navy2: #0f1525;
             --navy3: #161d30;
             --blue: #2563eb;
-            --blue-bright: #3b82f6;
+            --blue-bright: #0D7674;
             --blue-glow: #60a5fa;
             --amber: #f59e0b;
             --amber-bright: #fbbf24;
-            --green: #10b981;
+            --green: #0D7674;
             --white: #ffffff;
             --gray: #94a3b8;
             --gray2: #64748b;
@@ -100,7 +100,7 @@
             position: sticky;
             top: 0;
             z-index: 90;
-            background: #0D7674;
+  background:rgba(10,14,26,.97);
             border-bottom: 1px solid rgba(255, 255, 255, 0.07);
             padding: 0 20px;
             height: 54px;
@@ -595,12 +595,12 @@
         .ship-note {
             text-align: center;
             font-size: 12px;
-            color: var(--gray2);
+            color: var(--green);
             margin-top: 10px;
         }
 
         .ship-note strong {
-            color: var(--green);
+            color: #fff;
         }
 
         /* SECTION COMMON */
