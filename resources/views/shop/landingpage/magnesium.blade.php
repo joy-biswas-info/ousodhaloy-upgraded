@@ -1178,7 +1178,9 @@
             </a></div>
         <div class="nav-right">
             <div class="nav-price">৳999</div>
-            <a href="{{ route('buy.now', ['product' => 13, 'qty' => 1]) }}" class="nav-cta">অর্ডার করুন</a>
+            <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn nav-cta"
+                data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                data-price="{{ $product->effective_price }}">অর্ডার করুন</a>
         </div>
     </nav>
 
@@ -1295,7 +1297,9 @@
                     <div class="qty-num" id="qty-num">1</div>
                     <button class="qty-btn" id="qty-up" aria-label="বাড়ান">+</button>
                 </div>
-                <a href="{{ route('buy.now', ['product' => 13, 'qty' => 1]) }}" id="buynow-btn" class="cta-main">
+                <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn cta-main"
+                    id="buynow-btn" data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                    data-price="{{ $product->effective_price }}">
 
                     🛒 Buy Now — সরাসরি Checkout
 
@@ -1604,7 +1608,9 @@
             ২০০+ গ্রাহক ইতিমধ্যে তাদের ঘুম, শক্তি ও পেশির সমস্যার সমাধান করেছেন — এই
             একটি Supplement দিয়ে।
         </p>
-        <a href="{{ route('buy.now', ['product' => 13, 'qty' => 1]) }}" class="cta-final-btn"> ⚡ মাত্র ৳999-তে পান —
+        <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn cta-final-btn"
+            data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+            data-price="{{ $product->effective_price }}"> ⚡ মাত্র ৳999-তে পান —
             এখনই Order করুন
         </a>
         <div>
@@ -1641,7 +1647,10 @@
             ">৳১,৭৫০</span>
             </div>
         </div>
-        <a href="{{ route('buy.now', ['product' => 13, 'qty' => 1]) }}" class="s-cta">Order করুন ⚡</a>
+
+        <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn s-cta"
+            data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+            data-price="{{ $product->effective_price }}">Order করুন ⚡</a>
     </div>
 
     <script>
@@ -1655,6 +1664,7 @@
             }
 
             var end = +localStorage.getItem(KEY);
+
             function tick() {
                 var diff = Math.max(0, end - Date.now());
                 var d = Math.floor(diff / 86400000);

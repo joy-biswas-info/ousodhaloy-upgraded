@@ -1178,7 +1178,9 @@
             </a></div>
         <div class="nav-right">
             <div class="nav-price">৳999</div>
-            <a href="<?php echo e(route('buy.now', ['product' => 13, 'qty' => 1])); ?>" class="nav-cta">অর্ডার করুন</a>
+            <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn nav-cta"
+                data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
+                data-price="<?php echo e($product->effective_price); ?>">অর্ডার করুন</a>
         </div>
     </nav>
 
@@ -1295,7 +1297,9 @@
                     <div class="qty-num" id="qty-num">1</div>
                     <button class="qty-btn" id="qty-up" aria-label="বাড়ান">+</button>
                 </div>
-                <a href="<?php echo e(route('buy.now', ['product' => 13, 'qty' => 1])); ?>" id="buynow-btn" class="cta-main">
+                <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn cta-main"
+                    id="buynow-btn" data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
+                    data-price="<?php echo e($product->effective_price); ?>">
 
                     🛒 Buy Now — সরাসরি Checkout
 
@@ -1436,7 +1440,7 @@
         <div class="how-grid">
             <div class="how-card">
                 <div class="how-num">১</div>
-                <div class="how-en">Take 2 Capsules</div>
+                <div class="how-en">Take 1 Capsules</div>
                 <div class="how-bn">
                     রাতে ঘুমানোর ৩০–৬০ মিনিট আগে 1-2 টি capsule নিন। পানি দিয়ে গিলুন।
                 </div>
@@ -1604,7 +1608,9 @@
             ২০০+ গ্রাহক ইতিমধ্যে তাদের ঘুম, শক্তি ও পেশির সমস্যার সমাধান করেছেন — এই
             একটি Supplement দিয়ে।
         </p>
-        <a href="<?php echo e(route('buy.now', ['product' => 13, 'qty' => 1])); ?>" class="cta-final-btn"> ⚡ মাত্র ৳999-তে পান —
+        <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn cta-final-btn"
+            data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
+            data-price="<?php echo e($product->effective_price); ?>"> ⚡ মাত্র ৳999-তে পান —
             এখনই Order করুন
         </a>
         <div>
@@ -1641,50 +1647,44 @@
             ">৳১,৭৫০</span>
             </div>
         </div>
-        <a href="<?php echo e(route('buy.now', ['product' => 13, 'qty' => 1])); ?>" class="s-cta">Order করুন ⚡</a>
+
+        <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn s-cta"
+            data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
+            data-price="<?php echo e($product->effective_price); ?>">Order করুন ⚡</a>
     </div>
 
     <script>
-document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
 
-var KEY = "mg_sale_end";
+            var KEY = "mg_sale_end";
+            var newEnd = new Date("2026-06-18T23:59:59").getTime();
+            var stored = localStorage.getItem(KEY);
+            if (!stored || isNaN(+stored) || +stored < newEnd) {
+                localStorage.setItem(KEY, newEnd);
+            }
 
-var newEnd = new Date("2026-06-18T23:59:59").getTime();
+            var end = +localStorage.getItem(KEY);
 
-var stored = localStorage.getItem(KEY);
+            function tick() {
+                var diff = Math.max(0, end - Date.now());
+                var d = Math.floor(diff / 86400000);
+                var h = Math.floor((diff % 86400000) / 3600000);
+                var m = Math.floor((diff % 3600000) / 60000);
+                var s = Math.floor((diff % 60000) / 1000);
+                const dd = document.getElementById("cd-d");
+                const hh = document.getElementById("cd-h");
+                const mm = document.getElementById("cd-m");
+                const ss = document.getElementById("cd-s");
+                if (!dd || !hh || !mm || !ss) return;
+                dd.textContent = String(d).padStart(2, "0");
+                hh.textContent = String(h).padStart(2, "0");
+                mm.textContent = String(m).padStart(2, "0");
+                ss.textContent = String(s).padStart(2, "0");
+            }
 
-if (!stored || isNaN(+stored) || +stored < newEnd) {
-
-    localStorage.setItem(KEY, newEnd);
-
-}
-
-var end = +localStorage.getItem(KEY);
-
-    function tick() {
-        var diff = Math.max(0, end - Date.now());
-
-        var d = Math.floor(diff / 86400000);
-        var h = Math.floor((diff % 86400000) / 3600000);
-        var m = Math.floor((diff % 3600000) / 60000);
-        var s = Math.floor((diff % 60000) / 1000);
-
-        const dd = document.getElementById("cd-d");
-        const hh = document.getElementById("cd-h");
-        const mm = document.getElementById("cd-m");
-        const ss = document.getElementById("cd-s");
-
-        if (!dd || !hh || !mm || !ss) return;
-
-        dd.textContent = String(d).padStart(2, "0");
-        hh.textContent = String(h).padStart(2, "0");
-        mm.textContent = String(m).padStart(2, "0");
-        ss.textContent = String(s).padStart(2, "0");
-    }
-
-    tick();
-    setInterval(tick, 1000);
-});
+            tick();
+            setInterval(tick, 1000);
+        });
 
         let qty = 1;
 
@@ -1715,9 +1715,7 @@ var end = +localStorage.getItem(KEY);
             }
 
         });
-
         updateQty();
-
         var hero = document.querySelector(".hero");
         var sticky = document.getElementById("sticky");
         var io = new IntersectionObserver(
