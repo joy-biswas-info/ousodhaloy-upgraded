@@ -1645,41 +1645,46 @@
     </div>
 
     <script>
-        (function() {
-            var KEY = "mg_sale_end";
-            var end = localStorage.getItem(KEY);
-            if (!end || isNaN(+end)) {
-                end = Date.now() + 4 * 24 * 60 * 60 * 1000;
-                localStorage.setItem(KEY, end);
-            }
-            end = +end;
+document.addEventListener("DOMContentLoaded", function () {
 
-            function tick() {
-                var diff = Math.max(0, end - Date.now());
-                var d = Math.floor(diff / 86400000);
-                var h = Math.floor((diff % 86400000) / 3600000);
-                var m = Math.floor((diff % 3600000) / 60000);
-                var s = Math.floor((diff % 60000) / 1000);
-                document.getElementById("cd-d").textContent = String(d).padStart(
-                    2,
-                    "0",
-                );
-                document.getElementById("cd-h").textContent = String(h).padStart(
-                    2,
-                    "0",
-                );
-                document.getElementById("cd-m").textContent = String(m).padStart(
-                    2,
-                    "0",
-                );
-                document.getElementById("cd-s").textContent = String(s).padStart(
-                    2,
-                    "0",
-                );
-            }
-            tick();
-            setInterval(tick, 1000);
-        })();
+var KEY = "mg_sale_end";
+
+var newEnd = new Date("2026-06-18T23:59:59").getTime();
+
+var stored = localStorage.getItem(KEY);
+
+if (!stored || isNaN(+stored) || +stored < newEnd) {
+
+    localStorage.setItem(KEY, newEnd);
+
+}
+
+var end = +localStorage.getItem(KEY);
+
+    function tick() {
+        var diff = Math.max(0, end - Date.now());
+
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor((diff % 86400000) / 3600000);
+        var m = Math.floor((diff % 3600000) / 60000);
+        var s = Math.floor((diff % 60000) / 1000);
+
+        const dd = document.getElementById("cd-d");
+        const hh = document.getElementById("cd-h");
+        const mm = document.getElementById("cd-m");
+        const ss = document.getElementById("cd-s");
+
+        if (!dd || !hh || !mm || !ss) return;
+
+        dd.textContent = String(d).padStart(2, "0");
+        hh.textContent = String(h).padStart(2, "0");
+        mm.textContent = String(m).padStart(2, "0");
+        ss.textContent = String(s).padStart(2, "0");
+    }
+
+    tick();
+    setInterval(tick, 1000);
+});
 
         let qty = 1;
 
@@ -1734,13 +1739,44 @@
                 if (!open) item.classList.add("open");
             });
         });
-        btn.addEventListener('click', function() {
+        const product = {
+
+            id: <?php echo e($product->id); ?>,
+
+            name: <?php echo json_encode($product->name, 15, 512) ?>,
+
+            price: <?php echo e($product->effective_price); ?>
+
+
+        };
+
+        function trackAddToCart(product, qty = 1) {
+
             if (window.fbTrack) {
+
                 window.fbTrack('AddToCart', {
-                    ...
+
+                    content_ids: [product.id],
+
+                    content_name: product.name,
+
+                    content_type: 'product',
+
+                    num_items: qty,
+
+                    value: product.price,
+
+                    currency: 'BDT'
+
                 });
+
             }
+
+        }
+        document.getElementById('buynow-btn').addEventListener('click', function() {
+            trackAddToCart(product, qty);
         });
+
         <?php if($pixelViewContent ?? false): ?>
             document.addEventListener('DOMContentLoaded', function() {
                 if (window.fbTrack) {

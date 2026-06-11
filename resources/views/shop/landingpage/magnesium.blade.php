@@ -1436,7 +1436,7 @@
         <div class="how-grid">
             <div class="how-card">
                 <div class="how-num">১</div>
-                <div class="how-en">Take 2 Capsules</div>
+                <div class="how-en">Take 1 Capsules</div>
                 <div class="how-bn">
                     রাতে ঘুমানোর ৩০–৬০ মিনিট আগে 1-2 টি capsule নিন। পানি দিয়ে গিলুন।
                 </div>
@@ -1645,41 +1645,36 @@
     </div>
 
     <script>
-        (function() {
-            var KEY = "mg_sale_end";
-            var end = localStorage.getItem(KEY);
-            if (!end || isNaN(+end)) {
-                end = Date.now() + 4 * 24 * 60 * 60 * 1000;
-                localStorage.setItem(KEY, end);
-            }
-            end = +end;
+        document.addEventListener("DOMContentLoaded", function() {
 
+            var KEY = "mg_sale_end";
+            var newEnd = new Date("2026-06-18T23:59:59").getTime();
+            var stored = localStorage.getItem(KEY);
+            if (!stored || isNaN(+stored) || +stored < newEnd) {
+                localStorage.setItem(KEY, newEnd);
+            }
+
+            var end = +localStorage.getItem(KEY);
             function tick() {
                 var diff = Math.max(0, end - Date.now());
                 var d = Math.floor(diff / 86400000);
                 var h = Math.floor((diff % 86400000) / 3600000);
                 var m = Math.floor((diff % 3600000) / 60000);
                 var s = Math.floor((diff % 60000) / 1000);
-                document.getElementById("cd-d").textContent = String(d).padStart(
-                    2,
-                    "0",
-                );
-                document.getElementById("cd-h").textContent = String(h).padStart(
-                    2,
-                    "0",
-                );
-                document.getElementById("cd-m").textContent = String(m).padStart(
-                    2,
-                    "0",
-                );
-                document.getElementById("cd-s").textContent = String(s).padStart(
-                    2,
-                    "0",
-                );
+                const dd = document.getElementById("cd-d");
+                const hh = document.getElementById("cd-h");
+                const mm = document.getElementById("cd-m");
+                const ss = document.getElementById("cd-s");
+                if (!dd || !hh || !mm || !ss) return;
+                dd.textContent = String(d).padStart(2, "0");
+                hh.textContent = String(h).padStart(2, "0");
+                mm.textContent = String(m).padStart(2, "0");
+                ss.textContent = String(s).padStart(2, "0");
             }
+
             tick();
             setInterval(tick, 1000);
-        })();
+        });
 
         let qty = 1;
 
@@ -1710,9 +1705,7 @@
             }
 
         });
-
         updateQty();
-
         var hero = document.querySelector(".hero");
         var sticky = document.getElementById("sticky");
         var io = new IntersectionObserver(
@@ -1770,7 +1763,7 @@
         document.getElementById('buynow-btn').addEventListener('click', function() {
             trackAddToCart(product, qty);
         });
-        
+
         @if ($pixelViewContent ?? false)
             document.addEventListener('DOMContentLoaded', function() {
                 if (window.fbTrack) {

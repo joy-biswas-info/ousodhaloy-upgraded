@@ -12,7 +12,8 @@
                 Customer Reviews
                 @if ($product->rating_count > 0)
                     <span class="text-sm font-normal text-gray-400 ml-1">
-                        ({{ $product->rating_count }})
+                        {{-- ({{ $product->rating_count }}) --}}
+                        200+
                     </span>
                 @endif
             </h2>
