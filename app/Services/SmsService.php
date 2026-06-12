@@ -63,11 +63,11 @@ class SmsService
         if (Setting::get('sms_status_update', 'true') !== 'true')
             return false;
         $msgs = [
-            'confirmed' => "Your Order #{$order->order_number} has been confirmed. is comfirmed. Track https://ousodhaloy.com/track Thank you -Ousodhaloy",
+            'confirmed' => "Your Order #{$order->order_number} has been confirmed. Track: https://ousodhaloy.com/track - Thank you, Ousodhaloy",
             'shipped' => "Your Order #{$order->order_number} has been shipped",
-            'out_for_delivery' => "Good news! Your Order #{$order->order_number} will delivered today",
+            'out_for_delivery' => "Good news! Your Order #{$order->order_number} will be delivered today. Thank you -Ousodhaloy",
             'delivered' => "Your Order #{$order->order_number} Has been successfully delivered. Thank you",
-            'cancelled' => "Your Order #{$order->order_number} has been cancled",
+            'cancelled' => "Your Order #{$order->order_number} has been cancelled. Contact us if you need help. -Ousodhaloy",
         ];
         $msg = $msgs[$status] ?? "Order #{$order->order_number} Updated" . (Order::STATUS_LABELS[$status] ?? $status);
         return $this->send($order->shipping_phone, $msg, 'status_update', $order->id);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Shop\AccountController;
 use App\Http\Controllers\Shop\LandingController;
 use App\Http\Controllers\Shop\LegalController;
 use Illuminate\Support\Facades\Route;
@@ -64,20 +65,27 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
 Route::post('/checkout/delivery-charge', [CheckoutController::class, 'deliveryCharge'])->name('checkout.delivery-charge');
 
 // ── Orders (public) ────────────────────────────────────────────────────────
-
 Route::get('/order/{id}', [OrderController::class, 'show'])->name('orders.show');
 Route::get('/track', [OrderController::class, 'track'])->name('track');
 Route::post('/track', [OrderController::class, 'track'])->name('track.search');
 
 Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
     Route::get('/orders', [OrderController::class, 'myOrders'])->name('orders');
-    Route::get('/profile', fn() => view('shop.account.profile'))->name('profile');
-    Route::get('/wishlist', fn() => view('shop.account.wishlist'))->name('wishlist');
+    Route::get('/profile', function () {
+        $user = auth()->user()->loadCount([
+            'orders',
+            'orders as delivered_count' => fn($q) => $q->where('status', 'delivered'),
+        ]);
+        $loyaltyPoints = $user->total_loyalty_points;
+        return view('shop.account.profile', compact('user', 'loyaltyPoints'));
+    })->name('profile');
     Route::get('/addresses', fn() => view('shop.account.addresses'))->name('addresses');
+    Route::get('/wishlist', fn() => view('shop.account.wishlist'))->name('wishlist');
+    Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/wishlist/{product}', [AccountController::class, 'toggleWishlist'])->name('wishlist.toggle');
 });
 
 // ── Payment callbacks ──────────────────────────────────────────────────────
-
 Route::prefix('payment')->name('payment.')->group(function () {
     Route::post('/success', [PaymentController::class, 'success'])->name('success');
     Route::post('/fail', [PaymentController::class, 'fail'])->name('fail');
@@ -86,24 +94,24 @@ Route::prefix('payment')->name('payment.')->group(function () {
 });
 
 // ── Auth ───────────────────────────────────────────────────────────────────
-
 Route::middleware('guest')->prefix('auth')->name('auth.')->group(function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:5,1');
     Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
     Route::get('/otp', [AuthController::class, 'otpForm'])->name('otp');
     Route::post('/otp/send', [AuthController::class, 'sendOtp'])->name('otp.send');
     Route::post('/otp/verify', [AuthController::class, 'verifyOtp'])->name('otp.verify');
+
 });
+Route::post('/wishlist/{product}', [AccountController::class, 'toggleWishlist'])->name('wishlist.toggle');
+Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 // ── Admin ──────────────────────────────────────────────────────────────────
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(function () {
-
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
     // ── Products — specific routes BEFORE resource wildcard ───
     Route::get('/products/bulk', [BulkProductController::class, 'index'])->name('products.bulk');
     Route::post('/products/bulk', [BulkProductController::class, 'storeBulk'])->name('products.bulk-store');

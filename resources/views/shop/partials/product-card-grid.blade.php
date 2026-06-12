@@ -31,7 +31,6 @@
         <a href="{{ route('shop.product', $product->slug) }}">
             <h3 class="card-name">{{ $product->name }}</h3>
         </a>
-
         @if ($product->average_rating >= 0)
             <div class="flex items-center gap-1 mb-1">
                 <div class="flex">

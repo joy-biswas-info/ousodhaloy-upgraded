@@ -29,7 +29,6 @@
         <a href="<?php echo e(route('shop.product', $product->slug)); ?>">
             <h3 class="card-name"><?php echo e($product->name); ?></h3>
         </a>
-
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->average_rating >= 0): ?>
             <div class="flex items-center gap-1 mb-1">
                 <div class="flex">

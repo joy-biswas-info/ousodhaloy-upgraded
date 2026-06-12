@@ -12,7 +12,8 @@
                 Customer Reviews
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->rating_count > 0): ?>
                     <span class="text-sm font-normal text-gray-400 ml-1">
-                        (<?php echo e($product->rating_count); ?>)
+                        
+                        200+
                     </span>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </h2>

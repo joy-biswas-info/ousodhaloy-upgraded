@@ -322,10 +322,7 @@
                         <span class="cat-nav-icon"><?php echo e($cat->icon); ?></span>
                         <span
                             style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?php echo e($cat->name); ?></span>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($cat->product_count > 0): ?>
-                            <span
-                                style="font-size:10px;color:#9ca3af;flex-shrink:0;margin-left:4px"><?php echo e($cat->product_count); ?></span>
-                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        
                     </a>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </nav>

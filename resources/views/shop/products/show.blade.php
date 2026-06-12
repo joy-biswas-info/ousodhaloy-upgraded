@@ -39,7 +39,7 @@
                         <template x-if="!activeImg">
                             <span class="text-8xl select-none">💊</span>
                         </template>
-                        
+
                         @if ($product->mrp && $product->mrp > $product->effective_price)
                             <div
                                 class="absolute top-3 left-3 bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-lg shadow">
@@ -155,11 +155,14 @@
                                     <span x-text="added ? 'Added to Cart!' : 'Add to Cart'"></span>
                                 </button>
                                 @auth
-                                    <button
-                                        class="w-11 h-11 rounded-xl border-2 border-gray-200 flex items-center justify-center hover:border-red-300 hover:bg-red-50 transition-all"
-                                        title="Wishlist">
-                                        <i class="fas fa-heart text-gray-300"></i>
-                                    </button>
+                                    <form method="POST" action="{{ route('wishlist.toggle', $product->id) }}"
+                                        style="display:inline">
+                                        @csrf
+                                        <button type="submit"
+                                            class="text-gray-300 hover:text-red-500 transition-colors text-xs">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </form>
                                 @endauth
                             </div>
                         @else
@@ -181,13 +184,11 @@
                             <i class="fas fa-bolt mr-1.5"></i>Buy Now — Fast Checkout
                         </a> --}}
                         {{-- ── BUY NOW — direct checkout, skips cart ── --}}
-                        <button
-                            @click="buyNow({{ $product->id }}, qty)"
+                        <button @click="buyNow({{ $product->id }}, qty)"
                             class="w-full py-3 rounded-xl font-bold text-sm mb-4 transition-all text-white active:scale-95 cursor-pointer"
                             style="background:var(--orange, #f97316)">
                             <i class="fas fa-bolt mr-1.5"></i>Buy Now — Fast Checkout
                         </button>
-                       
                     @else
                         <div
                             class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-center text-red-600 font-semibold text-sm">
@@ -195,7 +196,7 @@
                         </div>
                     @endif
 
-                        {{-- Trust strip --}}
+                    {{-- Trust strip --}}
                     <div class="mt-3 bg-teal-50 rounded-xl p-2 text-xs text-teal-700 space-y-1">
                         <div class="grid grid-cols-3 gap-1 my-4">
                             @foreach ([['fas fa-truck', 'Fast Delivery', '24–48 hrs'], ['fas fa-undo', 'Easy Returns', 'Policy'], ['fas fa-lock', 'Secure Pay', 'bKash · Card']] as [$icon, $title, $sub])
@@ -244,36 +245,36 @@
                 @endif
             </div>
             {{-- Related Products — 1/3 width sticky sidebar --}}
-                @if ($related->count() > 0)
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:sticky lg:top-4">
-                            <div class="px-4 py-3 flex items-center gap-2 border-b border-teal-100">
-                                <i class="fas fa-pills text-sm" style="color:var(--teal)"></i>
-                                <h3 class="font-black text-gray-800 text-sm">
-                                    @if ($product->generic_name)
-                                        More {{ $product->generic_name }}
-                                    @else
-                                        Similar Products
-                                    @endif
-                                </h3>
-                                <span class="ml-auto text-xs text-gray-400">{{ $related->count() }}</span>
-                            </div>
-                            <div class="divide-y divide-gray-50 p-2">
-                                @foreach ($related as $p)
-                                    @include('shop.partials.product-card-list', ['product' => $p])
-                                @endforeach
-                            </div>
-                            <div class="px-4 py-3  bg-gray-50">
-                                <a href="{{ route('shop.index', $product->generic_name ? ['q' => $product->generic_name] : ['category' => $product->category?->slug]) }}"
-                                    class="text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
-                                    style="color:var(--teal)">
-                                    View all
-                                    <i class="fas fa-arrow-right text-[10px]"></i>
-                                </a>
-                            </div>
+            @if ($related->count() > 0)
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden lg:sticky lg:top-4">
+                        <div class="px-4 py-3 flex items-center gap-2 border-b border-teal-100">
+                            <i class="fas fa-pills text-sm" style="color:var(--teal)"></i>
+                            <h3 class="font-black text-gray-800 text-sm">
+                                @if ($product->generic_name)
+                                    More {{ $product->generic_name }}
+                                @else
+                                    Similar Products
+                                @endif
+                            </h3>
+                            <span class="ml-auto text-xs text-gray-400">{{ $related->count() }}</span>
+                        </div>
+                        <div class="divide-y divide-gray-50 p-2">
+                            @foreach ($related as $p)
+                                @include('shop.partials.product-card-list', ['product' => $p])
+                            @endforeach
+                        </div>
+                        <div class="px-4 py-3  bg-gray-50">
+                            <a href="{{ route('shop.index', $product->generic_name ? ['q' => $product->generic_name] : ['category' => $product->category?->slug]) }}"
+                                class="text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                                style="color:var(--teal)">
+                                View all
+                                <i class="fas fa-arrow-right text-[10px]"></i>
+                            </a>
                         </div>
                     </div>
-                @endif
+                </div>
+            @endif
         </div>
         {{-- Sticky ATC bar --}}
         @if ($product->is_in_stock)
@@ -321,23 +322,28 @@
                     buyNow(id, qty) {
                         var self = this;
                         fetch('/cart/add', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                            },
-                            body: JSON.stringify({ product_id: id, qty: qty })
-                        })
-                        .then(function(r) { return r.json(); })
-                        .then(function(data) {
-                            // Navigate to checkout regardless of response
-                            window.location.href = '{{ route("checkout.index") }}';
-                        })
-                        .catch(function() {
-                            // Even on network error, go to checkout
-                            window.location.href = '{{ route("checkout.index") }}';
-                        });
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                                },
+                                body: JSON.stringify({
+                                    product_id: id,
+                                    qty: qty
+                                })
+                            })
+                            .then(function(r) {
+                                return r.json();
+                            })
+                            .then(function(data) {
+                                // Navigate to checkout regardless of response
+                                window.location.href = '{{ route('checkout.index') }}';
+                            })
+                            .catch(function() {
+                                // Even on network error, go to checkout
+                                window.location.href = '{{ route('checkout.index') }}';
+                            });
                     },
 
                     addToCartWithQty(id, qty) {
