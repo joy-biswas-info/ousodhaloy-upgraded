@@ -199,8 +199,16 @@ class Product extends Model
 
     public function restoreStock(int $qty): void
     {
-        $this->increment('stock', $qty);
-        $this->decrement('total_sold', $qty);
+        $productId = $this->id;
+        DB::transaction(function () use ($qty, $productId) {
+            $product = Product::lockForUpdate()->findOrFail($productId);
+            $product->increment('stock', $qty);
+            $product->update([
+                'total_sold' => max(0, $product->total_sold - $qty)
+            ]);
+
+        });
+
     }
 
     public function updateRating(): void
