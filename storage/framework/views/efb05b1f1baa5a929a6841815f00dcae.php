@@ -7,7 +7,11 @@
     $product->meta_description ??
     "Buy {$product->name} online. {$product->generic_name}
     {$product->strength}. Fast delivery in Bangladesh."); ?>
+    <?php
 
+        $isWishlisted = auth()->check() && auth()->user()->wishlists()->where('product_id', $product->id)->exists();
+
+    ?>
 
 <?php $__env->startSection('content'); ?>
     <div class="max-w-6xl mx-auto px-3 sm:px-4 py-4" x-data="productPage()">
@@ -163,8 +167,10 @@
                                         style="display:inline">
                                         <?php echo csrf_field(); ?>
                                         <button type="submit"
-                                            class="text-gray-300 hover:text-red-500 transition-colors text-xs">
-                                            <i class="fas fa-heart"></i>
+                                            class="<?php echo e($isWishlisted ? 'text-red-500' : 'text-gray-300 hover:text-red-500'); ?> transition-colors text-xs">
+
+                                            <i class="<?php echo e($isWishlisted ? 'fas' : 'far'); ?> fa-heart"></i>
+
                                         </button>
                                     </form>
                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>

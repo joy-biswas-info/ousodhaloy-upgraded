@@ -143,8 +143,8 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             // Clear cached token so next request gets a fresh one
             \Illuminate\Support\Facades\Cache::forget('pathao_token_' . md5(
-                \App\Models\Setting::get('pathao_client_id', '') .
-                \App\Models\Setting::get('pathao_username', '')
+                Setting::get('pathao_client_id', '') .
+                Setting::get('pathao_username', '')
             ));
 
             return response()->json([
@@ -212,10 +212,9 @@ class OrderController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|in:confirm,cancel,export',
+            'action' => 'required|in:confirm,cancel,export,shipped',
             'order_ids' => 'required|array',
         ]);
-
         $orders = Order::whereIn('id', $request->order_ids)->get();
 
         if ($request->action === 'export') {
@@ -225,13 +224,12 @@ class OrderController extends Controller
             );
         }
 
-        $statusMap = ['confirm' => 'confirmed', 'cancel' => 'cancelled'];
+        $statusMap = ['confirm' => 'confirmed', 'cancel' => 'cancelled', 'shipped' => 'shipped'];
         $newStatus = $statusMap[$request->action];
 
         foreach ($orders as $order) {
             $this->orderService->updateStatus($order, $newStatus, 'Bulk action', false);
         }
-
         return back()->with('success', count($orders) . " orders updated to {$newStatus}.");
     }
 }

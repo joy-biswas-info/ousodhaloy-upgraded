@@ -8,7 +8,11 @@
     $product->meta_description ??
     "Buy {$product->name} online. {$product->generic_name}
     {$product->strength}. Fast delivery in Bangladesh.")
+    @php
 
+        $isWishlisted = auth()->check() && auth()->user()->wishlists()->where('product_id', $product->id)->exists();
+
+    @endphp
 
 @section('content')
     <div class="max-w-6xl mx-auto px-3 sm:px-4 py-4" x-data="productPage()">
@@ -159,8 +163,10 @@
                                         style="display:inline">
                                         @csrf
                                         <button type="submit"
-                                            class="text-gray-300 hover:text-red-500 transition-colors text-xs">
-                                            <i class="fas fa-heart"></i>
+                                            class="{{ $isWishlisted ? 'text-red-500' : 'text-gray-300 hover:text-red-500' }} transition-colors text-xs">
+
+                                            <i class="{{ $isWishlisted ? 'fas' : 'far' }} fa-heart"></i>
+
                                         </button>
                                     </form>
                                 @endauth

@@ -4,44 +4,73 @@
     <div class="space-y-4">
         {{-- Filters --}}
         <div class="bg-white rounded-xl border p-4">
-            <form method="GET" class="flex flex-wrap gap-3 items-end">
-                <div class="flex-1 min-w-48">
-                    <label class="form-label">Search</label>
-                    <input type="text" name="q" value="{{ request('q') }}" class="form-input"
-                        placeholder="Order #, name, phone...">
-                </div>
-                <div>
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        @foreach(\App\Models\Order::STATUS_LABELS as $key => $label)
-                            <option value="{{ $key }}" @selected(request('status') === $key)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">Payment</label>
-                    <select name="payment_status" class="form-select">
-                        <option value="">All</option>
-                        @foreach(['unpaid', 'pending', 'paid', 'failed', 'refunded'] as $s)
-                            <option value="{{ $s }}" @selected(request('payment_status') === $s)>{{ ucfirst($s) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">From</label>
-                    <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-input">
-                </div>
-                <div>
-                    <label class="form-label">To</label>
-                    <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-input">
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="btn-primary btn-sm">Filter</button>
-                    <a href="{{ route('admin.orders.index') }}" class="btn-outline btn-sm">Reset</a>
-                </div>
-            </form>
+    <form method="GET" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
+
+        <div class="md:col-span-2 xl:col-span-2">
+            <label class="form-label">Search</label>
+            <input
+                type="text"
+                name="q"
+                value="{{ request('q') }}"
+                class="form-input"
+                placeholder="Order #, name, phone...">
         </div>
+
+        <div>
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                @foreach(\App\Models\Order::STATUS_LABELS as $key => $label)
+                    <option value="{{ $key }}" @selected(request('status') === $key)>
+                        {{ $label }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label">Payment</label>
+            <select name="payment_status" class="form-select">
+                <option value="">All</option>
+                @foreach(['unpaid', 'pending', 'paid', 'failed', 'refunded'] as $s)
+                    <option value="{{ $s }}" @selected(request('payment_status') === $s)>
+                        {{ ucfirst($s) }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label">From</label>
+            <input
+                type="date"
+                name="date_from"
+                value="{{ request('date_from') }}"
+                class="form-input">
+        </div>
+
+        <div>
+            <label class="form-label">To</label>
+            <input
+                type="date"
+                name="date_to"
+                value="{{ request('date_to') }}"
+                class="form-input">
+        </div>
+
+        <div class="col-span-1 md:col-span-2 xl:col-span-6 flex flex-col sm:flex-row gap-2">
+            <button type="submit" class="btn-primary w-full sm:w-auto">
+                <i class="fas fa-filter mr-2"></i>Filter
+            </button>
+
+            <a href="{{ route('admin.orders.index') }}"
+               class="btn-outline w-full sm:w-auto text-center">
+                <i class="fas fa-rotate-left mr-2"></i>Reset
+            </a>
+        </div>
+
+    </form>
+</div>
 
         {{-- Status tabs --}}
         <div class="flex gap-1.5 flex-wrap">
@@ -71,6 +100,7 @@
                 <select name="action" class="form-select w-40">
                     <option value="">Bulk action</option>
                     <option value="confirm">Confirm All</option>
+                    <option value="shipped">Shipped All</option>
                     <option value="cancel">Cancel All</option>
                     <option value="export">Export Excel</option>
                 </select>

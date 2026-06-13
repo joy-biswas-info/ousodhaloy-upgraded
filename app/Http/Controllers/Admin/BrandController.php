@@ -22,5 +22,25 @@ class BrandController extends Controller
         $brand->update(['name' => $request->name, 'country' => $request->country, 'is_active' => $request->boolean('is_active', true)]);
         return back()->with('success','Brand updated!');
     }
-    public function destroy(Brand $brand) { $brand->update(['is_active' => false]); return back()->with('success','Brand deactivated.'); }
+    public function destroy(Brand $brand)
+    {
+        $replacementBrand = Brand::where('id', '!=', $brand->id)
+            ->orderBy('id')
+            ->first();
+
+        if (!$replacementBrand) {
+            return back()->with('error', 'Cannot delete the last remaining brand.');
+        }
+
+        $brand->products()->update([
+            'brand_id' => $replacementBrand->id,
+        ]);
+
+        $brand->delete();
+
+        return back()->with(
+            'success',
+            "Brand deleted. Products moved to {$replacementBrand->name}."
+        );
+    }
 }

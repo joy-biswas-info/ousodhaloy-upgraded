@@ -3,44 +3,75 @@
     <div class="space-y-4">
         
         <div class="bg-white rounded-xl border p-4">
-            <form method="GET" class="flex flex-wrap gap-3 items-end">
-                <div class="flex-1 min-w-48">
-                    <label class="form-label">Search</label>
-                    <input type="text" name="q" value="<?php echo e(request('q')); ?>" class="form-input"
-                        placeholder="Order #, name, phone...">
-                </div>
-                <div>
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = \App\Models\Order::STATUS_LABELS; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($key); ?>" <?php if(request('status') === $key): echo 'selected'; endif; ?>><?php echo e($label); ?></option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">Payment</label>
-                    <select name="payment_status" class="form-select">
-                        <option value="">All</option>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = ['unpaid', 'pending', 'paid', 'failed', 'refunded']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($s); ?>" <?php if(request('payment_status') === $s): echo 'selected'; endif; ?>><?php echo e(ucfirst($s)); ?></option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">From</label>
-                    <input type="date" name="date_from" value="<?php echo e(request('date_from')); ?>" class="form-input">
-                </div>
-                <div>
-                    <label class="form-label">To</label>
-                    <input type="date" name="date_to" value="<?php echo e(request('date_to')); ?>" class="form-input">
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="btn-primary btn-sm">Filter</button>
-                    <a href="<?php echo e(route('admin.orders.index')); ?>" class="btn-outline btn-sm">Reset</a>
-                </div>
-            </form>
+    <form method="GET" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
+
+        <div class="md:col-span-2 xl:col-span-2">
+            <label class="form-label">Search</label>
+            <input
+                type="text"
+                name="q"
+                value="<?php echo e(request('q')); ?>"
+                class="form-input"
+                placeholder="Order #, name, phone...">
         </div>
+
+        <div>
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = \App\Models\Order::STATUS_LABELS; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($key); ?>" <?php if(request('status') === $key): echo 'selected'; endif; ?>>
+                        <?php echo e($label); ?>
+
+                    </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label">Payment</label>
+            <select name="payment_status" class="form-select">
+                <option value="">All</option>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = ['unpaid', 'pending', 'paid', 'failed', 'refunded']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($s); ?>" <?php if(request('payment_status') === $s): echo 'selected'; endif; ?>>
+                        <?php echo e(ucfirst($s)); ?>
+
+                    </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label">From</label>
+            <input
+                type="date"
+                name="date_from"
+                value="<?php echo e(request('date_from')); ?>"
+                class="form-input">
+        </div>
+
+        <div>
+            <label class="form-label">To</label>
+            <input
+                type="date"
+                name="date_to"
+                value="<?php echo e(request('date_to')); ?>"
+                class="form-input">
+        </div>
+
+        <div class="col-span-1 md:col-span-2 xl:col-span-6 flex flex-col sm:flex-row gap-2">
+            <button type="submit" class="btn-primary w-full sm:w-auto">
+                <i class="fas fa-filter mr-2"></i>Filter
+            </button>
+
+            <a href="<?php echo e(route('admin.orders.index')); ?>"
+               class="btn-outline w-full sm:w-auto text-center">
+                <i class="fas fa-rotate-left mr-2"></i>Reset
+            </a>
+        </div>
+
+    </form>
+</div>
 
         
         <div class="flex gap-1.5 flex-wrap">
@@ -70,6 +101,7 @@
                 <select name="action" class="form-select w-40">
                     <option value="">Bulk action</option>
                     <option value="confirm">Confirm All</option>
+                    <option value="shipped">Shipped All</option>
                     <option value="cancel">Cancel All</option>
                     <option value="export">Export Excel</option>
                 </select>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -88,10 +87,7 @@
             <div style="height:52px;display:flex;align-items:center;gap:6px;padding:0 12px;">
 
                 
-                <button onclick="toggleSidebar()" aria-label="Categories"
-                    style="background:rgba(255,255,255,.18);border:none;color:#fff;width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
-                    <i class="fas fa-bars" style="font-size:16px"></i>
-                </button>
+                
                 
                 
                 
@@ -99,8 +95,8 @@
                 <a href="<?php echo e(route('home')); ?>"
                     style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
                     <div
-                        style="width:84px;height:34px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:900;font-size:16px">
-                        ঔষধালয়
+                        style="width:84px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
+                    ঔষ<span class=" text-red-400">ধা</span>লয়
                     </div>
                 </a>
 
@@ -153,9 +149,9 @@
             <a href="<?php echo e(route('home')); ?>"
                 style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;flex:1;min-width:0">
                 <div
-                    style="width:110px;height:42px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);font-weight:900;font-size:24px">
-                    ঔষধালয়
-                </div>
+                        style="width:84px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
+                    ঔষ<span class=" text-red-400">ধা</span>লয়
+                    </div>
             </a>
 
             
@@ -312,9 +308,9 @@
                         <div style="grid-column:1/-1">
                             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
                                 <div
-                                    style="width:64px;height:34px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
-                                    ঔষধালয়
-                                </div>
+                        style="width:84px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
+                    ঔষ<span class=" text-red-400">ধা</span>লয়
+                    </div>
                             </div>
                             <p style="font-size:12px;line-height:1.7;margin-bottom:8px">Trusted Health and Wellness
                                 Shop in Bangladesh</p>

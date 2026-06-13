@@ -23,6 +23,7 @@ class OrdersExport implements FromCollection, WithHeadings, WithMapping, ShouldA
             $order->customer_phone,
             $order->shipping_division,
             $order->shipping_district,
+            $order->shipping_address,
             '৳' . number_format($order->total, 2),
             ucwords(str_replace('_', ' ', $order->payment_method)),
             ucfirst($order->payment_status),
