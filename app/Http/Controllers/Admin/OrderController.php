@@ -47,7 +47,6 @@ class OrderController extends Controller
         $orders = $query->paginate(20)->withQueryString();
         $statusCounts = Order::selectRaw('status, count(*) as count')
             ->groupBy('status')->pluck('count', 'status');
-
         return view('admin.orders.index', compact('orders', 'statusCounts'));
     }
 
@@ -161,7 +160,6 @@ class OrderController extends Controller
     }
 
     // ── Steadfast ─────────────────────────────────────────────────────────
-
     public function pushToSteadfast(Order $order)
     {
         $result = $this->steadfast->createOrder($order);
@@ -181,11 +179,9 @@ class OrderController extends Controller
     }
 
     // ── Shipping label ────────────────────────────────────────────────────
-
     public function shippingLabel(Order $order)
     {
         $order->load('items');
-
         $courier = $order->courier
             ?? ($order->pathao_consignment_id ? 'pathao' : null)
             ?? ($order->steadfast_consignment_id ? 'steadfast' : null);
@@ -193,7 +189,6 @@ class OrderController extends Controller
         if (!$courier) {
             return back()->with('error', 'This order has not been pushed to a courier yet.');
         }
-
         return view('admin.orders.shipping-label', compact('order', 'courier'));
     }
 

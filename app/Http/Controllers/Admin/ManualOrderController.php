@@ -128,7 +128,7 @@ class ManualOrderController extends Controller
 
         // SMS if phone provided
         if ($request->send_sms) {
-            app(\App\Services\SmsService::class)->orderConfirm($order);
+            app(\App\Services\SmsService::class)->orderPlaced($order);
         }
 
         return redirect()->route('admin.orders.show', $order)

@@ -22,7 +22,10 @@ class SmsService
             'order_id' => $orderId,
         ]);
 
-        $apiKey = config('services.mimsms.api_key');
+        // ✅ Read from database (admin settings) instead of .env
+        $apiKey = Setting::get('mimsms_api_key');
+        $senderId = Setting::get('mimsms_sender_id', 'Ousodhaloy');
+
         if (!$apiKey) {
             logger()->info("SMS (no key): [{$phone}] {$message}");
             $log->update(['status' => 'sent', 'reference' => 'local']);
@@ -34,7 +37,7 @@ class SmsService
                 'api_key' => $apiKey,
                 'type' => 'text',
                 'contacts' => $phone,
-                'senderid' => config('services.mimsms.sender_id', 'Ousodhaloy'),
+                'senderid' => $senderId,
                 'msg' => $message,
             ]);
             $success = $res->successful();
@@ -50,38 +53,44 @@ class SmsService
         }
     }
 
-    public function orderConfirm(Order $order): bool
+    // Fires once when customer places the order — "we received it"
+    public function orderPlaced(Order $order): bool
     {
         if (Setting::get('sms_order_confirm', 'true') !== 'true')
             return false;
-        $msg = "Dear {$order->shipping_name}, Your Order #{$order->order_number} has been confirmed. Total TK {$order->total} Thank you -Ousodhaloy";
-        return $this->send($order->shipping_phone, $msg, 'order_confirm', $order->id);
+
+        $msg = "Dear {$order->shipping_name}, we received your order #{$order->order_number} (TK {$order->total}). We'll confirm it shortly. -Ousodhaloy";
+        return $this->send($order->shipping_phone, $msg, 'order_placed', $order->id);
     }
 
+    // Fires when admin changes status — "confirmed/shipped/delivered etc"
     public function orderStatusUpdate(Order $order, string $status): bool
     {
         if (Setting::get('sms_status_update', 'true') !== 'true')
             return false;
+
         $msgs = [
-            'confirmed' => "Your Order #{$order->order_number} has been confirmed. Track: https://ousodhaloy.com/track - Thank you, Ousodhaloy",
-            'shipped' => "Your Order #{$order->order_number} has been shipped",
-            'out_for_delivery' => "Good news! Your Order #{$order->order_number} will be delivered today. Thank you -Ousodhaloy",
-            'delivered' => "Your Order #{$order->order_number} Has been successfully delivered. Thank you",
+            'confirmed' => "Your Order #{$order->order_number} has been confirmed and is being processed. -Ousodhaloy",
+            'shipped' => "Your Order #{$order->order_number} has been shipped and is on its way. -Ousodhaloy",
+            'out_for_delivery' => "Good news! Your Order #{$order->order_number} will be delivered today. -Ousodhaloy",
+            'delivered' => "Your Order #{$order->order_number} has been delivered. Thank you for shopping with us! -Ousodhaloy",
             'cancelled' => "Your Order #{$order->order_number} has been cancelled. Contact us if you need help. -Ousodhaloy",
         ];
-        $msg = $msgs[$status] ?? "Order #{$order->order_number} Updated" . (Order::STATUS_LABELS[$status] ?? $status);
+
+        $msg = $msgs[$status] ?? "Your Order #{$order->order_number} has been updated to: " . (Order::STATUS_LABELS[$status] ?? $status) . ". -Ousodhaloy";
         return $this->send($order->shipping_phone, $msg, 'status_update', $order->id);
     }
 
     public function otp(string $phone, string $code): bool
     {
-        $msg = "Your Ousodhaloy OTP: {$code}। " . config('app.otp_expiry', 5) . " Will expire";
+        $expiry = config('app.otp_expiry', 5);
+        $msg = "Your Ousodhaloy OTP is {$code}. It will expire in {$expiry} minutes. -Ousodhaloy";
         return $this->send($phone, $msg, 'otp');
     }
 
     public function lowStockAlert(string $adminPhone, string $productName, int $stock): bool
     {
-        $msg = "⚠️ Low Stock: {$productName} - only {$stock} left. Login to restock.";
+        $msg = "Low Stock: {$productName} - only {$stock} left. Login to restock. -Ousodhaloy";
         return $this->send($adminPhone, $msg, 'low_stock');
     }
 }

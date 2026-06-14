@@ -150,7 +150,7 @@ class OrderService
             }
 
             // 9. Send confirmation SMS
-            $this->sms->orderConfirm($order);
+            $this->sms->orderPlaced($order);
 
             return $order->fresh(['items']);
         });
