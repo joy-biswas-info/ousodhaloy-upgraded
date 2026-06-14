@@ -190,7 +190,7 @@
 
 @push('scripts')
     <script>
-        @if(session('success') && str_contains(session('success', ''), 'Order placed') || str_contains(session('success', ''), 'Payment successful'))
+@if(session('success') && (str_contains(session('success'), 'Order placed') || str_contains(session('success'), 'Payment successful')))
             @php $pixelPurchase = \App\Models\Setting::get('meta_pixel_purchase', 'true') === 'true'; @endphp
             @if($pixelPurchase)
                 document.addEventListener('DOMContentLoaded', () => {

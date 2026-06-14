@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Services\SteadfastService;
 use App\Services\PathaoService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -45,10 +46,23 @@ class OrderController extends Controller
         ]);
     }
 
-    public function show(Order $order)
+    public function show(int $id)
     {
-        $order->load(['items.product', 'user', 'statusHistory']);
-        return response()->json(['order' => $this->formatOrderFull($order)]);
+        $order = Order::with(['items.product', 'statusHistory'])->findOrFail($id);
+
+        if ($order->user_id) {
+            // Logged-in user order
+            if (!Auth::check() || (Auth::id() !== $order->user_id && !Auth::user()->isManager())) {
+                abort(403);
+            }
+        } else {
+            // Guest order — only allow if it came from their session
+            if (session('last_order_id') !== $order->id) {
+                abort(403);
+            }
+        }
+
+        return view('shop.orders.show', compact('order'));
     }
 
     public function updateStatus(Request $request, Order $order)
