@@ -3,6 +3,7 @@
 use App\Http\Controllers\Shop\AccountController;
 use App\Http\Controllers\Shop\LandingController;
 use App\Http\Controllers\Shop\LegalController;
+use App\Http\Controllers\WebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
