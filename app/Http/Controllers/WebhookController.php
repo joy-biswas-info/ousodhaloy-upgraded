@@ -11,9 +11,18 @@ class WebhookController extends Controller
 {
     public function pathao(Request $request, OrderService $orderService)
     {
-        Log::info('Pathao webhook', $request->all());
-        // Verify Pathao webhook secret
-        $secret = Setting::get('pathao_webhook_secret');
+        // ── Step 1: Pathao webhook verification handshake ──────────────
+        // Pathao sends a verification request first and expects:
+        // - HTTP 202
+        // - Header: X-Pathao-Merchant-Webhook-Integration-Secret: <your-secret>
+        $secret = \App\Models\Setting::get('pathao_webhook_secret');
+
+        if ($request->has('challenge') || !$request->has('order_status')) {
+            return response()->json(['message' => 'Verified'], 202)
+                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
+        }
+
+        // ── Step 2: Verify live webhook requests ───────────────────────
         $incoming = $request->header('X-Pathao-Signature')
             ?? $request->header('X-Hub-Signature-256');
 
@@ -24,7 +33,10 @@ class WebhookController extends Controller
                 return response()->json(['message' => 'Invalid signature'], 401);
             }
         }
-        // Pathao sends: consignment_id, order_status, tracking_code
+
+        // ── Step 3: Process status update ─────────────────────────────
+        Log::info('Pathao webhook', $request->all());
+
         $consignmentId = $request->input('consignment_id');
         $pathaoStatus = $request->input('order_status');
 
@@ -38,7 +50,7 @@ class WebhookController extends Controller
         }
 
         if ($pathaoStatus === $order->pathao_status) {
-            return response()->json(['message' => 'No change']);
+            return response()->json(['message' => 'No change'], 202);
         }
 
         $order->update(['pathao_status' => $pathaoStatus]);
@@ -57,7 +69,7 @@ class WebhookController extends Controller
             $orderService->updateStatus($order, $statusMap[$pathaoStatus], 'Auto-synced from Pathao', false);
         }
 
-        return response()->json(['message' => 'OK']);
+        return response()->json(['message' => 'OK'], 202);
     }
 
     public function steadfast(Request $request, OrderService $orderService)
