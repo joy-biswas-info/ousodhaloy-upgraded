@@ -22,32 +22,45 @@ class SmsService
             'order_id' => $orderId,
         ]);
 
-        // ✅ Read from database (admin settings) instead of .env
+        $username = Setting::get('mimsms_username');
         $apiKey = Setting::get('mimsms_api_key');
         $senderId = Setting::get('mimsms_sender_id', 'Ousodhaloy');
 
-        if (!$apiKey) {
-            logger()->info("SMS (no key): [{$phone}] {$message}");
-            $log->update(['status' => 'sent', 'reference' => 'local']);
-            return true;
+        if (empty(trim($username ?? '')) || empty(trim($apiKey ?? ''))) {
+            logger()->warning("SMS skipped — MimSMS username or API key not configured.");
+            $log->delete();
+            return false;
         }
 
         try {
-            $res = Http::get('https://app.mimsms.com/smsapi', [
-                'api_key' => $apiKey,
-                'type' => 'text',
-                'contacts' => $phone,
-                'senderid' => $senderId,
-                'msg' => $message,
-            ]);
-            $success = $res->successful();
+            $res = Http::timeout(15)
+                ->withHeaders(['Content-Type' => 'application/json', 'Accept' => 'application/json'])
+                ->post('https://api.mimsms.com/api/SmsSending/SMS', [
+                    'UserName' => $username,
+                    'Apikey' => $apiKey,
+                    'MobileNumber' => $phone,
+                    'CampaignId' => 'null',
+                    'SenderName' => $senderId,
+                    'TransactionType' => 'T',
+                    'Message' => $message,
+                ]);
+
+            $body = $res->json();
+
+            logger()->info('MimSMS response', ['phone' => $phone, 'body' => $body]);
+
+            $success = $res->successful() && ($body['statusCode'] ?? '') === '200';
+
             $log->update([
                 'status' => $success ? 'sent' : 'failed',
-                'response' => $res->json() ?? ['raw' => $res->body()],
-                'reference' => $res->json('request_id') ?? null,
+                'response' => $body ?? ['raw' => $res->body()],
+                'reference' => $body['trxnId'] ?? null,
             ]);
+
             return $success;
+
         } catch (\Exception $e) {
+            logger()->error("MimSMS exception: " . $e->getMessage());
             $log->update(['status' => 'failed', 'response' => ['error' => $e->getMessage()]]);
             return false;
         }

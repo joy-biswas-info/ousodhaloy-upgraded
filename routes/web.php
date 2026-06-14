@@ -3,6 +3,7 @@
 use App\Http\Controllers\Shop\AccountController;
 use App\Http\Controllers\Shop\LandingController;
 use App\Http\Controllers\Shop\LegalController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     Auth\AuthController,
@@ -102,6 +103,9 @@ Route::middleware('guest')->prefix('auth')->name('auth.')->group(function () {
     Route::get('/otp', [AuthController::class, 'otpForm'])->name('otp');
     Route::post('/otp/send', [AuthController::class, 'sendOtp'])->name('otp.send');
     Route::post('/otp/verify', [AuthController::class, 'verifyOtp'])->name('otp.verify');
+    Route::get('/forgot-password', [AuthController::class, 'forgotForm'])->name('forgot');
+    Route::post('/forgot-password/send', [AuthController::class, 'forgotSendOtp'])->name('forgot.send');
+    Route::post('/forgot-password/reset', [AuthController::class, 'forgotReset'])->name('forgot.reset');
 
 });
 Route::post('/wishlist/{product}', [AccountController::class, 'toggleWishlist'])->name('wishlist.toggle');
@@ -198,7 +202,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::delete('/media/{medium}', [\App\Http\Controllers\Admin\MediaController::class, 'destroy'])->name('media.destroy');
 
     // ── SMS Logs ──────────────────────────────────────────────
-    Route::get('/sms-logs', fn() => view('admin.sms-logs', [
-        'logs' => \App\Models\SmsLog::latest()->paginate(30),
-    ]))->name('sms-logs');
+    Route::get('/sms-logs', function (Request $request) {
+        $query = \App\Models\SmsLog::latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('purpose')) {
+            $query->where('purpose', $request->purpose);
+        }
+        $stats = \App\Models\SmsLog::selectRaw("
+        COUNT(*) as total,
+        SUM(status = 'sent') as sent,
+        SUM(status = 'failed') as failed,
+        SUM(status = 'queued') as queued
+    ")->first();
+        return view('admin.sms-logs', [
+            'logs' => $query->paginate(30)->withQueryString(),
+            'stats' => $stats,
+        ]);
+    })->name('sms-logs');
 });

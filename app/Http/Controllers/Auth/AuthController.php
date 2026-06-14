@@ -65,6 +65,76 @@ class AuthController extends Controller
         Auth::login($user);
         return redirect()->route('home')->with('success', 'Welcome to Ousodhaloy! 🎉');
     }
+    // ── Forgot Password ──────────────────────────────────────
+
+    public function forgotForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function forgotSendOtp(Request $request, SmsService $sms)
+    {
+        $request->validate(['phone' => 'required|regex:/^01[3-9]\d{8}$/']);
+
+        if (!User::where('phone', $request->phone)->exists()) {
+            return response()->json(['success' => false, 'message' => 'No account found with this phone number.'], 404);
+        }
+
+        $recentOtp = Otp::where('phone', $request->phone)
+            ->where('purpose', 'password_reset')
+            ->where('created_at', '>', now()->subMinutes(2))
+            ->exists();
+
+        if ($recentOtp) {
+            return response()->json(['success' => false, 'message' => 'Please wait 2 minutes before requesting another OTP.'], 429);
+        }
+
+        $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        Otp::create([
+            'phone' => $request->phone,
+            'code' => Hash::make($code),
+            'purpose' => 'password_reset',
+            'expires_at' => now()->addMinutes((int) config('app.otp_expiry', 5)),
+        ]);
+
+        $sms->send($request->phone, "Your Ousodhaloy password reset OTP is {$code}. It expires in 5 minutes. -Ousodhaloy", 'otp');
+
+        return response()->json(['success' => true, 'message' => 'OTP sent to your phone.']);
+    }
+
+    public function forgotReset(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required',
+            'code' => 'required|digits:6',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $otp = Otp::where('phone', $request->phone)
+            ->where('purpose', 'password_reset')
+            ->where('is_used', false)
+            ->where('expires_at', '>', now())
+            ->latest()
+            ->first();
+
+        if (!$otp || !Hash::check($request->code, $otp->code)) {
+            return back()->withErrors(['code' => 'Invalid or expired OTP.'])->withInput();
+        }
+
+        $user = User::where('phone', $request->phone)->first();
+
+        if (!$user) {
+            return back()->withErrors(['phone' => 'No account found with this phone number.']);
+        }
+
+        $otp->update(['is_used' => true]);
+        $user->update(['password' => Hash::make($request->password)]);
+
+        Auth::login($user);
+
+        return redirect()->route('home')->with('success', 'Password reset successfully. Welcome back!');
+    }
 
     // ── OTP Login (phone-based) ──────────────────────────────
 

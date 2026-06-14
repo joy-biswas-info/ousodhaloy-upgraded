@@ -59,7 +59,7 @@ class SettingsController extends Controller
             'ssl_store_pass',
             'ssl_is_live',
         ],
-        'sms' => ['sms_order_confirm', 'sms_status_update', 'mimsms_api_key', 'mimsms_sender_id'],
+        'sms' => ['sms_order_confirm', 'sms_status_update', 'mimsms_username', 'mimsms_api_key', 'mimsms_sender_id'],
         'pathao' => ['pathao_client_id', 'pathao_client_secret', 'pathao_username', 'pathao_password', 'pathao_store_id', 'pathao_is_live', 'pathao_default_city_id', 'pathao_default_zone_id', 'pathao_default_area_id'],
         'steadfast' => ['steadfast_api_key', 'steadfast_secret_key', 'steadfast_enabled'],
         'loyalty' => ['loyalty_enabled', 'loyalty_points_per_taka', 'loyalty_points_per_order'],

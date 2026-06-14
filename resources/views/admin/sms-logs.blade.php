@@ -4,11 +4,13 @@
 @section('content')
 <div class="space-y-4">
 
-    <div class="grid grid-cols-3 gap-3">
+    {{-- Stats --}}
+    <div class="grid grid-cols-4 gap-3">
         @foreach([
-            ['label' => 'Total Sent',  'value' => \App\Models\SmsLog::where('status','sent')->count(),   'color' => 'green'],
-            ['label' => 'Failed',      'value' => \App\Models\SmsLog::where('status','failed')->count(),  'color' => 'red'],
-            ['label' => 'Queued',      'value' => \App\Models\SmsLog::where('status','queued')->count(),  'color' => 'yellow'],
+            ['label' => 'Total',  'value' => $stats->total,  'color' => 'blue'],
+            ['label' => 'Sent',   'value' => $stats->sent,   'color' => 'green'],
+            ['label' => 'Failed', 'value' => $stats->failed, 'color' => 'red'],
+            ['label' => 'Queued', 'value' => $stats->queued, 'color' => 'yellow'],
         ] as $card)
         <div class="bg-white rounded-xl border p-4 flex items-center gap-3">
             <div class="w-9 h-9 bg-{{ $card['color'] }}-100 rounded-lg flex items-center justify-center">
@@ -22,6 +24,28 @@
         @endforeach
     </div>
 
+    {{-- Filters --}}
+    <div class="bg-white rounded-xl border p-4">
+        <form method="GET" class="flex gap-3 flex-wrap items-center">
+            <select name="status" class="form-select text-sm" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                @foreach(['sent' => 'Sent', 'failed' => 'Failed', 'queued' => 'Queued'] as $val => $label)
+                <option value="{{ $val }}" {{ request('status') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+            <select name="purpose" class="form-select text-sm" onchange="this.form.submit()">
+                <option value="">All Types</option>
+                @foreach(['order_placed' => 'Order Placed', 'status_update' => 'Status Update', 'otp' => 'OTP', 'low_stock' => 'Low Stock'] as $val => $label)
+                <option value="{{ $val }}" {{ request('purpose') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+            @if(request()->hasAny(['status', 'purpose']))
+            <a href="{{ route('admin.sms-logs') }}" class="btn-outline text-sm">Clear filters</a>
+            @endif
+        </form>
+    </div>
+
+    {{-- Table --}}
     <div class="bg-white rounded-xl border overflow-hidden">
         <div class="overflow-x-auto">
             <table class="admin-table">
@@ -43,13 +67,31 @@
                             <p class="text-xs text-gray-600 line-clamp-2">{{ $log->message }}</p>
                         </td>
                         <td>
-                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-semibold capitalize">
-                                {{ str_replace('_',' ',$log->purpose ?? 'general') }}
+                            @php
+                                $purposeLabels = [
+                                    'order_placed'  => ['Order Placed',   'blue'],
+                                    'status_update' => ['Status Update',  'purple'],
+                                    'otp'           => ['OTP',            'orange'],
+                                    'low_stock'     => ['Low Stock',      'red'],
+                                    'general'       => ['General',        'gray'],
+                                ];
+                                [$purposeLabel, $purposeColor] = $purposeLabels[$log->purpose] ?? [ucfirst(str_replace('_', ' ', $log->purpose ?? 'general')), 'gray'];
+                            @endphp
+                            <span class="text-xs bg-{{ $purposeColor }}-100 text-{{ $purposeColor }}-700 px-2 py-0.5 rounded font-semibold">
+                                {{ $purposeLabel }}
                             </span>
                         </td>
                         <td>
-                            <span class="text-xs font-semibold {{ $log->status === 'sent' ? 'text-green-600' : ($log->status === 'failed' ? 'text-red-600' : 'text-yellow-600') }}">
-                                {{ ucfirst($log->status) }}
+                            @php
+                                $statusConfig = [
+                                    'sent'   => ['Sent',   'text-green-600',  'fa-check-circle'],
+                                    'failed' => ['Failed', 'text-red-600',    'fa-times-circle'],
+                                    'queued' => ['Queued', 'text-yellow-600', 'fa-clock'],
+                                ];
+                                [$statusLabel, $statusColor, $statusIcon] = $statusConfig[$log->status] ?? [ucfirst($log->status), 'text-gray-500', 'fa-circle'];
+                            @endphp
+                            <span class="text-xs font-semibold {{ $statusColor }} flex items-center gap-1">
+                                <i class="fas {{ $statusIcon }}"></i> {{ $statusLabel }}
                             </span>
                         </td>
                         <td>
@@ -57,17 +99,29 @@
                             <a href="{{ route('admin.orders.show', $log->order_id) }}" class="text-xs text-teal-700 hover:underline font-mono">
                                 #{{ $log->order_id }}
                             </a>
-                            @else <span class="text-xs text-gray-400">—</span>@endif
+                            @else
+                            <span class="text-xs text-gray-400">—</span>
+                            @endif
                         </td>
                         <td class="text-xs text-gray-400 whitespace-nowrap">{{ $log->created_at->format('d M Y h:i A') }}</td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" class="text-center py-12 text-gray-400">No SMS logs yet</td></tr>
+                    <tr>
+                        <td colspan="6" class="text-center py-12 text-gray-400">
+                            <i class="fas fa-sms text-3xl mb-2 block"></i>
+                            No SMS logs {{ request()->hasAny(['status','purpose']) ? 'matching filters' : 'yet' }}
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="p-4">{{ $logs->links() }}</div>
+        <div class="p-4 border-t flex items-center justify-between">
+            <p class="text-xs text-gray-400">
+                Showing {{ $logs->firstItem() ?? 0 }}–{{ $logs->lastItem() ?? 0 }} of {{ $logs->total() }} logs
+            </p>
+            {{ $logs->withQueryString()->links() }}
+        </div>
     </div>
 </div>
 @endsection
