@@ -193,7 +193,7 @@
 
 <?php $__env->startPush('scripts'); ?>
     <script>
-        <?php if(session('success') && str_contains(session('success', ''), 'Order placed') || str_contains(session('success', ''), 'Payment successful')): ?>
+<?php if(session('success') && (str_contains(session('success'), 'Order placed') || str_contains(session('success'), 'Payment successful'))): ?>
             <?php $pixelPurchase = \App\Models\Setting::get('meta_pixel_purchase', 'true') === 'true'; ?>
             <?php if($pixelPurchase): ?>
                 document.addEventListener('DOMContentLoaded', () => {

@@ -40,8 +40,11 @@ Route::get('/buy-now/{product}/{qty}', [LandingController::class, 'buyNow'])
 Route::get('/privacy-policy', [LegalController::class, 'privacy'])->name('legal.privacy');
 Route::get('/terms-of-use', [LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/return-policy', [LegalController::class, 'returns'])->name('legal.returns');
-
 Route::get('/search', [ProductController::class, 'search'])->name('search');
+
+// Webhooks
+Route::post('/webhooks/pathao', [WebhookController::class, 'pathao'])->name('webhooks.pathao');
+Route::post('/webhooks/steadfast', [WebhookController::class, 'steadfast'])->name('webhooks.steadfast');
 
 // ── Cart ───────────────────────────────────────────────────────────────────
 

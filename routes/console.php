@@ -9,7 +9,7 @@ Artisan::command('inspire', function () {
 
 // Sync Pathao order statuses every 30 minutes
 Schedule::command('pathao:sync')->everyThirtyMinutes();
-
+Schedule::command('steadfast:sync')->everyThirtyMinutes();
 // Clean expired OTPs daily
 Schedule::call(function () {
     \App\Models\Otp::where('expires_at', '<', now()->subDay())->delete();

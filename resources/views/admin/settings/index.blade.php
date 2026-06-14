@@ -380,6 +380,39 @@
                         Copy the IDs you use most often and paste them here.
                     </p>
                 </div>
+                <div class="border rounded-xl overflow-hidden mt-4">
+                    <div class="px-4 py-3 bg-gray-50 border-b flex items-center justify-between">
+                        <p class="text-xs font-semibold text-gray-600">Webhook Configuration</p>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div>
+                            <label class="form-label">Callback URL</label>
+                            <div class="flex gap-2">
+                                <input type="text" readonly value="{{ route('webhooks.pathao') }}"
+                                    class="form-input font-mono text-xs bg-gray-50 text-gray-600 flex-1">
+                                <button type="button"
+                                    onclick="navigator.clipboard.writeText('{{ route('webhooks.pathao') }}').then(() => this.textContent = 'Copied!')"
+                                    class="btn-outline text-xs px-3 flex-shrink-0">Copy</button>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Paste this URL in Pathao Merchant Portal → Settings →
+                                Webhook</p>
+                        </div>
+                        <div>
+                            <label class="form-label">Webhook Secret</label>
+                            <div class="flex gap-2">
+                                <input type="text" name="pathao_webhook_secret"
+                                    value="{{ $settings['pathao_webhook_secret'] ?? '' }}"
+                                    class="form-input font-mono flex-1"
+                                    placeholder="Set a strong secret, then copy it to Pathao portal">
+                                <button type="button"
+                                    onclick="const s = Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2); this.closest('div').querySelector('input').value = s"
+                                    class="btn-secondary text-xs px-3 flex-shrink-0 whitespace-nowrap">Generate</button>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Pathao will sign each webhook request with this secret so
+                                you can verify it's genuine</p>
+                        </div>
+                    </div>
+                </div>
 
                 <button type="submit" class="btn-primary">Save Pathao Settings</button>
             </form>
@@ -416,6 +449,7 @@
                             <p class="text-xs text-gray-400 mt-1">Keep this secret — never share</p>
                         </div>
                     </div>
+                
 
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="steadfast_enabled" value="true"
@@ -423,6 +457,37 @@
                             class="accent-teal-600">
                         <span class="text-sm text-gray-700 font-medium">Enable Steadfast courier</span>
                     </label>
+                    <div class="border rounded-xl overflow-hidden mt-4">
+    <div class="px-4 py-3 bg-gray-50 border-b flex items-center justify-between">
+        <p class="text-xs font-semibold text-gray-600">Webhook Configuration</p>
+    </div>
+    <div class="p-4 space-y-3">
+        <div>
+            <label class="form-label">Callback URL</label>
+            <div class="flex gap-2">
+                <input type="text" readonly
+                    value="{{ route('webhooks.steadfast') }}"
+                    class="form-input font-mono text-xs bg-gray-50 text-gray-600 flex-1">
+                <button type="button"
+                    onclick="navigator.clipboard.writeText('{{ route('webhooks.steadfast') }}').then(() => this.textContent = 'Copied!')"
+                    class="btn-outline text-xs px-3 flex-shrink-0">Copy</button>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Paste this URL in Steadfast Portal → Settings → Webhook</p>
+        </div>
+        <div>
+            <label class="form-label">Auth Token (Bearer)</label>
+            <div class="flex gap-2">
+                <input type="text" name="steadfast_bearer_token"
+                    value="{{ $settings['steadfast_bearer_token'] ?? '' }}"
+                    class="form-input font-mono flex-1" placeholder="Set a token, then copy it to Steadfast portal">
+                <button type="button"
+                    onclick="const s = Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2); this.closest('div').querySelector('input').value = s"
+                    class="btn-secondary text-xs px-3 flex-shrink-0 whitespace-nowrap">Generate</button>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Steadfast sends this token in the <code class="bg-gray-100 px-1 rounded">Authorization: Bearer</code> header — you verify it to confirm the request is genuine</p>
+        </div>
+    </div>
+</div>
 
                     <button type="submit" class="btn-primary">Save Steadfast Settings</button>
                 </form>

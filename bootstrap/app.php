@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'payment/fail',
             'payment/cancel',
             'payment/ipn',
+            'webhooks/*',   // ← add this
         ]);
 
         $middleware->alias([
