@@ -47,6 +47,7 @@ class SettingsController extends Controller
             'brand_bg',
             'messenger_url'
         ],
+        'notifications' => ['admin_notification_email', 'email_new_order'],
         'orders' => ['guest_checkout', 'free_delivery_min', 'delivery_charge', 'min_order_amount'],
         'payment' => [
             'cod_enabled',
@@ -59,7 +60,18 @@ class SettingsController extends Controller
             'ssl_store_pass',
             'ssl_is_live',
         ],
-        'sms' => ['sms_order_confirm', 'sms_status_update', 'mimsms_username', 'mimsms_api_key', 'mimsms_sender_id'],
+        'sms' => [
+            'sms_order_confirm',
+            'sms_status_update',
+            'mimsms_username',
+            'mimsms_api_key',
+            'mimsms_sender_id',
+            'sms_on_confirmed',
+            'sms_on_shipped',
+            'sms_on_out_for_delivery',
+            'sms_on_delivered',
+            'sms_on_cancelled',
+        ],
         'pathao' => ['pathao_client_id', 'pathao_client_secret', 'pathao_username', 'pathao_password', 'pathao_store_id', 'pathao_is_live', 'pathao_default_city_id', 'pathao_default_zone_id', 'pathao_default_area_id', 'pathao_webhook_secret',],
         'steadfast' => ['steadfast_api_key', 'steadfast_secret_key', 'steadfast_enabled', 'steadfast_bearer_token',],
         'loyalty' => ['loyalty_enabled', 'loyalty_points_per_taka', 'loyalty_points_per_order'],

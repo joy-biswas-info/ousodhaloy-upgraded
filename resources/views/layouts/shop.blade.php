@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="{{ \App\Models\Setting::get('brand_primary', '#0e7673') }}">
-    <title>@yield('title', config('app.name', 'Ousodhaloy')) – Bangladesh's Trusted Online Pharmacy</title>
+    <title>@yield('title', config('app.name', 'Ousodhaloy')) – Bangladesh's Trusted Online Healthcare and Wellness Shop</title>
     <meta name="description" content="@yield('meta_description', 'Buy genuine medicine, healthcare and wellness products online. Fast delivery across Bangladesh.')">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">

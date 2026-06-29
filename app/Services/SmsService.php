@@ -79,18 +79,26 @@ class SmsService
     // Fires when admin changes status — "confirmed/shipped/delivered etc"
     public function orderStatusUpdate(Order $order, string $status): bool
     {
+        // Check global toggle first
         if (Setting::get('sms_status_update', 'true') !== 'true')
+            return false;
+
+        // Check per-status toggle
+        if (Setting::get("sms_on_{$status}", 'true') !== 'true')
             return false;
 
         $msgs = [
             'confirmed' => "Your Order #{$order->order_number} has been confirmed and is being processed. -Ousodhaloy",
             'shipped' => "Your Order #{$order->order_number} has been shipped and is on its way. -Ousodhaloy",
             'out_for_delivery' => "Good news! Your Order #{$order->order_number} will be delivered today. -Ousodhaloy",
-            'delivered' => "Your Order #{$order->order_number} has been delivered. Thank you for shopping with us! -Ousodhaloy",
-            'cancelled' => "Your Order #{$order->order_number} has been cancelled. Contact us if you need help. -Ousodhaloy",
+            'delivered' => "Your Order #{$order->order_number} has been delivered. Thank you! -Ousodhaloy",
+            'cancelled' => "Your Order #{$order->order_number} has been cancelled. Contact us for help. -Ousodhaloy",
         ];
 
-        $msg = $msgs[$status] ?? "Your Order #{$order->order_number} has been updated to: " . (Order::STATUS_LABELS[$status] ?? $status) . ". -Ousodhaloy";
+        $msg = $msgs[$status] ?? null;
+        if (!$msg)
+            return false;
+
         return $this->send($order->shipping_phone, $msg, 'status_update', $order->id);
     }
 

@@ -11,65 +11,53 @@ class WebhookController extends Controller
 {
     public function pathao(Request $request, OrderService $orderService)
     {
-        // ── Step 1: Pathao webhook verification handshake ──────────────
-        // Pathao sends a verification request first and expects:
-        // - HTTP 202
-        // - Header: X-Pathao-Merchant-Webhook-Integration-Secret: <your-secret>
-        $secret = \App\Models\Setting::get('pathao_webhook_secret');
+        $secret = Setting::get('pathao_webhook_secret');
 
-        if ($request->has('challenge') || !$request->has('order_status')) {
-            return response()->json(['message' => 'Verified'], 202)
+        // Handshake / verification ping — Pathao expects 202 + secret header back
+        if (!$request->has('order_status')) {
+            return response()->json(['message' => 'OK'], 202)
                 ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
         }
 
-        // ── Step 2: Verify live webhook requests ───────────────────────
-        $incoming = $request->header('X-Pathao-Signature')
-            ?? $request->header('X-Hub-Signature-256');
-
-        if ($secret && $incoming) {
-            $expected = 'sha256=' . hash_hmac('sha256', $request->getContent(), $secret);
-            if (!hash_equals($expected, $incoming)) {
-                Log::warning('Pathao webhook signature mismatch');
-                return response()->json(['message' => 'Invalid signature'], 401);
-            }
-        }
-
-        // ── Step 3: Process status update ─────────────────────────────
-        Log::info('Pathao webhook', $request->all());
+        // Live event — log and process. No HMAC check; Pathao does not sign these.
+        Log::info('Pathao webhook payload', $request->all());
 
         $consignmentId = $request->input('consignment_id');
         $pathaoStatus = $request->input('order_status');
 
         if (!$consignmentId || !$pathaoStatus) {
-            return response()->json(['message' => 'Missing fields'], 400);
+            Log::warning('Pathao webhook missing fields', $request->all());
+            return response()->json(['message' => 'Missing fields'], 202)
+                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
         }
 
         $order = Order::where('pathao_consignment_id', $consignmentId)->first();
+
         if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
+            Log::warning("Pathao webhook: no order found for consignment {$consignmentId}");
+            return response()->json(['message' => 'Order not found'], 202)
+                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
         }
 
-        if ($pathaoStatus === $order->pathao_status) {
-            return response()->json(['message' => 'No change'], 202);
+        if ($pathaoStatus !== $order->pathao_status) {
+            $order->update(['pathao_status' => $pathaoStatus]);
+
+            $statusMap = [
+                'Pickup_Completed' => 'shipped',
+                'Delivery_Completed' => 'delivered',
+                'Delivery_Cancelled' => 'cancelled',
+                'Return_Completed' => 'returned',
+            ];
+
+            if (!empty($statusMap[$pathaoStatus])) {
+                $orderService->updateStatus($order, $statusMap[$pathaoStatus], 'Auto-synced from Pathao', false);
+            }
+
+            Log::info("Pathao webhook: order #{$order->order_number} updated to {$pathaoStatus}");
         }
 
-        $order->update(['pathao_status' => $pathaoStatus]);
-
-        $statusMap = [
-            'Pickup_Requested' => null,
-            'Pickup_Completed' => 'shipped',
-            'Pickup_Failed' => null,
-            'Delivery_Completed' => 'delivered',
-            'Delivery_Failed' => null,
-            'Delivery_Cancelled' => 'cancelled',
-            'Return_Completed' => 'returned',
-        ];
-
-        if (isset($statusMap[$pathaoStatus]) && $statusMap[$pathaoStatus]) {
-            $orderService->updateStatus($order, $statusMap[$pathaoStatus], 'Auto-synced from Pathao', false);
-        }
-
-        return response()->json(['message' => 'OK'], 202);
+        return response()->json(['message' => 'OK'], 202)
+            ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
     }
 
     public function steadfast(Request $request, OrderService $orderService)

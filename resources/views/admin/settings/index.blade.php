@@ -15,6 +15,7 @@
             'pathao' => '🚚 Pathao',
             'pixel' => '📊 Pixel',
             'steadfast' => '📦 Steadfast',
+            'notifications' => '🔔 Notifications',
         ] as $key => $label)
                 <button @click="tab = '{{ $key }}'"
                     :class="tab === '{{ $key }}' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
@@ -22,7 +23,7 @@
             @endforeach
         </div>
 
-        {{-- ── GENERAL ──────────────────────────────────────────── --}}
+        {{-- ── GENERAL ─ --}}
         <div x-show="tab === 'general'" class="bg-white rounded-xl border p-5">
             <h2 class="font-bold text-gray-800 mb-4 pb-2 border-b">🌐 General Settings</h2>
             <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data"
@@ -39,13 +40,7 @@
                             value="{{ $settings['site_email'] ?? '' }}" class="form-input"></div>
                     <div class="col-span-2"><label class="form-label">Address</label><input type="text"
                             name="site_address" value="{{ $settings['site_address'] ?? '' }}" class="form-input"></div>
-                    <div>
-                        <label class="form-label">Logo</label>
-                        @if (!empty($settings['site_logo']))
-                            <img src="{{ asset('storage/' . $settings['site_logo']) }}" class="h-12 mb-2 rounded border">
-                        @endif
-                        <input type="file" name="site_logo" accept="image/*" class="form-input py-1.5">
-                    </div>
+
                     <div>
                         <label class="form-label">Messenger / WhatsApp URL</label>
                         <input type="url" name="messenger_url" value="{{ $settings['messenger_url'] ?? '' }}"
@@ -60,8 +55,6 @@
                         <label class="text-sm text-gray-700">Maintenance Mode</label>
                     </div>
                 </div>
-
-
 
                 <button type="submit" class="btn-primary">Save General Settings</button>
             </form>
@@ -311,13 +304,77 @@
                     <div><label class="form-label">Sender ID</label><input type="text" name="mimsms_sender_id"
                             value="{{ $settings['mimsms_sender_id'] ?? 'Ousodhaloy' }}" class="form-input"></div>
                 </div>
-                @foreach (['sms_order_confirm' => 'SMS on Order Placed', 'sms_status_update' => 'SMS on Status Update'] as $key => $label)
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="{{ $key }}" value="true"
-                            {{ ($settings[$key] ?? '') === 'true' ? 'checked' : '' }} class="accent-teal-600">
-                        <span class="text-sm text-gray-700">{{ $label }}</span>
-                    </label>
-                @endforeach
+                {{-- Global SMS toggles --}}
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Notification Triggers</p>
+                    <div class="space-y-2">
+                        <label
+                            class="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">📦</span>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-800">Order Placed</p>
+                                    <p class="text-xs text-gray-400">Sent when a customer places a new order</p>
+                                </div>
+                            </div>
+                            <div class="relative flex-shrink-0 ml-4">
+                                <input type="checkbox" name="sms_order_confirm" value="true"
+                                    {{ ($settings['sms_order_confirm'] ?? '') === 'true' ? 'checked' : '' }}
+                                    class="sr-only peer">
+                                <div
+                                    class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-teal-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5">
+                                </div>
+                            </div>
+                        </label>
+
+                        {{-- Status updates with per-status control --}}
+                        <div class="border rounded-xl overflow-hidden">
+                            <label class="flex items-center justify-between p-4 border-b hover:bg-gray-50 cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-lg">🔄</span>
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-800">Status Updates</p>
+                                        <p class="text-xs text-gray-400">Master toggle — enable/disable all status SMS</p>
+                                    </div>
+                                </div>
+                                <div class="relative flex-shrink-0 ml-4">
+                                    <input type="checkbox" name="sms_status_update" value="true"
+                                        {{ ($settings['sms_status_update'] ?? '') === 'true' ? 'checked' : '' }}
+                                        class="sr-only peer">
+                                    <div
+                                        class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-teal-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5">
+                                    </div>
+                                </div>
+                            </label>
+                            @foreach ([
+            'sms_on_confirmed' => ['✅', 'Confirmed', 'Order confirmed & being processed'],
+            'sms_on_shipped' => ['🚚', 'Shipped', 'Order dispatched to courier'],
+            'sms_on_out_for_delivery' => ['🛵', 'Out for Delivery', 'Order out for delivery today'],
+            'sms_on_delivered' => ['🎉', 'Delivered', 'Order successfully delivered'],
+            'sms_on_cancelled' => ['❌', 'Cancelled', 'Order has been cancelled'],
+        ] as $key => [$icon, $label, $desc])
+                                <label
+                                    class="flex items-center justify-between px-4 py-3 border-b last:border-0 hover:bg-gray-50 cursor-pointer pl-10">
+                                    <div class="flex items-center gap-3">
+                                        <span>{{ $icon }}</span>
+                                        <div>
+                                            <p class="text-sm text-gray-700 font-medium">{{ $label }}</p>
+                                            <p class="text-xs text-gray-400">{{ $desc }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="relative flex-shrink-0 ml-4">
+                                        <input type="checkbox" name="{{ $key }}" value="true"
+                                            {{ ($settings[$key] ?? 'true') === 'true' ? 'checked' : '' }}
+                                            class="sr-only peer">
+                                        <div
+                                            class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-teal-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4">
+                                        </div>
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
                 <p class="text-xs text-gray-400">Get key: <a href="https://app.mimsms.com" target="_blank"
                         class="text-teal-600 underline">app.mimsms.com</a></p>
                 <button type="submit" class="btn-primary">Save SMS Settings</button>
@@ -449,7 +506,7 @@
                             <p class="text-xs text-gray-400 mt-1">Keep this secret — never share</p>
                         </div>
                     </div>
-                
+
 
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="steadfast_enabled" value="true"
@@ -458,36 +515,39 @@
                         <span class="text-sm text-gray-700 font-medium">Enable Steadfast courier</span>
                     </label>
                     <div class="border rounded-xl overflow-hidden mt-4">
-    <div class="px-4 py-3 bg-gray-50 border-b flex items-center justify-between">
-        <p class="text-xs font-semibold text-gray-600">Webhook Configuration</p>
-    </div>
-    <div class="p-4 space-y-3">
-        <div>
-            <label class="form-label">Callback URL</label>
-            <div class="flex gap-2">
-                <input type="text" readonly
-                    value="{{ route('webhooks.steadfast') }}"
-                    class="form-input font-mono text-xs bg-gray-50 text-gray-600 flex-1">
-                <button type="button"
-                    onclick="navigator.clipboard.writeText('{{ route('webhooks.steadfast') }}').then(() => this.textContent = 'Copied!')"
-                    class="btn-outline text-xs px-3 flex-shrink-0">Copy</button>
-            </div>
-            <p class="text-xs text-gray-400 mt-1">Paste this URL in Steadfast Portal → Settings → Webhook</p>
-        </div>
-        <div>
-            <label class="form-label">Auth Token (Bearer)</label>
-            <div class="flex gap-2">
-                <input type="text" name="steadfast_bearer_token"
-                    value="{{ $settings['steadfast_bearer_token'] ?? '' }}"
-                    class="form-input font-mono flex-1" placeholder="Set a token, then copy it to Steadfast portal">
-                <button type="button"
-                    onclick="const s = Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2); this.closest('div').querySelector('input').value = s"
-                    class="btn-secondary text-xs px-3 flex-shrink-0 whitespace-nowrap">Generate</button>
-            </div>
-            <p class="text-xs text-gray-400 mt-1">Steadfast sends this token in the <code class="bg-gray-100 px-1 rounded">Authorization: Bearer</code> header — you verify it to confirm the request is genuine</p>
-        </div>
-    </div>
-</div>
+                        <div class="px-4 py-3 bg-gray-50 border-b flex items-center justify-between">
+                            <p class="text-xs font-semibold text-gray-600">Webhook Configuration</p>
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <div>
+                                <label class="form-label">Callback URL</label>
+                                <div class="flex gap-2">
+                                    <input type="text" readonly value="{{ route('webhooks.steadfast') }}"
+                                        class="form-input font-mono text-xs bg-gray-50 text-gray-600 flex-1">
+                                    <button type="button"
+                                        onclick="navigator.clipboard.writeText('{{ route('webhooks.steadfast') }}').then(() => this.textContent = 'Copied!')"
+                                        class="btn-outline text-xs px-3 flex-shrink-0">Copy</button>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">Paste this URL in Steadfast Portal → Settings →
+                                    Webhook</p>
+                            </div>
+                            <div>
+                                <label class="form-label">Auth Token (Bearer)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" name="steadfast_bearer_token"
+                                        value="{{ $settings['steadfast_bearer_token'] ?? '' }}"
+                                        class="form-input font-mono flex-1"
+                                        placeholder="Set a token, then copy it to Steadfast portal">
+                                    <button type="button"
+                                        onclick="const s = Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2); this.closest('div').querySelector('input').value = s"
+                                        class="btn-secondary text-xs px-3 flex-shrink-0 whitespace-nowrap">Generate</button>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">Steadfast sends this token in the <code
+                                        class="bg-gray-100 px-1 rounded">Authorization: Bearer</code> header — you verify
+                                    it to confirm the request is genuine</p>
+                            </div>
+                        </div>
+                    </div>
 
                     <button type="submit" class="btn-primary">Save Steadfast Settings</button>
                 </form>
@@ -631,7 +691,7 @@
                     <button type="submit" class="btn-primary">Save Pixel Settings</button>
                 </form>
             </div>
-
+            
             {{-- Status card --}}
             @if (!empty($settings['meta_pixel_id']))
                 <div class="bg-white rounded-xl border p-5">
@@ -643,7 +703,8 @@
                                 class="text-lg">{{ ($settings['meta_pixel_mode'] ?? '') === 'live' ? '🟢' : '🧪' }}</span>
                             <div>
                                 <p class="text-xs font-bold">Mode</p>
-                                <p class="text-sm font-black">{{ strtoupper($settings['meta_pixel_mode'] ?? 'test') }}</p>
+                                <p class="text-sm font-black">{{ strtoupper($settings['meta_pixel_mode'] ?? 'test') }}
+                                </p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5">
@@ -673,7 +734,50 @@
                 </div>
             @endif
         </div>
+<div x-show="tab === 'notifications'" x-cloak>
+    <div class="bg-white rounded-xl border overflow-hidden">
+        <div class="px-6 py-4 border-b bg-gray-50 flex items-center gap-2">
+            <span class="text-lg">🔔</span>
+            <div>
+                <h2 class="font-bold text-gray-800 text-sm">Admin Notifications</h2>
+                <p class="text-xs text-gray-400">Email alerts sent to you when things happen</p>
+            </div>
+        </div>
+        <form method="POST" action="{{ route('admin.settings.update') }}" class="p-6 space-y-5">
+            @csrf <input type="hidden" name="group" value="notifications">
 
+            <div>
+                <label class="form-label">Notification Email</label>
+                <input type="email" name="admin_notification_email"
+                    value="{{ $settings['admin_notification_email'] ?? $settings['site_email'] ?? '' }}"
+                    class="form-input" placeholder="admin@ousodhaloy.com">
+                <p class="text-xs text-gray-400 mt-1">All admin notifications are sent to this address</p>
+            </div>
+
+            <div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Email Triggers</p>
+                <label class="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">🛍️</span>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">New Order Placed</p>
+                            <p class="text-xs text-gray-400">Receive an email every time a customer places an order</p>
+                        </div>
+                    </div>
+                    <div class="relative flex-shrink-0 ml-4">
+                        <input type="checkbox" name="email_new_order" value="true"
+                            {{ ($settings['email_new_order'] ?? 'true') === 'true' ? 'checked' : '' }} class="sr-only peer">
+                        <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-teal-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="flex justify-end border-t pt-4">
+                <button type="submit" class="btn-primary"><i class="fas fa-save mr-2"></i>Save Notification Settings</button>
+            </div>
+        </form>
+    </div>
+</div>
     </div>
 @endsection
 

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <meta name="theme-color" content="<?php echo e(\App\Models\Setting::get('brand_primary', '#0e7673')); ?>">
-    <title><?php echo $__env->yieldContent('title', config('app.name', 'Ousodhaloy')); ?> – Bangladesh's Trusted Online Pharmacy</title>
+    <title><?php echo $__env->yieldContent('title', config('app.name', 'Ousodhaloy')); ?> – Bangladesh's Trusted Online Healthcare and Wellness Shop</title>
     <meta name="description" content="<?php echo $__env->yieldContent('meta_description', 'Buy genuine medicine, healthcare and wellness products online. Fast delivery across Bangladesh.'); ?>">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
