@@ -30,6 +30,12 @@ class SettingsController extends Controller
         'meta_pixel_add_to_cart',
         'meta_pixel_initiate_checkout',
         'meta_pixel_purchase',
+        'email_new_order',          // ← add
+        'sms_on_confirmed',          // ← also missing, add this too
+        'sms_on_shipped',            // ← also missing
+        'sms_on_out_for_delivery',   // ← also missing
+        'sms_on_delivered',          // ← also missing
+        'sms_on_cancelled',          // ← also missing
     ];
 
     // All keys per group — used to know which keys to save

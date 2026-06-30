@@ -1538,7 +1538,6 @@
         <div class="vi">✓ 100% Chelated Formula</div>
         <div class="vi">✓ Veggie Capsules</div>
         <div class="vi">✓ ৭ দিনের Return Policy</div>
-        <div class="vi">✓ DGDA Licensed Pharmacy</div>
     </div>
 
     <!-- FAQ -->
@@ -1624,7 +1623,7 @@
 
     <!-- FOOTER -->
     <footer>
-        <p>© 2025 Ousodhaloy.com · DGDA Licensed Online Pharmacy · Bangladesh</p>
+        <p>© 2025 Ousodhaloy.com · Bangladesh</p>
         <div class="footer-links">
             <a href="https://ousodhaloy.com/privacy-policy">Privacy Policy</a>
             <a href="https://ousodhaloy.com/terms-of-use">Terms of Use</a>

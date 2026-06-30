@@ -1,9 +1,9 @@
 <?php $__env->startSection('title', \App\Models\Setting::get('site_name','Ousodhaloy') . ' – বাংলাদেশের বিশ্বস্ত অনলাইন ফার্মেসি'); ?>
 
 <?php $__env->startSection('content'); ?>
+<div class="max-w-8xl mx-auto">
 
-
-<section x-data="heroSlider(<?php echo e($banners->count()); ?>)" style="position:relative;overflow:hidden;background:var(--teal-dark)">
+<section x-data="heroSlider(<?php echo e($banners->count()); ?>)" style="position:relative;overflow:hidden;background:var(--teal-dark)" >
     <?php $heroH = (int)\App\Models\Setting::get('hero_banner_height', 400); ?>
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($banners->count() > 1): ?>
     <div style="position:relative;min-height:240px;height:<?php echo e($heroH); ?>px;max-height:<?php echo e($heroH); ?>px;">
@@ -137,6 +137,8 @@
 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
 <?php $__env->stopSection(); ?>
+</div>
+
 
 <?php $__env->startPush('scripts'); ?>
 <script>

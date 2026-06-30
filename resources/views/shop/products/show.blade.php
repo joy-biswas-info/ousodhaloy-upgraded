@@ -16,7 +16,6 @@
 
 @section('content')
     <div class="max-w-6xl mx-auto px-3 sm:px-4 py-4" x-data="productPage()">
-
         {{-- Breadcrumb --}}
         <nav class="text-xs text-gray-400 mb-4 flex items-center gap-1.5 flex-wrap">
             <a href="{{ route('home') }}" class="hover:text-teal-600 transition-colors">Home</a>

@@ -31,6 +31,7 @@ use App\Http\Controllers\{
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/magnesium', [LandingController::class, 'show']);
+Route::get('/the-ordinary-niacinamide-10-zinc1-serum-30ml', [LandingController::class, 'niacinamide']);
 Route::prefix('shop')->name('shop.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
     Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product');

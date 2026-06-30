@@ -2,9 +2,9 @@
 @section('title', \App\Models\Setting::get('site_name','Ousodhaloy') . ' – বাংলাদেশের বিশ্বস্ত অনলাইন ফার্মেসি')
 
 @section('content')
-
+<div class="max-w-8xl mx-auto">
 {{-- ── Hero Slider ──────────────────────────────────────────────────────── --}}
-<section x-data="heroSlider({{ $banners->count() }})" style="position:relative;overflow:hidden;background:var(--teal-dark)">
+<section x-data="heroSlider({{ $banners->count() }})" style="position:relative;overflow:hidden;background:var(--teal-dark)" >
     @php $heroH = (int)\App\Models\Setting::get('hero_banner_height', 400); @endphp
     @if($banners->count() > 1)
     <div style="position:relative;min-height:240px;height:{{ $heroH }}px;max-height:{{ $heroH }}px;">
@@ -138,6 +138,8 @@
 @endif
 
 @endsection
+</div>
+
 
 @push('scripts')
 <script>

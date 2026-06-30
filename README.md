@@ -71,7 +71,7 @@ Copy `.env.example` to `.env` and fill in your keys:
 | **Checkout** | Guest + logged-in, prescription upload, division/district dropdowns (all 8 BD divisions) |
 | **OTP login** | Phone-based, Bangla SMS via MimSMS, rate-limited, auto-register new users |
 | **Order tracking** | Public tracking by order number + phone — no login needed |
-| **Trust badges** | DGDA licensed, 100% genuine, fast delivery, secure payment |
+| **Trust badges** | Fast delivery, secure payment |
 
 ### 🔧 Admin Panel
 | Feature | Details |

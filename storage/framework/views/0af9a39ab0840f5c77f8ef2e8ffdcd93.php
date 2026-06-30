@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Triple Magnesium Complex — ঘুম। রিল্যাক্স। রিকভারি।</title>
+    <title>The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক</title>
     <meta name="description"
-        content="৩-in-১ Magnesium Glycinate + Malate + Citrate। 4০০mg প্রতি সার্ভিং। 90 ভেজি ক্যাপস। Flash sale মাত্র ৳999।" />
+        content="Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳950।" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap"
@@ -21,19 +21,19 @@
         }
 
         :root {
-            --navy: #0a0e1a;
-            --navy2: #0f1525;
-            --navy3: #161d30;
-            --blue: #2563eb;
-            --blue-bright: #0D7674;
-            --blue-glow: #60a5fa;
-            --amber: #f59e0b;
-            --amber-bright: #fbbf24;
-            --green: #0D7674;
-            --white: #ffffff;
-            --gray: #94a3b8;
-            --gray2: #64748b;
-            --red: #ef4444;
+            --navy: #FAF3F1;
+            --navy2: #FDF8F6;
+            --navy3: #FFFFFF;
+            --blue: #C97B8E;
+            --blue-bright: #B5566F;
+            --blue-glow: #E8A3B5;
+            --amber: #D9647C;
+            --amber-bright: #C2486A;
+            --green: #8E7355;
+            --white: #2B2220;
+            --gray: #8A7570;
+            --gray2: #A6938D;
+            --red: #C2486A;
             --r: 14px;
             --r2: 20px;
         }
@@ -44,13 +44,7 @@
         }
 
         body {
-            font-family:
-                "Hind Siliguri",
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                system-ui,
-                sans-serif;
+            font-family: "Hind Siliguri", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
             background: var(--navy);
             color: var(--white);
             line-height: 1.55;
@@ -76,8 +70,7 @@
         }
 
         .en {
-            font-family:
-                -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
         }
 
         /* TOPBAR */
@@ -100,8 +93,8 @@
             position: sticky;
             top: 0;
             z-index: 90;
-  background:rgba(10,14,26,.97);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            background: #0D7674;
+            border-bottom: 1px solid rgba(139, 90, 80, 0.12);
             padding: 0 20px;
             height: 54px;
             display: flex;
@@ -117,12 +110,6 @@
             white-space: nowrap;
         }
 
-        .nav-logo em {
-            color: var(--blue-bright);
-            font-style: normal;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
         .nav-right {
             display: flex;
             align-items: center;
@@ -132,12 +119,12 @@
         .nav-price {
             font-size: 15px;
             font-weight: 800;
-            color: var(--amber-bright);
+            color: #fff;
             white-space: nowrap;
         }
 
         .nav-cta {
-            background: var(--amber);
+            background: #FF6367;
             color: var(--navy);
             padding: 8px 16px;
             border-radius: 8px;
@@ -154,11 +141,7 @@
         /* HERO */
         .hero {
             padding: 44px 20px 0;
-            background:
-                radial-gradient(ellipse 80% 55% at 50% -5%,
-                    rgba(37, 99, 235, 0.2) 0%,
-                    transparent 70%),
-                var(--navy);
+            background: radial-gradient(ellipse 80% 55% at 50% -5%, rgba(217, 100, 124, 0.16) 0%, transparent 70%), var(--navy);
             text-align: center;
             overflow: hidden;
         }
@@ -167,9 +150,9 @@
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: rgba(37, 99, 235, 0.18);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: var(--blue-glow);
+            background: rgba(217, 100, 124, 0.12);
+            border: 1px solid rgba(217, 100, 124, 0.28);
+            color: var(--blue-bright);
             padding: 5px 14px;
             border-radius: 20px;
             font-size: 12px;
@@ -229,7 +212,6 @@
             font-weight: 600;
         }
 
-        /* problem pills */
         .problems {
             display: flex;
             justify-content: center;
@@ -239,8 +221,8 @@
         }
 
         .prob {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(139, 90, 80, 0.08);
+            border: 1px solid rgba(139, 90, 80, 0.16);
             border-radius: 10px;
             padding: 10px 16px;
             font-size: 13px;
@@ -251,7 +233,6 @@
             gap: 7px;
         }
 
-        /* product image */
         .hero-img-wrap {
             position: relative;
             display: inline-block;
@@ -259,8 +240,9 @@
         }
 
         .hero-img-wrap img {
-            width: clamp(450px, 50vw, 480px);
-            filter: drop-shadow(0 20px 55px rgba(37, 99, 235, 0.45));
+            width: clamp(260px, 50vw, 320px);
+            border-radius: 16px;
+            filter: drop-shadow(0 20px 55px rgba(197, 90, 120, 0.28));
             animation: flt 4s ease-in-out infinite;
             margin: 0 auto;
         }
@@ -277,11 +259,10 @@
             }
         }
 
-        /* floating badges */
         .fbadge {
             position: absolute;
-            background: rgba(15, 21, 37, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(139, 90, 80, 0.16);
             border-radius: 12px;
             padding: 9px 13px;
             display: flex;
@@ -290,7 +271,7 @@
             font-size: 11px;
             font-weight: 700;
             animation: flt2 3.5s ease-in-out infinite;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 20px rgba(139, 90, 80, 0.18);
         }
 
         .fbadge.f1 {
@@ -350,9 +331,9 @@
         }
 
         .tpill {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            color: #6ee7b7;
+            background: rgba(79, 122, 92, 0.10);
+            border: 1px solid rgba(79, 122, 92, 0.25);
+            color: #4F7A5C;
             font-size: 11px;
             font-weight: 700;
             padding: 5px 12px;
@@ -371,7 +352,7 @@
             border: 1px solid rgba(59, 130, 246, 0.22);
             border-radius: var(--r2);
             padding: 26px 22px;
-            box-shadow: 0 0 40px rgba(37, 99, 235, 0.13);
+            box-shadow: 0 0 40px rgba(197, 90, 120, 0.14);
         }
 
         .sale-badge {
@@ -417,7 +398,7 @@
             font-size: 13px;
             font-weight: 700;
             background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
+            color: #B5566F;
             padding: 3px 10px;
             border-radius: 6px;
         }
@@ -432,7 +413,6 @@
             color: var(--white);
         }
 
-        /* countdown */
         .countdown {
             background: rgba(239, 68, 68, 0.09);
             border: 1px solid rgba(239, 68, 68, 0.22);
@@ -447,7 +427,7 @@
 
         .cd-label {
             font-size: 12px;
-            color: #fca5a5;
+            color: #B5566F;
             font-weight: 600;
             flex-shrink: 0;
         }
@@ -488,7 +468,6 @@
             margin-top: 1px;
         }
 
-        /* qty */
         .qty-row {
             display: flex;
             align-items: center;
@@ -499,8 +478,8 @@
         .qty-wrap {
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(139, 90, 80, 0.10);
+            border: 1px solid rgba(139, 90, 80, 0.16);
             border-radius: 10px;
             overflow: hidden;
         }
@@ -516,7 +495,7 @@
         }
 
         .qty-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(139, 90, 80, 0.14);
         }
 
         .qty-num {
@@ -540,9 +519,7 @@
             align-items: center;
             justify-content: center;
             gap: 7px;
-            transition:
-                background 0.15s,
-                transform 0.1s;
+            transition: background 0.15s, transform 0.1s;
             box-shadow: 0 4px 24px rgba(245, 158, 11, 0.38);
         }
 
@@ -554,27 +531,6 @@
             background: var(--amber-bright);
         }
 
-        .cta-secondary {
-            width: 100%;
-            height: 50px;
-            background: transparent;
-            color: var(--white);
-            border: 1.5px solid rgba(255, 255, 255, 0.14);
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            margin-bottom: 16px;
-            transition: background 0.15s;
-        }
-
-        .cta-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
         .pay-row {
             display: flex;
             justify-content: center;
@@ -583,8 +539,8 @@
         }
 
         .pay-badge {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.09);
+            background: rgba(139, 90, 80, 0.12);
+            border: 1px solid rgba(139, 90, 80, 0.15);
             border-radius: 6px;
             padding: 4px 10px;
             font-size: 11px;
@@ -636,7 +592,7 @@
             line-height: 1.65;
         }
 
-        /* TRIPLE GRID */
+        /* FORMULA GRID (replaces triple-grid — 2 actives + base, matching this product) */
         .triple-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -650,7 +606,7 @@
             border-radius: var(--r2);
             padding: 22px 16px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(139, 90, 80, 0.12);
             transition: border-color 0.2s;
         }
 
@@ -707,7 +663,7 @@
             align-items: flex-start;
             gap: 14px;
             background: var(--navy3);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(139, 90, 80, 0.12);
             border-radius: var(--r);
             padding: 18px 18px;
         }
@@ -767,7 +723,7 @@
 
         .review {
             background: var(--navy3);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(139, 90, 80, 0.12);
             border-radius: var(--r2);
             padding: 18px;
         }
@@ -776,15 +732,6 @@
             color: var(--amber-bright);
             font-size: 12px;
             margin-bottom: 7px;
-        }
-
-        .rev-en {
-            font-size: 12px;
-            font-style: italic;
-            color: #94a3b8;
-            margin-bottom: 6px;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.5;
         }
 
         .rev-bn {
@@ -833,9 +780,9 @@
             flex-wrap: wrap;
             gap: 16px;
             padding: 22px 20px;
-            background: rgba(16, 185, 129, 0.06);
-            border-top: 1px solid rgba(16, 185, 129, 0.12);
-            border-bottom: 1px solid rgba(16, 185, 129, 0.12);
+            background: rgba(79, 122, 92, 0.06);
+            border-top: 1px solid rgba(79, 122, 92, 0.14);
+            border-bottom: 1px solid rgba(79, 122, 92, 0.14);
         }
 
         .vi {
@@ -844,7 +791,40 @@
             gap: 7px;
             font-size: 12px;
             font-weight: 600;
-            color: #6ee7b7;
+            color: #4F7A5C;
+        }
+
+        /* INGREDIENTS BOX (specific to this product) */
+        .inci-box {
+            max-width: 680px;
+            margin: 0 auto;
+            background: var(--navy3);
+            border: 1px solid rgba(139, 90, 80, 0.12);
+            border-radius: var(--r2);
+            padding: 20px 22px;
+        }
+
+        .inci-box p {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 11.5px;
+            line-height: 1.9;
+            color: var(--gray);
+        }
+
+        .caution-box {
+            max-width: 680px;
+            margin: 14px auto 0;
+            background: rgba(178, 134, 60, 0.10);
+            border: 1px solid rgba(178, 134, 60, 0.28);
+            border-radius: var(--r);
+            padding: 14px 18px;
+            font-size: 12.5px;
+            color: #6B4F2A;
+            line-height: 1.6;
+        }
+
+        .caution-box strong {
+            color: var(--amber-bright);
         }
 
         /* HOW TO USE */
@@ -861,7 +841,7 @@
             border-radius: var(--r2);
             padding: 20px 14px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(139, 90, 80, 0.12);
         }
 
         .how-num {
@@ -905,7 +885,7 @@
         .faq-item {
             background: var(--navy3);
             border-radius: var(--r);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(139, 90, 80, 0.12);
             overflow: hidden;
         }
 
@@ -942,7 +922,7 @@
             font-size: 13px;
             color: var(--gray);
             line-height: 1.65;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(139, 90, 80, 0.08);
             padding-top: 12px;
         }
 
@@ -950,13 +930,27 @@
             display: block;
         }
 
+        /* GALLERY */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .gallery-grid img {
+            border-radius: var(--r);
+            border: 1px solid rgba(139, 90, 80, 0.14);
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+
         /* FINAL CTA */
         .final-cta {
             padding: 52px 20px 40px;
             text-align: center;
-            background: radial-gradient(ellipse 70% 50% at 50% 0%,
-                    rgba(37, 99, 235, 0.16) 0%,
-                    transparent 70%);
+            background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(217, 100, 124, 0.14) 0%, transparent 70%);
         }
 
         .final-cta h2 {
@@ -993,9 +987,7 @@
             font-size: 17px;
             font-weight: 700;
             box-shadow: 0 6px 28px rgba(245, 158, 11, 0.42);
-            transition:
-                background 0.15s,
-                transform 0.1s;
+            transition: background 0.15s, transform 0.1s;
             max-width: 380px;
             width: 100%;
         }
@@ -1031,12 +1023,12 @@
             right: 0;
             z-index: 80;
             background: var(--navy2);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(139, 90, 80, 0.16);
             padding: 10px 16px;
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 -4px 24px rgba(139, 90, 80, 0.15);
             transform: translateY(100%);
             transition: transform 0.25s ease;
         }
@@ -1086,7 +1078,7 @@
         footer {
             padding: 22px 20px;
             text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            border-top: 1px solid rgba(139, 90, 80, 0.12);
         }
 
         footer p {
@@ -1125,6 +1117,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .fbadge.f1 {
                 right: -10px;
             }
@@ -1155,6 +1151,8 @@
         }
     </style>
     <?php echo $__env->make('partials.meta-pixel', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+
 </head>
 <?php
     $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
@@ -1163,21 +1161,23 @@
 <body>
     <!-- TOPBAR -->
     <div class="topbar">
-        ⚡ Flash Sale চলছে — মাত্র ৳999 (ছিল ৳1,750)
+        ⚡ Flash Sale চলছে — মাত্র ৳950 (ছিল ৳1,200)
         <span class="sep">|</span>৳1800+ অর্ডারে ফ্রি ডেলিভারি
     </div>
 
     <!-- NAV -->
     <nav>
-        <div class="nav-logo"><a href="<?php echo e(route('home')); ?>"
+        <div class="nav-logo">
+            <a href="<?php echo e(route('home')); ?>"
                 style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
-                <div
-                    style="width:114px;height:48px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#0D7674;font-weight:900;font-size:26px">
-                    ঔষধালয়
+                <div style="display:flex;align-items:center;justify-content:center;font-weight:900"
+                    class="sm:text-2xl lg:text-4xl">
+                    ঔষ<span class=" text-red-400">ধা</span>লয়
                 </div>
-            </a></div>
+            </a>
+        </div>
         <div class="nav-right">
-            <div class="nav-price">৳999</div>
+            <div class="nav-price">৳950</div>
             <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn nav-cta"
                 data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
                 data-price="<?php echo e($product->effective_price); ?>">অর্ডার করুন</a>
@@ -1186,30 +1186,30 @@
 
     <!-- HERO -->
     <section class="hero">
-        <div class="eyebrow">
+        <div class="eyebrow ">
             <div class="blink"></div>
             Flash Sale · মাত্র 7 দিন বাকি
         </div>
 
         <h1 class="hero-h1">
-            ঘুম হয় না? সারাদিন ক্লান্ত?<br />
-            <span class="hi">একটি Capsule — তিনটি সমাধান।</span>
+            ব্রণ, দাগ আর তেলতেলে ত্বক?<br />
+            <span class="hi">একটি সিরাম, তিনটি সমাধান।</span>
         </h1>
 
         <p class="hero-sub">
-            শরীরে <strong>Magnesium-এর ঘাটতি</strong> আপনার ঘুম, শক্তি আর মাংসপেশির
-            রিকভারি চুরি করছে। Triple Magnesium Complex তিনটি ফর্মে একসাথে কাজ করে।
+            <strong>Niacinamide 10% + Zinc 1%</strong> — তেল নিয়ন্ত্রণ করে, দাগ হালকা করে,
+            আর ত্বককে রাখে উজ্জ্বল ও সুরক্ষিত। The Ordinary-র সবচেয়ে জনপ্রিয় ফর্মুলা।
         </p>
 
         <div class="problems">
-            <div class="prob">😴 ঘুম আসে না</div>
-            <div class="prob">😩 সারাক্ষণ ক্লান্তি</div>
-            <div class="prob">💪 মাংসপেশিতে টান</div>
+            <div class="prob">🛢️ তেলতেলে ত্বক</div>
+            <div class="prob">😣 ব্রণের দাগ</div>
+            <div class="prob">🔴 লালচে ভাব</div>
         </div>
 
         <div class="hero-img-wrap">
-            <img src="<?php echo e(asset('storage/media/magnesium-capsules-magnesium-glycinate-magnesium-citrate-magnesium-malate-triple-magnesium-complex-main.jpg')); ?>"
-                alt="Triple Magnesium Complex 400mg — 90 Veggie Capsules" width="270" height="270" loading="eager"
+            <img src="<?php echo e(asset('storage/media/niacinamide.jpg')); ?>"
+                alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="270" height="270" loading="eager"
                 onerror="
         this.style.display = 'none';
         this.nextElementSibling.style.display = 'flex';
@@ -1220,18 +1220,18 @@
             width: 200px;
             height: 200px;
             margin: 0 auto;
-            background: rgba(37, 99, 235, 0.12);
+            background: rgba(217, 100, 124, 0.10);
             border-radius: 24px;
             align-items: center;
             justify-content: center;
             font-size: 72px;
           ">
-                💊
+                🧴
             </div>
 
             <!-- Floating badges -->
             <div class="fbadge f1">
-                <div class="fbadge-icon" style="background: rgba(16, 185, 129, 0.15)">
+                <div class="fbadge-icon" style="background: rgba(79, 122, 92, 0.14)">
                     ⚡
                 </div>
                 <div>
@@ -1240,12 +1240,12 @@
                 </div>
             </div>
             <div class="fbadge f2">
-                <div class="fbadge-icon" style="background: rgba(245, 158, 11, 0.12)">
+                <div class="fbadge-icon" style="background: rgba(217, 100, 124, 0.14)">
                     ★
                 </div>
                 <div>
                     <div class="fbadge-t">৪.৮/৫ Rating</div>
-                    <div class="fbadge-s">২০০+ রিভিউ</div>
+                    <div class="fbadge-s">৩৪০+ রিভিউ</div>
                 </div>
             </div>
         </div>
@@ -1258,12 +1258,12 @@
             <div class="sale-badge">🔥 Flash Sale — সীমিত সময়</div>
 
             <div class="price-row">
-                <div class="price-now">৳999</div>
-                <div class="price-was">৳1,750</div>
-                <div class="price-save">42% OFF</div>
+                <div class="price-now">৳950</div>
+                <div class="price-was">৳1,200</div>
+                <div class="price-save">21% OFF</div>
             </div>
             <div class="price-per">
-                90 capsules · <strong>90 দিনের সাপ্লাই</strong> · মাত্র ৳11/দিন
+                30ml · <strong>সকাল-রাত ব্যবহারের জন্য পর্যাপ্ত</strong> · প্রতিদিন মাত্র ৳১৫ এর মতো
             </div>
 
             <div class="countdown">
@@ -1306,72 +1306,61 @@
                 </a>
             </div>
 
-
-
             <div class="pay-row">
                 <div class="pay-badge">💵 Cash on Delivery</div>
             </div>
             <div class="ship-note">
-                <strong> ডেলিভারি ফি ঢাকার ভিতর ৮০ টাকা ঢাকার বাইরে ১১০ টাকা </strong> · ২৪–৪৮ ঘণ্টায়
+                <strong>ডেলিভারি ফি ঢাকার ভিতর ৮০ টাকা, ঢাকার বাইরে ১১০ টাকা</strong> · ২৪–৪৮ ঘণ্টায়
                 পৌঁছাবে
             </div>
         </div>
     </section>
     <div class="trust-pills">
-        <div class="tpill">✓ Non-GMO</div>
-        <div class="tpill">✓ 100% Chelated</div>
-        <div class="tpill">✓ 90 Veggie Caps</div>
-        <div class="tpill">✓ 400mg/serving</div>
-        <div class="tpill">✓ Halal Friendly</div>
+        <div class="tpill">✓ ১০০% Original</div>
+        <div class="tpill">✓ The Ordinary (DECIEM)</div>
+        <div class="tpill">✓ 30ml Bottle</div>
+        <div class="tpill">✓ Niacinamide 10% + Zinc 1%</div>
+        <div class="tpill">✓ All Skin Types</div>
     </div>
-    <!-- 3-IN-1 EXPLAINER -->
+
+    <!-- FORMULA EXPLAINER -->
     <section class="sec"
-        style="
-        background: radial-gradient(
-          ellipse 60% 50% at 50% 100%,
-          rgba(37, 99, 235, 0.09) 0%,
-          transparent 70%
-        );
-      ">
-        <div class="sec-label">কেন ৩টি ফর্ম?</div>
-        <h2 class="sec-h2">৩ ধরনের Magnesium।<br />তিনগুণ বেশি কার্যকর।</h2>
+        style="background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(217, 100, 124, 0.07) 0%, transparent 70%);">
+        <div class="sec-label">ফর্মুলার ভেতরে কী আছে</div>
+        <h2 class="sec-h2">২টি সক্রিয় উপাদান।<br />একসাথে কাজ করে সর্বোচ্চ ফলাফলের জন্য।</h2>
         <p class="sec-sub">
-            প্রতিটি ফর্ম আলাদা সিস্টেমে কাজ করে — একসাথে ব্যবহারে ফলাফল আসে তিনগুণ
-            দ্রুত।
+            প্রতিটি উপাদান আলাদা সমস্যায় কাজ করে — একসাথে ব্যবহারে ত্বক হয় পরিষ্কার, উজ্জ্বল ও নিয়ন্ত্রিত।
         </p>
 
         <div class="triple-grid">
             <div class="triple-card">
-                <div class="t-icon" style="background: rgba(139, 92, 246, 0.15)">
-                    😴
+                <div class="t-icon" style="background: rgba(181, 86, 111, 0.14)">
+                    ✨
                 </div>
-                <div class="t-en">Deep Sleep</div>
-                <div class="t-type">Glycinate</div>
+                <div class="t-en">Brighten & Repair</div>
+                <div class="t-type">Niacinamide 10%</div>
                 <div class="t-bn">
-                    Brain-এ সরাসরি কাজ করে। উদ্বেগ কমায়, গভীর ও আরামদায়ক ঘুম নিশ্চিত
-                    করে।
+                    ত্বকের উজ্জ্বলতা বাড়ায়, টেক্সচার ঠিক করে এবং ময়েশ্চার ব্যারিয়ার মজবুত করে।
                 </div>
             </div>
             <div class="triple-card">
-                <div class="t-icon" style="background: rgba(245, 158, 11, 0.12)">
-                    ⚡
+                <div class="t-icon" style="background: rgba(178, 134, 60, 0.14)">
+                    🛢️
                 </div>
-                <div class="t-en">Energy & Muscle</div>
-                <div class="t-type">Malate</div>
+                <div class="t-en">Oil Control</div>
+                <div class="t-type">Zinc PCA 1%</div>
                 <div class="t-bn">
-                    শরীরের fuel (ATP) তৈরিতে সাহায্য করে। ক্লান্তি কমায়, মাংসপেশির
-                    ব্যথা সারায়।
+                    অতিরিক্ত সেবাম উৎপাদন নিয়ন্ত্রণ করে, ত্বককে রাখে ম্যাট ও সতেজ — দিনভর।
                 </div>
             </div>
             <div class="triple-card">
-                <div class="t-icon" style="background: rgba(16, 185, 129, 0.12)">
-                    🌿
+                <div class="t-icon" style="background: rgba(79, 122, 92, 0.14)">
+                    💧
                 </div>
-                <div class="t-en">Gut & Absorption</div>
-                <div class="t-type">Citrate</div>
+                <div class="t-en">Lightweight Base</div>
+                <div class="t-type">Water-Based</div>
                 <div class="t-bn">
-                    দ্রুত শোষিত হয়, হজমশক্তি উন্নত করে এবং অন্য Mineral-এর absorption
-                    বাড়ায়।
+                    হালকা ও non-greasy ফর্মুলা, যা দ্রুত শোষিত হয় এবং কোনো চিটচিটে ভাব রাখে না।
                 </div>
             </div>
         </div>
@@ -1380,86 +1369,108 @@
     <!-- BENEFITS -->
     <section class="sec" style="padding-top: 8px">
         <div class="sec-label">আপনি কী অনুভব করবেন</div>
-        <h2 class="sec-h2">1 সপ্তাহেই পার্থক্য বুঝবেন</h2>
+        <h2 class="sec-h2">২ সপ্তাহেই পার্থক্য বুঝবেন</h2>
         <p class="sec-sub">
-            ৪০০mg প্রতি সার্ভিং · ১০০% Chelated — শরীর সর্বোচ্চ মাত্রায় শোষণ করে
+            30ml বোতল · সকাল ও রাতে ব্যবহারের জন্য পর্যাপ্ত — ক্লিনিক্যালি প্রমাণিত ফর্মুলা
         </p>
 
         <div class="benefit-list">
             <div class="benefit">
-                <div class="b-icon">🌙</div>
+                <div class="b-icon">🛢️</div>
                 <div>
-                    <div class="b-en">Fall asleep faster — wake up refreshed</div>
+                    <div class="b-en">Less oil, less shine all day</div>
                     <div class="b-bn">
-                        Magnesium Glycinate আপনার nervous system-কে শান্ত করে। দ্রুত ঘুম
-                        আসে, মাঝরাতে জেগে ওঠা বন্ধ হয়, সকালে সতেজ লাগে।
+                        Zinc PCA সেবাম উৎপাদন নিয়ন্ত্রণ করে। দুপুরের পর মুখ চকচক করা কমে যায়, ত্বক থাকে ম্যাট।
                     </div>
                 </div>
             </div>
             <div class="benefit">
-                <div class="b-icon">🔋</div>
+                <div class="b-icon">✨</div>
                 <div>
-                    <div class="b-en">All-day energy, zero crashes</div>
+                    <div class="b-en">Fades acne marks & redness</div>
                     <div class="b-bn">
-                        Magnesium Malate cell-এর energy factory চালু রাখে। কোনো stimulant
-                        নেই — সকাল থেকে রাত পর্যন্ত steady শক্তি।
+                        ব্রণ পরবর্তী দাগ এবং লালচে ভাব কমিয়ে ত্বকের টোন করে আরও সমান ও স্বচ্ছ।
                     </div>
                 </div>
             </div>
             <div class="benefit">
-                <div class="b-icon">💆</div>
+                <div class="b-icon">🧱</div>
                 <div>
-                    <div class="b-en">Muscle tension melts away</div>
+                    <div class="b-en">Stronger moisture barrier</div>
                     <div class="b-bn">
-                        Magnesium প্রকৃতির muscle relaxer। মাংসপেশির ক্র্যাম্প, টান এবং
-                        Restless Leg Syndrome-এ দ্রুত আরাম দেয়।
+                        ত্বকের প্রাকৃতিক বাধা মজবুত করে — ত্বক থাকে হাইড্রেটেড, রুক্ষতা ও সংবেদনশীলতা কমে।
                     </div>
                 </div>
             </div>
             <div class="benefit">
-                <div class="b-icon">🧠</div>
+                <div class="b-icon">🔍</div>
                 <div>
-                    <div class="b-en">Calmer mind, less stress</div>
+                    <div class="b-en">Visibly smaller-looking pores</div>
                     <div class="b-bn">
-                        Cortisol (স্ট্রেস হরমোন) নিয়ন্ত্রণ করে। Brain-এর calming chemical
-                        GABA সক্রিয় করে — মন শান্ত থাকে, মাথা ঠান্ডা থাকে।
+                        নিয়মিত ব্যবহারে রোমকূপ সংকুচিত দেখায় এবং ত্বকের টেক্সচার হয় মসৃণ ও নরম।
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- GALLERY -->
+    <section class="sec" style="padding-top: 0">
+        <div class="sec-label">প্রোডাক্ট গ্যালারি</div>
+        <h2 class="sec-h2" style="margin-bottom: 26px">আসল প্রোডাক্টের ছবি</h2>
+        <div class="gallery-grid">
+            <img src="<?php echo e(asset('storage/media/niacinamide.jpg')); ?>" alt="Niacinamide serum bottle">
+            <img src="<?php echo e(asset('storage/media/ousodhaloy_niacinamide_zinc.jpg')); ?>" alt="Niacinamide label closeup">
+            <img src="<?php echo e(asset('storage/media/ordinary_ousodhaloy.jpg')); ?>" alt="Niacinamide unboxing with box">
+            <img src="<?php echo e(asset('storage/media/ousodhaloy_niacinamide.jpg')); ?>"
+                alt="Niacinamide serum with packaging">
+        </div>
+    </section>
+
     <!-- HOW TO USE -->
     <section class="sec" style="padding-top: 0">
-        <div class="sec-label">কীভাবে খাবেন</div>
+        <div class="sec-label">কীভাবে ব্যবহার করবেন</div>
         <h2 class="sec-h2">ব্যবহার করা অত্যন্ত সহজ</h2>
         <p class="sec-sub">
-            প্রতিদিন মাত্র 1-2 টি capsule — বাকিটা আপনার শরীর নিজেই করবে।
+            প্রতিদিন সকাল-রাত মাত্র ২–৩ ড্রপ — বাকিটা ফর্মুলা নিজেই করবে।
         </p>
 
         <div class="how-grid">
             <div class="how-card">
                 <div class="how-num">১</div>
-                <div class="how-en">Take 1 Capsules</div>
+                <div class="how-en">Cleanse First</div>
                 <div class="how-bn">
-                    রাতে ঘুমানোর ৩০–৬০ মিনিট আগে 1-2 টি capsule নিন। পানি দিয়ে গিলুন।
+                    ফেসওয়াশ দিয়ে মুখ ধুয়ে হালকা শুকিয়ে নিন, একদম শুষ্ক হওয়ার আগেই সিরাম লাগান।
                 </div>
             </div>
             <div class="how-card">
                 <div class="how-num">২</div>
-                <div class="how-en">Consistent Daily Use</div>
+                <div class="how-en">Apply 2–3 Drops</div>
                 <div class="how-bn">
-                    প্রতিদিন একই সময়ে নিন। ৫–১০ দিনেই প্রথম পরিবর্তন টের পাবেন।
+                    সকাল ও রাতে সম্পূর্ণ মুখ ও গলায় আলতোভাবে লাগান। চোখের চারপাশ এড়িয়ে চলুন।
                 </div>
             </div>
             <div class="how-card">
                 <div class="how-num">৩</div>
-                <div class="how-en">Feel the Difference</div>
+                <div class="how-en">Moisturize + SPF</div>
                 <div class="how-bn">
-                    ২ সপ্তাহের মধ্যে ঘুম, এনার্জি ও মাংসপেশিতে উল্লেখযোগ্য পরিবর্তন
-                    আসবে।
+                    সিরাম শুকিয়ে গেলে ময়েশ্চারাইজার দিন। দিনে সানস্ক্রিন ব্যবহার করতে ভুলবেন না।
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- INGREDIENTS -->
+    <section class="sec" style="padding-top: 0">
+        <div class="sec-label">উপাদান তালিকা</div>
+        <h2 class="sec-h2" style="margin-bottom: 22px">সম্পূর্ণ ইনগ্রেডিয়েন্ট লিস্ট (INCI)</h2>
+        <div class="inci-box">
+            <p>Aqua (Water), Niacinamide, Pentylene Glycol, Zinc PCA, Dimethyl Isosorbide, Tamarindus Indica Seed Gum,
+                Xanthan Gum, Isoceteth-20, Ethoxydiglycol, Phenoxyethanol, Chlorphenesin.</p>
+        </div>
+        <div class="caution-box">
+            <strong>⚠ ব্যবহারে সতর্কতা:</strong> টপিকাল ভিটামিন সি (L-Ascorbic Acid) ব্যবহার করলে এই সিরাম থেকে আলাদা
+            সময়ে ব্যবহার করুন — ভিটামিন সি রাতে, নায়াসিনামাইড সকালে। এতে দুটি উপাদানই সর্বোচ্চ কার্যকারিতা দেখাবে।
         </div>
     </section>
 
@@ -1468,7 +1479,7 @@
         <div class="stars-row">
             <div class="stars">★★★★★</div>
             <div class="stars-txt">
-                <strong>৪.৮/৫</strong> — ২০০+ Verified Buyer-এর রেটিং
+                <strong>৪.৮/৫</strong> — ৩৪০+ Verified Buyer-এর রেটিং
             </div>
         </div>
 
@@ -1476,27 +1487,27 @@
             <div class="review">
                 <div class="rev-stars">★★★★★</div>
                 <div class="rev-bn">
-                    "রাতে ৩–৪ বার ঘুম ভাঙত। ১০ দিন খাওয়ার পর পুরো রাত একটানা ঘুম হচ্ছে।
-                    বউ বলে আমি নাকি এখন অনেক শান্ত!"
+                    "২ সপ্তাহ ব্যবহার করেই তেলতেলে ভাব অনেক কমে গেছে। মুখ এখন সারাদিন ফ্রেশ লাগে। আগে দুপুরের পর মুখ
+                    চকচক করত।"
                 </div>
                 <div class="rev-author">
-                    <div class="rev-av">R</div>
+                    <div class="rev-av">ম</div>
                     <div>
-                        <div class="rev-name">Rahim A.</div>
-                        <div class="rev-loc">ঢাকা, মিরপুর · Verified Buyer</div>
+                        <div class="rev-name">Mahfuza R.</div>
+                        <div class="rev-loc">ঢাকা · Verified Buyer</div>
                     </div>
                 </div>
             </div>
             <div class="review">
                 <div class="rev-stars">★★★★★</div>
                 <div class="rev-bn">
-                    "পায়ে ক্র্যাম্পের কারণে রাতে ঘুমাতে পারতাম না। ২ সপ্তাহ হলো — একটিও
-                    ক্র্যাম্প হয়নি। ডেলিভারিও পরদিনই পেয়েছি।"
+                    "ব্রণের দাগ হালকা হয়ে এসেছে এক মাসে। অরিজিনাল প্রোডাক্ট, প্যাকেজিং একদম পারফেক্ট ছিল। নিশ্চিন্তে
+                    অর্ডার করতে পারবেন।"
                 </div>
                 <div class="rev-author">
-                    <div class="rev-av" style="background: #7c3aed">S</div>
+                    <div class="rev-av" style="background: #B5566F">র</div>
                     <div>
-                        <div class="rev-name">Sumaiya K.</div>
+                        <div class="rev-name">Rakibul H.</div>
                         <div class="rev-loc">চট্টগ্রাম · Verified Buyer</div>
                     </div>
                 </div>
@@ -1504,13 +1515,13 @@
             <div class="review">
                 <div class="rev-stars">★★★★★</div>
                 <div class="rev-bn">
-                    "Gym-এর পর muscle recovery অনেক দ্রুত হচ্ছে। আগে ২ দিন ব্যথা থাকত,
-                    এখন পরদিনই ঠিক হয়ে যায়।"
+                    "ডেলিভারি খুব ফাস্ট ছিল, পরদিনই পেয়েছি। স্কিন টেক্সচার আগের চেয়ে অনেক স্মুথ লাগছে। সবাইকে রেকমেন্ড
+                    করব।"
                 </div>
                 <div class="rev-author">
-                    <div class="rev-av" style="background: #059669">T</div>
+                    <div class="rev-av" style="background: #8E7355">স</div>
                     <div>
-                        <div class="rev-name">Tanvir H.</div>
+                        <div class="rev-name">Sadia I.</div>
                         <div class="rev-loc">সিলেট · Verified Buyer</div>
                     </div>
                 </div>
@@ -1518,11 +1529,11 @@
             <div class="review">
                 <div class="rev-stars">★★★★★</div>
                 <div class="rev-bn">
-                    "বাংলাদেশে এত ভালো Magnesium supplement আগে কোথাও পাইনি। তিনটা ফর্ম
-                    একসাথে — আলাদা কিনতে হয় না। সুপারিশ করব।"
+                    "পোরস আগের চেয়ে অনেক ছোট দেখায় এখন। প্রাইস অনুযায়ী রিজাল্ট সত্যিই দারুণ। ঔষধালয় থেকে
+                    বিশ্বস্তভাবে কিনতে পেরেছি।"
                 </div>
                 <div class="rev-author">
-                    <div class="rev-av" style="background: #dc2626">N</div>
+                    <div class="rev-av" style="background: #C2486A">ন</div>
                     <div>
                         <div class="rev-name">Nusrat J.</div>
                         <div class="rev-loc">রাজশাহী · Verified Buyer</div>
@@ -1534,10 +1545,10 @@
 
     <!-- VERIFIED STRIP -->
     <div class="vstrip">
-        <div class="vi">✓ Non-GMO Verified</div>
-        <div class="vi">✓ 100% Chelated Formula</div>
-        <div class="vi">✓ Veggie Capsules</div>
-        <div class="vi">✓ ৭ দিনের Return Policy</div>
+        <div class="vi">✓ ১০০% Original Product</div>
+        <div class="vi">✓ DECIEM Authentic</div>
+        <div class="vi">✓ All Skin Types</div>
+        <div class="vi">✓ ৭ দিনের Exchange Policy</div>
     </div>
 
     <!-- FAQ -->
@@ -1547,54 +1558,56 @@
         <div class="faq-list">
             <div class="faq-item">
                 <button class="faq-q">
+                    এই প্রোডাক্ট কি ১০০% অরিজিনাল? <span class="ico">+</span>
+                </button>
+                <div class="faq-a">
+                    হ্যাঁ, ঔষধালয়-এর সব The Ordinary প্রোডাক্ট সরাসরি অনুমোদিত আমদানিকারক থেকে সংগ্রহ করা। প্রতিটি
+                    বোতলে ব্যাচ কোড থাকে যা যাচাই করা যায়।
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-q">
                     কতদিনে ফলাফল পাব? <span class="ico">+</span>
                 </button>
                 <div class="faq-a">
-                    বেশিরভাগ মানুষ ৫–১০ দিনের মধ্যে ঘুমের উন্নতি টের পান। Energy ও
-                    muscle benefit সাধারণত ২ সপ্তাহের মধ্যে আসে। ফলাফল নির্ভর করে আপনার
-                    শরীরে Magnesium-এর ঘাটতির মাত্রার উপর।
+                    নিয়মিত সকাল-রাত ব্যবহারে সাধারণত ২–৪ সপ্তাহের মধ্যে তেল নিয়ন্ত্রণ ও উজ্জ্বলতায় পরিবর্তন বোঝা
+                    যায়। দাগ হালকা হতে ৬–৮ সপ্তাহ লাগতে পারে।
                 </div>
             </div>
             <div class="faq-item">
                 <button class="faq-q">
-                    কীভাবে এবং কখন খাব? <span class="ico">+</span>
+                    সেনসিটিভ ত্বকে কি ব্যবহার করা যাবে? <span class="ico">+</span>
                 </button>
                 <div class="faq-a">
-                    প্রতিদিন ২টি capsule নিন। ঘুমের আগে খেলে ঘুমের উপকার বেশি পাবেন,
-                    খাবারের সাথে খেলে energy উপকার ভালো হয়। প্রতিটি বোতলে ৯০ capsule
-                    আছে — ৪৫ দিনের সাপ্লাই।
+                    হ্যাঁ, এটি সব ধরনের ত্বকের জন্য তৈরি। তবে প্রথমবার ব্যবহারের আগে কানের পেছনে বা হাতের কনুইয়ে প্যাচ
+                    টেস্ট করে নেওয়া ভালো।
                 </div>
             </div>
             <div class="faq-item">
                 <button class="faq-q">
-                    সাধারণ Magnesium-এর চেয়ে এটা ভালো কেন? <span class="ico">+</span>
+                    ভিটামিন সি-এর সাথে ব্যবহার করা যাবে? <span class="ico">+</span>
                 </button>
                 <div class="faq-a">
-                    সস্তা Magnesium Oxide-এর absorption মাত্র ৪%। আমাদের Chelated
-                    Glycinate, Malate ও Citrate ফর্মের absorption ৩০–৮০%। মানে একই
-                    পরিমাণ খেলে শরীর অনেক বেশি পায় — ফলাফল দ্রুত আসে।
+                    ব্যবহার করা যাবে, কিন্তু একসাথে নয়। ভিটামিন সি রাতে এবং নায়াসিনামাইড সিরাম সকালে ব্যবহার করুন —
+                    এতে দুটি উপাদানই সর্বোচ্চ কার্যকারিতা দেখাবে।
                 </div>
             </div>
             <div class="faq-item">
                 <button class="faq-q">
-                    পার্শ্বপ্রতিক্রিয়া আছে? প্রতিদিন খাওয়া নিরাপদ?
-                    <span class="ico">+</span>
+                    ডেলিভারি কতদিনে হবে? Cash on Delivery আছে? <span class="ico">+</span>
                 </button>
                 <div class="faq-a">
-                    হ্যাঁ, প্রতিদিন খাওয়া সম্পূর্ণ নিরাপদ। এই তিনটি ফর্ম পেটের জন্য
-                    অত্যন্ত gentle। তবে Kidney সমস্যা থাকলে বা অন্য ওষুধ খেলে ডাক্তারের
-                    পরামর্শ নিন।
+                    ঢাকায় সাধারণত ১২–২৪ ঘণ্টা, সারাদেশে ২৪–৪৮ ঘণ্টার মধ্যে পৌঁছাবে। হ্যাঁ, Cash on Delivery সুবিধা আছে।
+                    bKash, Nagad, Card-এও পেমেন্ট করা যাবে।
                 </div>
             </div>
             <div class="faq-item">
                 <button class="faq-q">
-                    ডেলিভারি কতদিনে হবে? Cash on Delivery আছে?
-                    <span class="ico">+</span>
+                    পছন্দ না হলে কি ফেরত দেওয়া যাবে? <span class="ico">+</span>
                 </button>
                 <div class="faq-a">
-                    ঢাকায় সাধারণত ১২–২৪ ঘণ্টা, সারাদেশে ২৪–৪৮ ঘণ্টার মধ্যে পৌঁছাবে।
-                    হ্যাঁ, Cash on Delivery সুবিধা আছে। bKash, Nagad, Card-এও পেমেন্ট
-                    করা যাবে।
+                    সিল ভাঙা না থাকলে ৭ দিনের মধ্যে এক্সচেঞ্জ করতে পারবেন। বিস্তারিত জানতে অর্ডারের পর আমাদের সাপোর্ট
+                    টিমের সাথে যোগাযোগ করুন।
                 </div>
             </div>
         </div>
@@ -1602,14 +1615,13 @@
 
     <!-- FINAL CTA -->
     <section class="final-cta">
-        <h2>কষ্ট পাওয়া বন্ধ করুন।<br />আজ রাত থেকেই <em>ঘুমান।</em></h2>
+        <h2>দাগ আর তেল নিয়ে চিন্তা বন্ধ করুন।<br />আজ থেকেই শুরু করুন <em>ক্লিয়ার স্কিন।</em></h2>
         <p>
-            ২০০+ গ্রাহক ইতিমধ্যে তাদের ঘুম, শক্তি ও পেশির সমস্যার সমাধান করেছেন — এই
-            একটি Supplement দিয়ে।
+            ৩৪০+ গ্রাহক ইতিমধ্যে তাদের ত্বকের তেল ও দাগের সমস্যার সমাধান করেছেন — এই একটি সিরাম দিয়ে।
         </p>
         <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn cta-final-btn"
             data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
-            data-price="<?php echo e($product->effective_price); ?>"> ⚡ মাত্র ৳999-তে পান —
+            data-price="<?php echo e($product->effective_price); ?>"> ⚡ মাত্র ৳950-তে পান —
             এখনই Order করুন
         </a>
         <div>
@@ -1623,7 +1635,7 @@
 
     <!-- FOOTER -->
     <footer>
-        <p>© 2025 Ousodhaloy.com · Bangladesh</p>
+        <p>© 2026 Ousodhaloy.com · Bangladesh</p>
         <div class="footer-links">
             <a href="https://ousodhaloy.com/privacy-policy">Privacy Policy</a>
             <a href="https://ousodhaloy.com/terms-of-use">Terms of Use</a>
@@ -1634,16 +1646,11 @@
     <!-- STICKY BAR -->
     <div class="sticky-bar" id="sticky">
         <div class="s-info">
-            <div class="s-name">Triple Magnesium Complex · ৯০ Caps</div>
+            <div class="s-name">Niacinamide 10% + Zinc 1% · 30ml</div>
             <div class="s-price">
-                ৳999
+                ৳950
                 <span
-                    style="
-              font-size: 12px;
-              color: var(--gray2);
-              text-decoration: line-through;
-              font-weight: 400;
-            ">৳১,৭৫০</span>
+                    style="font-size: 12px; color: var(--gray2); text-decoration: line-through; font-weight: 400;">৳১,২০০</span>
             </div>
         </div>
 
@@ -1655,8 +1662,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            var KEY = "mg_sale_end";
-            var newEnd = new Date("2026-06-18T23:59:59").getTime();
+            var KEY = "niacinamide_sale_end";
+            var newEnd = new Date("2026-07-06T23:59:59").getTime();
             var stored = localStorage.getItem(KEY);
             if (!stored || isNaN(+stored) || +stored < newEnd) {
                 localStorage.setItem(KEY, newEnd);
@@ -1687,7 +1694,7 @@
 
         let qty = 1;
 
-        const productId = 13;
+        const productId = <?php echo e($product->id); ?>;
 
         function updateQty() {
             document.getElementById('qty-num').textContent = qty;
@@ -1791,4 +1798,4 @@
 </body>
 
 </html>
-<?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/landingpage/magnesium.blade.php ENDPATH**/ ?>
+<?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/landingpage/ordinary-niacinamide.blade.php ENDPATH**/ ?>
