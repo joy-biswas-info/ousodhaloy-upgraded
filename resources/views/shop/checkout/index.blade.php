@@ -1,4 +1,4 @@
-@extends('layouts.checkout')
+@extends('layouts.shop')
 @php
     $cart   = session('cart', []);
     $sub    = collect($cart)->sum(fn($i) => $i['price'] * $i['qty']);
