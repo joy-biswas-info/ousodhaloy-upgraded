@@ -60,7 +60,6 @@ Route::prefix('cart')->name('cart.')->group(function () {
 });
 
 // ── Checkout ───────────────────────────────────────────────────────────────
-
 Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
     Route::post('/', [CheckoutController::class, 'store'])->name('store');

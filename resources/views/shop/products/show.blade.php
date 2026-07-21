@@ -111,7 +111,7 @@
                                 @endfor
                             </div>
                             <span class="text-xs text-gray-500 font-semibold">{{ $product->average_rating }}</span>
-                            <span class="text-xs text-gray-400">({{ $product->rating_count }} reviews)</span>
+                            <span class="text-xs text-gray-400">320+ reviews</span>
                         </div>
                     @endif
 

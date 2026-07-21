@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক</title>
     <meta name="description"
-        content="Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳950।" />
+        content="Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳1,099।" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap"
@@ -27,11 +27,11 @@
             --blue: #C97B8E;
             --blue-bright: #B5566F;
             --blue-glow: #E8A3B5;
-            --amber: #D9647C;
+            --amber: #0D7674;
             --amber-bright: #C2486A;
             --green: #8E7355;
             --white: #2B2220;
-            --gray: #8A7570;
+            --gray: #000;
             --gray2: #A6938D;
             --red: #C2486A;
             --r: 14px;
@@ -93,7 +93,6 @@
             position: sticky;
             top: 0;
             z-index: 90;
-            background: #0D7674;
             border-bottom: 1px solid rgba(139, 90, 80, 0.12);
             padding: 0 20px;
             height: 54px;
@@ -101,6 +100,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 10px;
+            background-color: #fff
         }
 
         .nav-logo {
@@ -119,12 +119,12 @@
         .nav-price {
             font-size: 15px;
             font-weight: 800;
-            color: #fff;
+            color: #000;
             white-space: nowrap;
         }
 
         .nav-cta {
-            background: #FF6367;
+            background:var(--amber);
             color: var(--navy);
             padding: 8px 16px;
             border-radius: 8px;
@@ -240,7 +240,7 @@
         }
 
         .hero-img-wrap img {
-            width: clamp(260px, 50vw, 320px);
+            width: clamp(260px, 90vw, 620px);
             border-radius: 16px;
             filter: drop-shadow(0 20px 55px rgba(197, 90, 120, 0.28));
             animation: flt 4s ease-in-out infinite;
@@ -333,7 +333,7 @@
         .tpill {
             background: rgba(79, 122, 92, 0.10);
             border: 1px solid rgba(79, 122, 92, 0.25);
-            color: #4F7A5C;
+            color: var(--amber);
             font-size: 11px;
             font-weight: 700;
             padding: 5px 12px;
@@ -551,12 +551,12 @@
         .ship-note {
             text-align: center;
             font-size: 12px;
-            color: var(--green);
+            color: #000;
             margin-top: 10px;
         }
 
         .ship-note strong {
-            color: #fff;
+            color: #000;
         }
 
         /* SECTION COMMON */
@@ -736,7 +736,7 @@
 
         .rev-bn {
             font-size: 13px;
-            color: #cbd5e1;
+            color: #000;
             line-height: 1.6;
             margin-bottom: 12px;
         }
@@ -1159,25 +1159,20 @@
 @endphp
 
 <body>
-    <!-- TOPBAR -->
-    <div class="topbar">
-        ⚡ Flash Sale চলছে — মাত্র ৳950 (ছিল ৳1,200)
-        <span class="sep">|</span>৳1800+ অর্ডারে ফ্রি ডেলিভারি
-    </div>
 
     <!-- NAV -->
     <nav>
         <div class="nav-logo">
             <a href="{{ route('home') }}"
-                style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
+                style="display:flex;align-items:center;text-decoration:none;color:var(--amber);flex:1;min-width:0">
                 <div style="display:flex;align-items:center;justify-content:center;font-weight:900"
-                    class="sm:text-2xl lg:text-4xl">
+                    class="sm:text-xl lg:text-2xl">
                     ঔষ<span class=" text-red-400">ধা</span>লয়
                 </div>
             </a>
         </div>
         <div class="nav-right">
-            <div class="nav-price">৳950</div>
+            <div class="nav-price">৳1,099</div>
             <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn nav-cta"
                 data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                 data-price="{{ $product->effective_price }}">অর্ডার করুন</a>
@@ -1208,8 +1203,8 @@
         </div>
 
         <div class="hero-img-wrap">
-            <img src="{{ asset('storage/media/niacinamide.jpg') }}"
-                alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="270" height="270" loading="eager"
+            <img src="{{ asset('storage/media/ordinary_ousodhaloy.jpg') }}"
+                alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="570" height="570" loading="eager"
                 onerror="
         this.style.display = 'none';
         this.nextElementSibling.style.display = 'flex';
@@ -1236,7 +1231,7 @@
                 </div>
                 <div>
                     <div class="fbadge-t">Fast Delivery</div>
-                    <div class="fbadge-s">২৪–৪৮ ঘণ্টায়</div>
+                    <div class="fbadge-s">24–48 ঘণ্টায়</div>
                 </div>
             </div>
             <div class="fbadge f2">
@@ -1244,8 +1239,8 @@
                     ★
                 </div>
                 <div>
-                    <div class="fbadge-t">৪.৮/৫ Rating</div>
-                    <div class="fbadge-s">৩৪০+ রিভিউ</div>
+                    <div class="fbadge-t">4.8/5 Rating</div>
+                    <div class="fbadge-s">340+ রিভিউ</div>
                 </div>
             </div>
         </div>
@@ -1258,12 +1253,12 @@
             <div class="sale-badge">🔥 Flash Sale — সীমিত সময়</div>
 
             <div class="price-row">
-                <div class="price-now">৳950</div>
-                <div class="price-was">৳1,200</div>
-                <div class="price-save">21% OFF</div>
+                <div class="price-now">৳1,090</div>
+                <div class="price-was">৳1,620</div>
+                <div class="price-save">37.04% OFF</div>
             </div>
             <div class="price-per">
-                30ml · <strong>সকাল-রাত ব্যবহারের জন্য পর্যাপ্ত</strong> · প্রতিদিন মাত্র ৳১৫ এর মতো
+                30ml · <strong>সকাল-রাত ব্যবহারের জন্য</strong>
             </div>
 
             <div class="countdown">
@@ -1301,7 +1296,7 @@
                     id="buynow-btn" data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                     data-price="{{ $product->effective_price }}">
 
-                    🛒 Buy Now — সরাসরি Checkout
+                    Buy Now
 
                 </a>
             </div>
@@ -1310,14 +1305,17 @@
                 <div class="pay-badge">💵 Cash on Delivery</div>
             </div>
             <div class="ship-note">
-                <strong>ডেলিভারি ফি ঢাকার ভিতর ৮০ টাকা, ঢাকার বাইরে ১১০ টাকা</strong> · ২৪–৪৮ ঘণ্টায়
+                <strong>ডেলিভারি ফি ঢাকার ভিতর 80 টাকা, ঢাকার বাইরে 120 টাকা</strong> · ২৪–৪৮ ঘণ্টায়
                 পৌঁছাবে
+            </div>
+            <div class="caution-box">
+                <strong>⚠️ রিটার্ন পলিসি</strong> <br/>
+পণ্য রিটার্ন করতে চাইলে অবশ্যই ডেলিভারি ম্যানের সামনে প্যাকেট খুলে চেক করতে হবে। ডেলিভারি ম্যান চলে যাওয়ার পর কোনো রিটার্ন গ্রহণযোগ্য হবে না।
             </div>
         </div>
     </section>
     <div class="trust-pills">
-        <div class="tpill">✓ ১০০% Original</div>
-        <div class="tpill">✓ The Ordinary (DECIEM)</div>
+        <div class="tpill">✓ 100% Authentic</div>
         <div class="tpill">✓ 30ml Bottle</div>
         <div class="tpill">✓ Niacinamide 10% + Zinc 1%</div>
         <div class="tpill">✓ All Skin Types</div>
@@ -1432,7 +1430,7 @@
         <div class="sec-label">কীভাবে ব্যবহার করবেন</div>
         <h2 class="sec-h2">ব্যবহার করা অত্যন্ত সহজ</h2>
         <p class="sec-sub">
-            প্রতিদিন সকাল-রাত মাত্র ২–৩ ড্রপ — বাকিটা ফর্মুলা নিজেই করবে।
+            প্রতিদিন সকাল-রাত মাত্র ২–৩ ড্রপ বাকিটা ফর্মুলা নিজেই করবে।
         </p>
 
         <div class="how-grid">
@@ -1621,7 +1619,7 @@
         </p>
         <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn cta-final-btn"
             data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-            data-price="{{ $product->effective_price }}"> ⚡ মাত্র ৳950-তে পান —
+            data-price="{{ $product->effective_price }}"> ⚡ মাত্র ৳1,099-তে —
             এখনই Order করুন
         </a>
         <div>
@@ -1648,7 +1646,7 @@
         <div class="s-info">
             <div class="s-name">Niacinamide 10% + Zinc 1% · 30ml</div>
             <div class="s-price">
-                ৳950
+                ৳1,099
                 <span
                     style="font-size: 12px; color: var(--gray2); text-decoration: line-through; font-weight: 400;">৳১,২০০</span>
             </div>
@@ -1663,7 +1661,7 @@
         document.addEventListener("DOMContentLoaded", function() {
 
             var KEY = "niacinamide_sale_end";
-            var newEnd = new Date("2026-07-06T23:59:59").getTime();
+            var newEnd = new Date("2026-08-10T23:59:59").getTime();
             var stored = localStorage.getItem(KEY);
             if (!stored || isNaN(+stored) || +stored < newEnd) {
                 localStorage.setItem(KEY, newEnd);

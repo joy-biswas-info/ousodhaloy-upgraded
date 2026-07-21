@@ -15,7 +15,6 @@
 
 <?php $__env->startSection('content'); ?>
     <div class="max-w-6xl mx-auto px-3 sm:px-4 py-4" x-data="productPage()">
-
         
         <nav class="text-xs text-gray-400 mb-4 flex items-center gap-1.5 flex-wrap">
             <a href="<?php echo e(route('home')); ?>" class="hover:text-teal-600 transition-colors">Home</a>
@@ -113,7 +112,7 @@
                                 <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                             <span class="text-xs text-gray-500 font-semibold"><?php echo e($product->average_rating); ?></span>
-                            <span class="text-xs text-gray-400">(<?php echo e($product->rating_count); ?> reviews)</span>
+                            <span class="text-xs text-gray-400">320+ reviews</span>
                         </div>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
