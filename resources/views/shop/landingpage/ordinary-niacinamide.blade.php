@@ -1199,7 +1199,7 @@
         </div>
 
         <div class="hero-img-wrap">
-            <img src="{{ asset('storage/media/ordinary_ousodhaloy.jpg') }}"
+            <img src="{{ asset('storage/media/the_ordinary_ousodhaloy.jpg') }}"
                 alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
                 onerror="
         this.style.display = 'none';
