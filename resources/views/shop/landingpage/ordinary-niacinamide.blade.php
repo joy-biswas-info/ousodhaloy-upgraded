@@ -81,7 +81,7 @@
             z-index: 90;
             border-bottom: 1px solid rgba(139, 90, 80, 0.12);
             padding: 0 20px;
-            background-color: #fff;
+            /* background-color: #fff; */
 
         }
 
@@ -321,7 +321,7 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 7px;
-            padding: 28px 0 0;
+            padding: 28px 0;
         }
 
         .tpill {
@@ -401,12 +401,8 @@
             font-size: 13px;
             color: var(--gray);
             margin-bottom: 18px;
+            font-weight: 800
         }
-
-        .price-per strong {
-            color: var(--white);
-        }
-
         .countdown {
             background: rgba(239, 68, 68, 0.09);
             border: 1px solid rgba(239, 68, 68, 0.22);
@@ -418,7 +414,6 @@
             margin-bottom: 18px;
             flex-wrap: wrap;
         }
-
         .cd-label {
             font-size: 12px;
             color: #B5566F;
@@ -530,6 +525,7 @@
             justify-content: center;
             gap: 8px;
             flex-wrap: wrap;
+            margin-top: 40px;
         }
 
         .pay-badge {
@@ -1155,7 +1151,7 @@
 <body>
 
     <!-- NAV -->
-    <nav>
+    {{-- <nav>
         <div class="inner-nav">
             <div class="nav-logo">
                 <a href="{{ route('home') }}"
@@ -1173,30 +1169,11 @@
                     data-price="{{ $product->effective_price }}">অর্ডার করুন</a>
             </div>
         </div>
-    </nav>
+    </nav> --}}
 
     <!-- HERO -->
     <section class="hero">
-        <div class="eyebrow ">
-            <div class="blink"></div>
-            Flash Sale · মাত্র 7 দিন বাকি
-        </div>
-
-        <h1 class="hero-h1">
-            ব্রণ, দাগ আর তেলতেলে ত্বক?<br />
-            <span class="hi">একটি সিরাম, তিনটি সমাধান।</span>
-        </h1>
-
-        <p class="hero-sub">
-            <strong>Niacinamide 10% + Zinc 1%</strong> তেল নিয়ন্ত্রণ করে, দাগ হালকা করে,
-            আর ত্বককে রাখে উজ্জ্বল ও সুরক্ষিত। The Ordinary-র সবচেয়ে জনপ্রিয় ফর্মুলা।
-        </p>
-
-        <div class="problems">
-            <div class="prob">🛢️ তেলতেলে ত্বক</div>
-            <div class="prob">😣 ব্রণের দাগ</div>
-            <div class="prob">🔴 লালচে ভাব</div>
-        </div>
+     
 
         <div class="hero-img-wrap">
             <img src="{{ asset('storage/media/the_ordinary_ousodhaloy.jpg') }}"
@@ -1249,13 +1226,14 @@
             <div class="sale-badge">🔥 Flash Sale — সীমিত সময়</div>
 
             <div class="price-row">
-                <div class="price-now">৳1,090</div>
+                <div class="price-now">৳1,099</div>
                 <div class="price-was">৳1,620</div>
                 <div class="price-save">37.04% OFF</div>
+                <div class="price-per">
+                30ml
             </div>
-            <div class="price-per">
-                30ml · <strong>সকাল-রাত ব্যবহারের জন্য</strong>
             </div>
+            
 
             <div class="countdown">
                 <div class="cd-label">⏰ অফার শেষ হবে:</div>
@@ -1292,8 +1270,7 @@
                     id="buynow-btn" data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                     data-price="{{ $product->effective_price }}">
 
-                    Buy Now
-
+এখনই অর্ডার করুন ⚡
                 </a>
             </div>
 
@@ -1311,16 +1288,40 @@
             </div>
         </div>
     </section>
-    <div class="trust-pills">
+    <div class="trust-pills" >
         <div class="tpill">✓ 100% Authentic</div>
         <div class="tpill">✓ 30ml Bottle</div>
         <div class="tpill">✓ Niacinamide 10% + Zinc 1%</div>
         <div class="tpill">✓ All Skin Types</div>
     </div>
+    
+    <section class="hero">
+           <div class="eyebrow ">
+            <div class="blink"></div>
+            Flash Sale · মাত্র 7 দিন বাকি
+        </div>
+
+        <h1 class="hero-h1">
+            ব্রণ, দাগ আর তেলতেলে ত্বক?<br />
+            <span class="hi">একটি সিরাম, তিনটি সমাধান।</span>
+        </h1>
+
+        <p class="hero-sub">
+            <strong>Niacinamide 10% + Zinc 1%</strong> তেল নিয়ন্ত্রণ করে, দাগ হালকা করে,
+            আর ত্বককে রাখে উজ্জ্বল ও সুরক্ষিত। The Ordinary-র সবচেয়ে জনপ্রিয় ফর্মুলা।
+        </p>
+
+        <div class="problems">
+            <div class="prob">🛢️ তেলতেলে ত্বক</div>
+            <div class="prob">😣 ব্রণের দাগ</div>
+            <div class="prob">🔴 লালচে ভাব</div>
+        </div>
+</section>
 
     <!-- FORMULA EXPLAINER -->
     <section class="sec"
         style="background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(217, 100, 124, 0.07) 0%, transparent 70%);">
+        
         <div class="sec-label">ফর্মুলার ভেতরে কী আছে</div>
         <h2 class="sec-h2">২টি সক্রিয় উপাদান।<br />একসাথে কাজ করে সর্বোচ্চ ফলাফলের জন্য।</h2>
         <p class="sec-sub">
@@ -1658,7 +1659,7 @@
         document.addEventListener("DOMContentLoaded", function() {
 
             var KEY = "niacinamide_sale_end";
-            var newEnd = new Date("2026-08-10T23:59:59").getTime();
+            var newEnd = new Date("2026-07-30T23:59:59").getTime();
             var stored = localStorage.getItem(KEY);
             if (!stored || isNaN(+stored) || +stored < newEnd) {
                 localStorage.setItem(KEY, newEnd);
