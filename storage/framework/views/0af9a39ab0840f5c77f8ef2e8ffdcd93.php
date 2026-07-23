@@ -73,20 +73,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
         }
 
-        /* TOPBAR */
-        .topbar {
-            background: var(--amber);
-            color: var(--navy);
-            text-align: center;
-            padding: 9px 16px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .topbar .sep {
-            margin: 0 8px;
-            opacity: 0.4;
-        }
 
         /* NAV */
         nav {
@@ -95,12 +81,20 @@
             z-index: 90;
             border-bottom: 1px solid rgba(139, 90, 80, 0.12);
             padding: 0 20px;
-            height: 54px;
+            background-color: #fff;
+
+        }
+
+        .inner-nav {
+            max-width: 1020px;
+            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            background-color: #fff
+            background-color: #fff;
+            height: 54px;
+
         }
 
         .nav-logo {
@@ -124,7 +118,7 @@
         }
 
         .nav-cta {
-            background:var(--amber);
+            background: var(--amber);
             color: var(--navy);
             padding: 8px 16px;
             border-radius: 8px;
@@ -1162,20 +1156,22 @@
 
     <!-- NAV -->
     <nav>
-        <div class="nav-logo">
-            <a href="<?php echo e(route('home')); ?>"
-                style="display:flex;align-items:center;text-decoration:none;color:var(--amber);flex:1;min-width:0">
-                <div style="display:flex;align-items:center;justify-content:center;font-weight:900"
-                    class="sm:text-xl lg:text-2xl">
-                    ঔষ<span class=" text-red-400">ধা</span>লয়
-                </div>
-            </a>
-        </div>
-        <div class="nav-right">
-            <div class="nav-price">৳1,099</div>
-            <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn nav-cta"
-                data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
-                data-price="<?php echo e($product->effective_price); ?>">অর্ডার করুন</a>
+        <div class="inner-nav">
+            <div class="nav-logo">
+                <a href="<?php echo e(route('home')); ?>"
+                    style="display:flex;align-items:center;text-decoration:none;color:var(--amber);flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;justify-content:center;font-weight:900"
+                        class="sm:text-xl lg:text-2xl">
+                        ঔষ<span class=" text-red-400">ধা</span>লয়
+                    </div>
+                </a>
+            </div>
+            <div class="nav-right">
+                <div class="nav-price">৳1,099</div>
+                <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn nav-cta"
+                    data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
+                    data-price="<?php echo e($product->effective_price); ?>">অর্ডার করুন</a>
+            </div>
         </div>
     </nav>
 
@@ -1192,7 +1188,7 @@
         </h1>
 
         <p class="hero-sub">
-            <strong>Niacinamide 10% + Zinc 1%</strong> — তেল নিয়ন্ত্রণ করে, দাগ হালকা করে,
+            <strong>Niacinamide 10% + Zinc 1%</strong> তেল নিয়ন্ত্রণ করে, দাগ হালকা করে,
             আর ত্বককে রাখে উজ্জ্বল ও সুরক্ষিত। The Ordinary-র সবচেয়ে জনপ্রিয় ফর্মুলা।
         </p>
 
@@ -1204,7 +1200,7 @@
 
         <div class="hero-img-wrap">
             <img src="<?php echo e(asset('storage/media/ordinary_ousodhaloy.jpg')); ?>"
-                alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="570" height="570" loading="eager"
+                alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
                 onerror="
         this.style.display = 'none';
         this.nextElementSibling.style.display = 'flex';
@@ -1309,8 +1305,9 @@
                 পৌঁছাবে
             </div>
             <div class="caution-box">
-                <strong>⚠️ রিটার্ন পলিসি</strong> <br/>
-পণ্য রিটার্ন করতে চাইলে অবশ্যই ডেলিভারি ম্যানের সামনে প্যাকেট খুলে চেক করতে হবে। ডেলিভারি ম্যান চলে যাওয়ার পর কোনো রিটার্ন গ্রহণযোগ্য হবে না।
+                <strong>⚠️ রিটার্ন পলিসি</strong> <br />
+                পণ্য রিটার্ন করতে চাইলে অবশ্যই ডেলিভারি ম্যানের সামনে প্যাকেট খুলে চেক করতে হবে। ডেলিভারি ম্যান চলে
+                যাওয়ার পর কোনো রিটার্ন গ্রহণযোগ্য হবে না।
             </div>
         </div>
     </section>
@@ -1468,7 +1465,7 @@
         </div>
         <div class="caution-box">
             <strong>⚠ ব্যবহারে সতর্কতা:</strong> টপিকাল ভিটামিন সি (L-Ascorbic Acid) ব্যবহার করলে এই সিরাম থেকে আলাদা
-            সময়ে ব্যবহার করুন — ভিটামিন সি রাতে, নায়াসিনামাইড সকালে। এতে দুটি উপাদানই সর্বোচ্চ কার্যকারিতা দেখাবে।
+            সময়ে ব্যবহার করুন ভিটামিন সি রাতে, নায়াসিনামাইড সকালে। এতে দুটি উপাদানই সর্বোচ্চ কার্যকারিতা দেখাবে।
         </div>
     </section>
 
@@ -1586,7 +1583,7 @@
                     ভিটামিন সি-এর সাথে ব্যবহার করা যাবে? <span class="ico">+</span>
                 </button>
                 <div class="faq-a">
-                    ব্যবহার করা যাবে, কিন্তু একসাথে নয়। ভিটামিন সি রাতে এবং নায়াসিনামাইড সিরাম সকালে ব্যবহার করুন —
+                    ব্যবহার করা যাবে, কিন্তু একসাথে নয়। ভিটামিন সি রাতে এবং নায়াসিনামাইড সিরাম সকালে ব্যবহার করুন
                     এতে দুটি উপাদানই সর্বোচ্চ কার্যকারিতা দেখাবে।
                 </div>
             </div>
@@ -1604,8 +1601,8 @@
                     পছন্দ না হলে কি ফেরত দেওয়া যাবে? <span class="ico">+</span>
                 </button>
                 <div class="faq-a">
-                    সিল ভাঙা না থাকলে ৭ দিনের মধ্যে এক্সচেঞ্জ করতে পারবেন। বিস্তারিত জানতে অর্ডারের পর আমাদের সাপোর্ট
-                    টিমের সাথে যোগাযোগ করুন।
+                    পণ্য রিটার্ন করতে চাইলে অবশ্যই ডেলিভারি ম্যানের সামনে প্যাকেট খুলে চেক করতে হবে। ডেলিভারি ম্যান চলে
+                    যাওয়ার পর কোনো রিটার্ন গ্রহণযোগ্য হবে না।
                 </div>
             </div>
         </div>
@@ -1615,12 +1612,12 @@
     <section class="final-cta">
         <h2>দাগ আর তেল নিয়ে চিন্তা বন্ধ করুন।<br />আজ থেকেই শুরু করুন <em>ক্লিয়ার স্কিন।</em></h2>
         <p>
-            ৩৪০+ গ্রাহক ইতিমধ্যে তাদের ত্বকের তেল ও দাগের সমস্যার সমাধান করেছেন — এই একটি সিরাম দিয়ে।
+            ৩৪০+ গ্রাহক ইতিমধ্যে তাদের ত্বকের তেল ও দাগের সমস্যার সমাধান করেছেন এই একটি সিরাম দিয়ে।
         </p>
         <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn cta-final-btn"
             data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
-            data-price="<?php echo e($product->effective_price); ?>"> ⚡ মাত্র ৳1,099-তে —
-            এখনই Order করুন
+            data-price="<?php echo e($product->effective_price); ?>"> ⚡ মাত্র ৳1,099 —
+             Order Now
         </a>
         <div>
             <div class="money-back">
