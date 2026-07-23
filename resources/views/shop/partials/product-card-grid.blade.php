@@ -39,7 +39,7 @@
                             class="fas fa-star text-[10px] {{ $i <= $product->average_rating ? 'text-yellow-400' : 'text-gray-200' }}"></i>
                     @endfor
                 </div>
-                <span class="text-[10px] text-gray-400">({{ $product->rating_count }})</span>
+                <span class="text-[10px] text-gray-400">(220+)</span>
             </div>
         @endif
         @if ($product->is_low_stock)
