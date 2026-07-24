@@ -3,11 +3,18 @@
 <?php $__env->startSection('breadcrumb', 'Landing Pages / ' . ($landingPage ? 'Edit' : 'New')); ?>
 
 <?php
-    $sections = $landingPage->sections ?? \App\Models\LandingPage::defaultSections();
-    $theme = $landingPage->theme ?? \App\Models\LandingPage::defaultTheme();
+    // old('sections')/old('theme') must win over the stored record — otherwise a validation
+    // failure on an unrelated field (e.g. duplicate slug) silently wipes every Benefit/FAQ/etc.
+    // row the admin just typed, since the page re-renders from the stale DB copy instead.
+    $sections = old('sections')
+        ? json_decode(old('sections'), true)
+        : ($landingPage->sections ?? \App\Models\LandingPage::defaultSections());
+    $theme = old('theme')
+        ? json_decode(old('theme'), true)
+        : ($landingPage->theme ?? \App\Models\LandingPage::defaultTheme());
     // Fill in any keys missing from an older/partial record so Alpine always has a stable shape
-    $sections = array_replace_recursive(\App\Models\LandingPage::defaultSections(), $sections);
-    $theme = array_replace(\App\Models\LandingPage::defaultTheme(), $theme);
+    $sections = array_replace_recursive(\App\Models\LandingPage::defaultSections(), $sections ?: []);
+    $theme = array_replace(\App\Models\LandingPage::defaultTheme(), $theme ?: []);
 ?>
 <?php echo $__env->make('partials.media-picker', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
@@ -50,7 +57,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <div>
                         <label class="form-label">URL Slug *</label>
                         <div class="flex items-center gap-1 text-xs text-gray-400 mb-1"><?php echo e(url('/')); ?>/<span x-text="slug || 'your-slug-here'"></span></div>
-                        <input type="text" name="slug" x-model="slug" @input="slugEdited = true"
+                        <input type="text" name="slug" x-model="slug" @input="slugEdited = true" @blur="slug = slugify(slug)"
                             class="form-input <?php $__errorArgs = ['slug'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -117,13 +124,14 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
             <div class="bg-white rounded-xl border p-5">
                 <h2 class="font-bold text-gray-800 mb-4 pb-2 border-b">Hero Image</h2>
+                <?php $heroImagePath = old('hero_image_media_path', $landingPage->hero_image ?? ''); ?>
                 <div id="hero-preview" class="w-full h-40 bg-gray-50 rounded-lg border flex items-center justify-center overflow-hidden cursor-pointer mb-2"
                     onclick="openMediaPicker('lp-hero', function(path, url){
                         document.getElementById('hero-media-path').value = path;
                         document.getElementById('hero-preview').innerHTML = '<img src=\'' + url + '\' style=\'width:100%;height:100%;object-fit:contain\'>';
                     })">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($landingPage?->hero_image): ?>
-                    <img src="<?php echo e(asset('storage/' . $landingPage->hero_image)); ?>" style="width:100%;height:100%;object-fit:contain">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($heroImagePath): ?>
+                    <img src="<?php echo e(asset('storage/' . $heroImagePath)); ?>" style="width:100%;height:100%;object-fit:contain">
                     <?php else: ?>
                     <div class="text-center text-gray-400">
                         <i class="fas fa-image text-3xl block mb-1.5"></i>
@@ -131,7 +139,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     </div>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                <input type="hidden" name="hero_image_media_path" id="hero-media-path" value="<?php echo e($landingPage->hero_image ?? ''); ?>">
+                <input type="hidden" name="hero_image_media_path" id="hero-media-path" value="<?php echo e($heroImagePath); ?>">
                 <p class="text-xs text-gray-400">Or upload a new file:</p>
                 <input type="file" name="hero_image_upload" accept="image/*" class="form-input mt-1 text-xs">
             </div>
@@ -248,6 +256,13 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <input type="checkbox" x-model="sections.formula.enabled" class="accent-teal-600"> Enabled
                     </label>
                 </div>
+                <div class="space-y-2 mb-3" x-show="sections.formula.enabled">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" x-model="sections.formula.label" placeholder="Label — small text above heading" class="form-input text-xs">
+                        <input type="text" x-model="sections.formula.heading" placeholder="Heading (H2)" class="form-input text-xs">
+                    </div>
+                    <input type="text" x-model="sections.formula.subheading" placeholder="Subheading (optional, shown under the heading)" class="form-input text-xs">
+                </div>
                 <div class="space-y-3" x-show="sections.formula.enabled">
                     <template x-for="(item, i) in sections.formula.items" :key="i">
                         <div class="grid grid-cols-12 gap-2 items-start p-3 bg-gray-50 rounded-lg">
@@ -270,6 +285,13 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <input type="checkbox" x-model="sections.benefits.enabled" class="accent-teal-600"> Enabled
                     </label>
                 </div>
+                <div class="space-y-2 mb-3" x-show="sections.benefits.enabled">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" x-model="sections.benefits.label" placeholder="Label — small text above heading" class="form-input text-xs">
+                        <input type="text" x-model="sections.benefits.heading" placeholder="Heading (H2)" class="form-input text-xs">
+                    </div>
+                    <input type="text" x-model="sections.benefits.subheading" placeholder="Subheading (optional, shown under the heading)" class="form-input text-xs">
+                </div>
                 <div class="space-y-3" x-show="sections.benefits.enabled">
                     <template x-for="(item, i) in sections.benefits.items" :key="i">
                         <div class="grid grid-cols-12 gap-2 items-start p-3 bg-gray-50 rounded-lg">
@@ -290,6 +312,13 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <label class="flex items-center gap-2 cursor-pointer text-sm">
                         <input type="checkbox" x-model="sections.how_to_use.enabled" class="accent-teal-600"> Enabled
                     </label>
+                </div>
+                <div class="space-y-2 mb-3" x-show="sections.how_to_use.enabled">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" x-model="sections.how_to_use.label" placeholder="Label — small text above heading" class="form-input text-xs">
+                        <input type="text" x-model="sections.how_to_use.heading" placeholder="Heading (H2)" class="form-input text-xs">
+                    </div>
+                    <input type="text" x-model="sections.how_to_use.subheading" placeholder="Subheading (optional, shown under the heading)" class="form-input text-xs">
                 </div>
                 <div class="space-y-3" x-show="sections.how_to_use.enabled">
                     <template x-for="(item, i) in sections.how_to_use.items" :key="i">
@@ -313,6 +342,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     </label>
                 </div>
                 <div class="space-y-3" x-show="sections.ingredients.enabled">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" x-model="sections.ingredients.label" placeholder="Label — small text above heading" class="form-input text-xs">
+                        <input type="text" x-model="sections.ingredients.heading" placeholder="Heading (H2)" class="form-input text-xs">
+                    </div>
+                    <input type="text" x-model="sections.ingredients.subheading" placeholder="Subheading (optional, shown under the heading)" class="form-input text-xs">
                     <div>
                         <label class="form-label">Full ingredient / spec list</label>
                         <textarea x-model="sections.ingredients.text" rows="3" class="form-input resize-none"></textarea>
@@ -338,6 +372,10 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <input type="checkbox" x-model="sections.reviews.enabled" class="accent-teal-600"> Enabled
                     </label>
                 </div>
+                <div class="grid grid-cols-2 gap-2 mt-3" x-show="sections.reviews.enabled">
+                    <input type="text" x-model="sections.reviews.label" placeholder="Label — optional, blank = no header" class="form-input text-xs">
+                    <input type="text" x-model="sections.reviews.heading" placeholder="Heading (H2) — optional" class="form-input text-xs">
+                </div>
             </div>
 
             
@@ -347,6 +385,13 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <label class="flex items-center gap-2 cursor-pointer text-sm">
                         <input type="checkbox" x-model="sections.faq.enabled" class="accent-teal-600"> Enabled
                     </label>
+                </div>
+                <div class="space-y-2 mb-3" x-show="sections.faq.enabled">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" x-model="sections.faq.label" placeholder="Label — small text above heading" class="form-input text-xs">
+                        <input type="text" x-model="sections.faq.heading" placeholder="Heading (H2)" class="form-input text-xs">
+                    </div>
+                    <input type="text" x-model="sections.faq.subheading" placeholder="Subheading (optional, shown under the heading)" class="form-input text-xs">
                 </div>
                 <div class="space-y-3" x-show="sections.faq.enabled">
                     <template x-for="(item, i) in sections.faq.items" :key="i">
@@ -388,6 +433,10 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <label class="flex items-center gap-2 cursor-pointer text-sm">
                         <input type="checkbox" x-model="sections.gallery.enabled" class="accent-teal-600"> Enabled
                     </label>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mb-3" x-show="sections.gallery.enabled">
+                    <input type="text" x-model="sections.gallery.label" placeholder="Label — small text above heading" class="form-input text-xs">
+                    <input type="text" x-model="sections.gallery.heading" placeholder="Heading (H2)" class="form-input text-xs">
                 </div>
                 <div x-show="sections.gallery.enabled">
                     <div class="flex flex-wrap gap-2 mb-2">

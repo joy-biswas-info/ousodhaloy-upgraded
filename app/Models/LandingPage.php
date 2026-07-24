@@ -83,13 +83,16 @@ class LandingPage extends Model
         return (int) round(($compare - $price) / $compare * 100);
     }
 
-    // A section is always an array shaped like ['enabled' => bool, 'items'|'text'|'images' => ...].
-    // Missing/malformed entries fall back to disabled rather than throwing, since this data
-    // is hand-edited via the admin form and must never be able to 500 the public page.
+    // A section is always an array shaped like ['enabled' => bool, 'items'|'text'|'images' => ...],
+    // plus 'label'/'heading'/'subheading' for sections that render their own header.
+    // Missing/malformed entries fall back to the section's defaults (never throw), since this
+    // data is hand-edited via the admin form — including older records saved before a key like
+    // 'heading' existed — and must never be able to 500 the public page.
     public function section(string $key): array
     {
+        $defaults = static::defaultSections()[$key] ?? ['enabled' => false];
         $section = $this->sections[$key] ?? null;
-        return is_array($section) ? $section : ['enabled' => false];
+        return is_array($section) ? array_replace($defaults, $section) : $defaults;
     }
 
     public function sectionEnabled(string $key): bool
@@ -101,13 +104,34 @@ class LandingPage extends Model
     {
         return [
             'problems' => ['enabled' => true, 'items' => []],
-            'formula' => ['enabled' => true, 'items' => []],
-            'benefits' => ['enabled' => true, 'items' => []],
-            'how_to_use' => ['enabled' => true, 'items' => []],
-            'ingredients' => ['enabled' => false, 'text' => '', 'caution' => ''],
-            'reviews' => ['enabled' => true],
-            'faq' => ['enabled' => true, 'items' => []],
-            'gallery' => ['enabled' => false, 'images' => []],
+            'formula' => [
+                'enabled' => true, 'items' => [],
+                'label' => 'ফর্মুলার ভেতরে কী আছে', 'heading' => 'মূল উপাদানসমূহ', 'subheading' => '',
+            ],
+            'benefits' => [
+                'enabled' => true, 'items' => [],
+                'label' => 'আপনি কী অনুভব করবেন', 'heading' => 'যা যা পাবেন', 'subheading' => '',
+            ],
+            'how_to_use' => [
+                'enabled' => true, 'items' => [],
+                'label' => 'কীভাবে ব্যবহার করবেন', 'heading' => 'ব্যবহার করা অত্যন্ত সহজ', 'subheading' => '',
+            ],
+            'ingredients' => [
+                'enabled' => false, 'text' => '', 'caution' => '',
+                'label' => 'বিস্তারিত', 'heading' => 'উপাদান / স্পেসিফিকেশন', 'subheading' => '',
+            ],
+            'reviews' => [
+                'enabled' => true,
+                'label' => '', 'heading' => '', 'subheading' => '',
+            ],
+            'faq' => [
+                'enabled' => true, 'items' => [],
+                'label' => 'সাধারণ প্রশ্ন', 'heading' => 'কিছু জিজ্ঞাসা আছে?', 'subheading' => '',
+            ],
+            'gallery' => [
+                'enabled' => false, 'images' => [],
+                'label' => 'প্রোডাক্ট গ্যালারি', 'heading' => 'আসল প্রোডাক্টের ছবি', 'subheading' => '',
+            ],
             'trust_badges' => ['enabled' => true, 'items' => []],
         ];
     }

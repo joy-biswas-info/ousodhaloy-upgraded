@@ -410,9 +410,11 @@
     </section>
 
     @if($landingPage->sectionEnabled('formula') && count($landingPage->section('formula')['items'] ?? []))
+    @php $formulaSec = $landingPage->section('formula'); @endphp
     <section class="sec" style="background: radial-gradient(ellipse 60% 50% at 50% 100%, color-mix(in srgb, var(--accent) 7%, transparent) 0%, transparent 70%);">
-        <div class="sec-label">ফর্মুলার ভেতরে কী আছে</div>
-        <h2 class="sec-h2">মূল উপাদানসমূহ</h2>
+        @if($formulaSec['label']) <div class="sec-label">{{ $formulaSec['label'] }}</div> @endif
+        @if($formulaSec['heading']) <h2 class="sec-h2">{{ $formulaSec['heading'] }}</h2> @endif
+        @if($formulaSec['subheading']) <p class="sec-sub">{{ $formulaSec['subheading'] }}</p> @endif
         <div class="grid-cards">
             @foreach($landingPage->section('formula')['items'] as $f)
             <div class="g-card">
@@ -427,9 +429,11 @@
     @endif
 
     @if($landingPage->sectionEnabled('benefits') && count($landingPage->section('benefits')['items'] ?? []))
+    @php $benefitsSec = $landingPage->section('benefits'); @endphp
     <section class="sec" style="padding-top: 8px">
-        <div class="sec-label">আপনি কী অনুভব করবেন</div>
-        <h2 class="sec-h2">যা যা পাবেন</h2>
+        @if($benefitsSec['label']) <div class="sec-label">{{ $benefitsSec['label'] }}</div> @endif
+        @if($benefitsSec['heading']) <h2 class="sec-h2">{{ $benefitsSec['heading'] }}</h2> @endif
+        @if($benefitsSec['subheading']) <p class="sec-sub">{{ $benefitsSec['subheading'] }}</p> @endif
         <div class="benefit-list">
             @foreach($landingPage->section('benefits')['items'] as $b)
             <div class="benefit">
@@ -445,9 +449,11 @@
     @endif
 
     @if($landingPage->sectionEnabled('how_to_use') && count($landingPage->section('how_to_use')['items'] ?? []))
+    @php $howToUseSec = $landingPage->section('how_to_use'); @endphp
     <section class="sec" style="padding-top: 0">
-        <div class="sec-label">কীভাবে ব্যবহার করবেন</div>
-        <h2 class="sec-h2">ব্যবহার করা অত্যন্ত সহজ</h2>
+        @if($howToUseSec['label']) <div class="sec-label">{{ $howToUseSec['label'] }}</div> @endif
+        @if($howToUseSec['heading']) <h2 class="sec-h2">{{ $howToUseSec['heading'] }}</h2> @endif
+        @if($howToUseSec['subheading']) <p class="sec-sub">{{ $howToUseSec['subheading'] }}</p> @endif
         <div class="how-grid">
             @foreach($landingPage->section('how_to_use')['items'] as $i => $h)
             <div class="how-card">
@@ -461,18 +467,23 @@
     @endif
 
     @if($landingPage->sectionEnabled('ingredients') && !empty($landingPage->section('ingredients')['text']))
+    @php $ingredientsSec = $landingPage->section('ingredients'); @endphp
     <section class="sec" style="padding-top: 0">
-        <div class="sec-label">বিস্তারিত</div>
-        <h2 class="sec-h2" style="margin-bottom: 22px">উপাদান / স্পেসিফিকেশন</h2>
-        <div class="inci-box"><p>{{ $landingPage->section('ingredients')['text'] }}</p></div>
-        @if(!empty($landingPage->section('ingredients')['caution']))
-        <div class="caution-box" style="max-width:680px"><strong>⚠ সতর্কতা:</strong> {{ $landingPage->section('ingredients')['caution'] }}</div>
+        @if($ingredientsSec['label']) <div class="sec-label">{{ $ingredientsSec['label'] }}</div> @endif
+        @if($ingredientsSec['heading']) <h2 class="sec-h2" style="margin-bottom: 22px">{{ $ingredientsSec['heading'] }}</h2> @endif
+        @if($ingredientsSec['subheading']) <p class="sec-sub">{{ $ingredientsSec['subheading'] }}</p> @endif
+        <div class="inci-box"><p>{{ $ingredientsSec['text'] }}</p></div>
+        @if(!empty($ingredientsSec['caution']))
+        <div class="caution-box" style="max-width:680px"><strong>⚠ সতর্কতা:</strong> {{ $ingredientsSec['caution'] }}</div>
         @endif
     </section>
     @endif
 
     @if($landingPage->sectionEnabled('reviews') && $reviews->isNotEmpty())
+    @php $reviewsSec = $landingPage->section('reviews'); @endphp
     <section class="sec" style="padding-top: 0">
+        @if($reviewsSec['label']) <div class="sec-label">{{ $reviewsSec['label'] }}</div> @endif
+        @if($reviewsSec['heading']) <h2 class="sec-h2" style="margin-bottom: 22px">{{ $reviewsSec['heading'] }}</h2> @endif
         <div class="stars-row">
             <div class="stars">{{ str_repeat('★', round($product->average_rating)) }}{{ str_repeat('☆', 5 - round($product->average_rating)) }}</div>
             <div class="stars-txt"><strong>{{ number_format($product->average_rating, 1) }}/৫</strong> — {{ $product->rating_count }}+ Verified Buyer-এর রেটিং</div>
@@ -501,9 +512,10 @@
     @endif
 
     @if($landingPage->sectionEnabled('gallery') && count($landingPage->section('gallery')['images'] ?? []))
+    @php $gallerySec = $landingPage->section('gallery'); @endphp
     <section class="sec" style="padding-top: 0">
-        <div class="sec-label">প্রোডাক্ট গ্যালারি</div>
-        <h2 class="sec-h2" style="margin-bottom: 26px">আসল প্রোডাক্টের ছবি</h2>
+        @if($gallerySec['label']) <div class="sec-label">{{ $gallerySec['label'] }}</div> @endif
+        @if($gallerySec['heading']) <h2 class="sec-h2" style="margin-bottom: 26px">{{ $gallerySec['heading'] }}</h2> @endif
         <div class="gallery-grid">
             @foreach($landingPage->section('gallery')['images'] as $img)
             <img src="{{ asset('storage/' . $img) }}" alt="{{ $product->name }}">
@@ -513,9 +525,11 @@
     @endif
 
     @if($landingPage->sectionEnabled('faq') && count($landingPage->section('faq')['items'] ?? []))
+    @php $faqSec = $landingPage->section('faq'); @endphp
     <section class="sec">
-        <div class="sec-label">সাধারণ প্রশ্ন</div>
-        <h2 class="sec-h2" style="margin-bottom: 32px">কিছু জিজ্ঞাসা আছে?</h2>
+        @if($faqSec['label']) <div class="sec-label">{{ $faqSec['label'] }}</div> @endif
+        @if($faqSec['heading']) <h2 class="sec-h2" style="margin-bottom: 32px">{{ $faqSec['heading'] }}</h2> @endif
+        @if($faqSec['subheading']) <p class="sec-sub">{{ $faqSec['subheading'] }}</p> @endif
         <div class="faq-list">
             @foreach($landingPage->section('faq')['items'] as $faq)
             <div class="faq-item">

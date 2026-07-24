@@ -411,9 +411,11 @@
     </section>
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($landingPage->sectionEnabled('formula') && count($landingPage->section('formula')['items'] ?? [])): ?>
+    <?php $formulaSec = $landingPage->section('formula'); ?>
     <section class="sec" style="background: radial-gradient(ellipse 60% 50% at 50% 100%, color-mix(in srgb, var(--accent) 7%, transparent) 0%, transparent 70%);">
-        <div class="sec-label">ফর্মুলার ভেতরে কী আছে</div>
-        <h2 class="sec-h2">মূল উপাদানসমূহ</h2>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($formulaSec['label']): ?> <div class="sec-label"><?php echo e($formulaSec['label']); ?></div> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($formulaSec['heading']): ?> <h2 class="sec-h2"><?php echo e($formulaSec['heading']); ?></h2> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($formulaSec['subheading']): ?> <p class="sec-sub"><?php echo e($formulaSec['subheading']); ?></p> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <div class="grid-cards">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $landingPage->section('formula')['items']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $f): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="g-card">
@@ -428,9 +430,11 @@
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($landingPage->sectionEnabled('benefits') && count($landingPage->section('benefits')['items'] ?? [])): ?>
+    <?php $benefitsSec = $landingPage->section('benefits'); ?>
     <section class="sec" style="padding-top: 8px">
-        <div class="sec-label">আপনি কী অনুভব করবেন</div>
-        <h2 class="sec-h2">যা যা পাবেন</h2>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($benefitsSec['label']): ?> <div class="sec-label"><?php echo e($benefitsSec['label']); ?></div> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($benefitsSec['heading']): ?> <h2 class="sec-h2"><?php echo e($benefitsSec['heading']); ?></h2> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($benefitsSec['subheading']): ?> <p class="sec-sub"><?php echo e($benefitsSec['subheading']); ?></p> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <div class="benefit-list">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $landingPage->section('benefits')['items']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="benefit">
@@ -446,9 +450,11 @@
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($landingPage->sectionEnabled('how_to_use') && count($landingPage->section('how_to_use')['items'] ?? [])): ?>
+    <?php $howToUseSec = $landingPage->section('how_to_use'); ?>
     <section class="sec" style="padding-top: 0">
-        <div class="sec-label">কীভাবে ব্যবহার করবেন</div>
-        <h2 class="sec-h2">ব্যবহার করা অত্যন্ত সহজ</h2>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($howToUseSec['label']): ?> <div class="sec-label"><?php echo e($howToUseSec['label']); ?></div> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($howToUseSec['heading']): ?> <h2 class="sec-h2"><?php echo e($howToUseSec['heading']); ?></h2> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($howToUseSec['subheading']): ?> <p class="sec-sub"><?php echo e($howToUseSec['subheading']); ?></p> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <div class="how-grid">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $landingPage->section('how_to_use')['items']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $h): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="how-card">
@@ -462,18 +468,23 @@
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($landingPage->sectionEnabled('ingredients') && !empty($landingPage->section('ingredients')['text'])): ?>
+    <?php $ingredientsSec = $landingPage->section('ingredients'); ?>
     <section class="sec" style="padding-top: 0">
-        <div class="sec-label">বিস্তারিত</div>
-        <h2 class="sec-h2" style="margin-bottom: 22px">উপাদান / স্পেসিফিকেশন</h2>
-        <div class="inci-box"><p><?php echo e($landingPage->section('ingredients')['text']); ?></p></div>
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($landingPage->section('ingredients')['caution'])): ?>
-        <div class="caution-box" style="max-width:680px"><strong>⚠ সতর্কতা:</strong> <?php echo e($landingPage->section('ingredients')['caution']); ?></div>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ingredientsSec['label']): ?> <div class="sec-label"><?php echo e($ingredientsSec['label']); ?></div> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ingredientsSec['heading']): ?> <h2 class="sec-h2" style="margin-bottom: 22px"><?php echo e($ingredientsSec['heading']); ?></h2> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ingredientsSec['subheading']): ?> <p class="sec-sub"><?php echo e($ingredientsSec['subheading']); ?></p> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <div class="inci-box"><p><?php echo e($ingredientsSec['text']); ?></p></div>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($ingredientsSec['caution'])): ?>
+        <div class="caution-box" style="max-width:680px"><strong>⚠ সতর্কতা:</strong> <?php echo e($ingredientsSec['caution']); ?></div>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </section>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($landingPage->sectionEnabled('reviews') && $reviews->isNotEmpty()): ?>
+    <?php $reviewsSec = $landingPage->section('reviews'); ?>
     <section class="sec" style="padding-top: 0">
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($reviewsSec['label']): ?> <div class="sec-label"><?php echo e($reviewsSec['label']); ?></div> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($reviewsSec['heading']): ?> <h2 class="sec-h2" style="margin-bottom: 22px"><?php echo e($reviewsSec['heading']); ?></h2> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <div class="stars-row">
             <div class="stars"><?php echo e(str_repeat('★', round($product->average_rating))); ?><?php echo e(str_repeat('☆', 5 - round($product->average_rating))); ?></div>
             <div class="stars-txt"><strong><?php echo e(number_format($product->average_rating, 1)); ?>/৫</strong> — <?php echo e($product->rating_count); ?>+ Verified Buyer-এর রেটিং</div>
@@ -502,9 +513,10 @@
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($landingPage->sectionEnabled('gallery') && count($landingPage->section('gallery')['images'] ?? [])): ?>
+    <?php $gallerySec = $landingPage->section('gallery'); ?>
     <section class="sec" style="padding-top: 0">
-        <div class="sec-label">প্রোডাক্ট গ্যালারি</div>
-        <h2 class="sec-h2" style="margin-bottom: 26px">আসল প্রোডাক্টের ছবি</h2>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($gallerySec['label']): ?> <div class="sec-label"><?php echo e($gallerySec['label']); ?></div> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($gallerySec['heading']): ?> <h2 class="sec-h2" style="margin-bottom: 26px"><?php echo e($gallerySec['heading']); ?></h2> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <div class="gallery-grid">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $landingPage->section('gallery')['images']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $img): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <img src="<?php echo e(asset('storage/' . $img)); ?>" alt="<?php echo e($product->name); ?>">
@@ -514,9 +526,11 @@
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($landingPage->sectionEnabled('faq') && count($landingPage->section('faq')['items'] ?? [])): ?>
+    <?php $faqSec = $landingPage->section('faq'); ?>
     <section class="sec">
-        <div class="sec-label">সাধারণ প্রশ্ন</div>
-        <h2 class="sec-h2" style="margin-bottom: 32px">কিছু জিজ্ঞাসা আছে?</h2>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($faqSec['label']): ?> <div class="sec-label"><?php echo e($faqSec['label']); ?></div> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($faqSec['heading']): ?> <h2 class="sec-h2" style="margin-bottom: 32px"><?php echo e($faqSec['heading']); ?></h2> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($faqSec['subheading']): ?> <p class="sec-sub"><?php echo e($faqSec['subheading']); ?></p> <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <div class="faq-list">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $landingPage->section('faq')['items']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $faq): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="faq-item">
