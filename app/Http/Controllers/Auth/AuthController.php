@@ -89,7 +89,7 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'Please wait 2 minutes before requesting another OTP.'], 429);
         }
 
-        $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         Otp::create([
             'phone' => $request->phone,
@@ -155,7 +155,7 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'Please wait 2 minutes before requesting another OTP.'], 429);
         }
 
-        $code = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         Otp::create([
             'phone' => $request->phone,
             'code' => Hash::make($code),

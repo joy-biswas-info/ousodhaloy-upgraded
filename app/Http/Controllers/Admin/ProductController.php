@@ -196,7 +196,7 @@ class ProductController extends Controller
             'delivery_charge_per_unit' => $request->boolean('delivery_charge_per_unit'),
             'flash_sale_price' => $request->is_flash_sale ? $request->flash_sale_price : null,
             'flash_sale_ends_at' => $request->is_flash_sale ? $request->flash_sale_ends_at : null,
-            'tabs' => $request->tabs ? json_decode($request->tabs, true) : [],
+            'tabs' => $request->tabs ? $this->sanitizeTabs(json_decode($request->tabs, true)) : [],
             'tags' => $request->tags
                 ? array_map('trim', explode(',', $request->tags))
                 : [],
@@ -271,6 +271,28 @@ class ProductController extends Controller
         if ($primaryId) {
             $product->update(['category_id' => $primaryId]);
         }
+    }
+
+    /**
+     * Strip scripts/event handlers from admin-entered tab HTML before it's
+     * stored and later rendered unescaped ({!! !!}) on public product pages.
+     */
+    private function sanitizeTabs(?array $tabs): array
+    {
+        if (!$tabs)
+            return [];
+
+        $config = \HTMLPurifier_Config::createDefault();
+        $config->set('HTML.Allowed', 'p,br,strong,b,em,i,u,ul,ol,li,h3,h4,h5,h6,a[href],span,table,thead,tbody,tr,td,th,img[src|alt]');
+        $config->set('Cache.SerializerPath', storage_path('app/htmlpurifier'));
+        $purifier = new \HTMLPurifier($config);
+
+        return array_map(function ($tab) use ($purifier) {
+            if (isset($tab['content']) && is_string($tab['content'])) {
+                $tab['content'] = $purifier->purify($tab['content']);
+            }
+            return $tab;
+        }, $tabs);
     }
 
     private function uniqueSlug(string $slug, ?int $excludeId = null): string

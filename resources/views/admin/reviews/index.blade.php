@@ -23,6 +23,30 @@
         @endforeach
     </div>
 
+    {{-- Bulk import --}}
+    <div class="bg-white rounded-xl border p-5">
+        <div class="flex items-start justify-between flex-wrap gap-3 mb-3">
+            <div>
+                <h3 class="font-bold text-gray-800">Bulk Import Reviews</h3>
+                <p class="text-xs text-gray-500 mt-0.5">
+                    Carry over real reviews from your parent site — CSV, matched by SKU or product name.
+                    Imported rows are tagged <span class="font-semibold text-indigo-500">Imported</span> in the list below.
+                </p>
+            </div>
+            <a href="{{ route('admin.reviews.import-template') }}" class="btn-outline btn-sm text-xs whitespace-nowrap">
+                <i class="fas fa-download mr-1"></i>Download CSV template
+            </a>
+        </div>
+        <form method="POST" action="{{ route('admin.reviews.import-csv') }}" enctype="multipart/form-data"
+            class="flex items-center gap-3 flex-wrap">
+            @csrf
+            <input type="file" name="csv_file" accept=".csv,.txt" required class="form-input flex-1 min-w-[200px]">
+            <button type="submit" class="btn-primary btn-sm">
+                <i class="fas fa-upload mr-1.5"></i>Import
+            </button>
+        </form>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         {{-- Review list --}}
@@ -67,8 +91,12 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <p class="font-semibold text-sm">{{ $review->user->name }}</p>
-                                    <p class="text-xs text-gray-400">{{ $review->user->phone }}</p>
+                                    <p class="font-semibold text-sm">{{ $review->display_name }}</p>
+                                    @if($review->is_imported)
+                                        <span class="text-[10px] font-semibold text-indigo-500 bg-indigo-50 rounded px-1.5 py-0.5">Imported</span>
+                                    @else
+                                        <p class="text-xs text-gray-400">{{ $review->user->phone ?? '—' }}</p>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="flex gap-0.5">
@@ -174,17 +202,36 @@
                     @error('product_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
-                <div>
-                    <label class="form-label">Customer *</label>
-                    <select name="user_id" class="form-select" required>
-                        <option value="">Select customer…</option>
-                        @foreach(\App\Models\User::where('role','customer')->orderBy('name')->get(['id','name','phone']) as $u)
-                        <option value="{{ $u->id }}" @selected(old('user_id')==$u->id)>
-                            {{ $u->name }} {{ $u->phone ? '('.$u->phone.')' : '' }}
-                        </option>
-                        @endforeach
-                    </select>
-                    @error('user_id') <p class="form-error">{{ $message }}</p> @enderror
+                <div x-data="{ mode: '{{ old('reviewer_name') ? 'name' : 'customer' }}' }">
+                    <label class="form-label">Reviewer *</label>
+                    <div class="flex gap-2 mb-2">
+                        <button type="button" @click="mode='customer'"
+                            :class="mode==='customer' ? 'btn-primary' : 'btn-outline'" class="btn-sm text-xs flex-1">
+                            Existing customer
+                        </button>
+                        <button type="button" @click="mode='name'"
+                            :class="mode==='name' ? 'btn-primary' : 'btn-outline'" class="btn-sm text-xs flex-1">
+                            Name only (imported)
+                        </button>
+                    </div>
+
+                    <div x-show="mode==='customer'">
+                        <select name="user_id" class="form-select" :required="mode==='customer'">
+                            <option value="">Select customer…</option>
+                            @foreach(\App\Models\User::where('role','customer')->orderBy('name')->get(['id','name','phone']) as $u)
+                            <option value="{{ $u->id }}" @selected(old('user_id')==$u->id)>
+                                {{ $u->name }} {{ $u->phone ? '('.$u->phone.')' : '' }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('user_id') <p class="form-error">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div x-show="mode==='name'" x-cloak>
+                        <input type="text" name="reviewer_name" value="{{ old('reviewer_name') }}"
+                            :required="mode==='name'" class="form-input" placeholder="e.g. Rafiq Ahmed">
+                        @error('reviewer_name') <p class="form-error">{{ $message }}</p> @enderror
+                    </div>
                 </div>
 
                 <div>

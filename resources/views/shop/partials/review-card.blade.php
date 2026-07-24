@@ -63,7 +63,7 @@
 
                         <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
                             style="background:var(--teal)">
-                            {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                            {{ strtoupper(substr($review->display_name, 0, 1)) }}
                         </div>
 
                         <div class="flex-1 min-w-0">
@@ -72,7 +72,7 @@
 
                                 <div>
                                     <span class="text-sm font-bold text-gray-800">
-                                        {{ $review->user->name }}
+                                        {{ $review->display_name }}
                                     </span>
 
                                     <div class="flex gap-0.5 mt-0.5">

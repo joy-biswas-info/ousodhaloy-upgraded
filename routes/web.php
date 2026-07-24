@@ -14,6 +14,7 @@ use App\Http\Controllers\{
     Shop\CheckoutController,
     Shop\OrderController,
     Shop\PaymentController,
+    Shop\LandingPageController,
     Admin\DashboardController,
     Admin\OrderController as AdminOrderController,
     Admin\ProductController as AdminProductController,
@@ -25,6 +26,7 @@ use App\Http\Controllers\{
     Admin\ReviewController,
     Admin\ManualOrderController,
     Admin\BulkProductController,
+    Admin\LandingPageController as AdminLandingPageController,
 };
 
 // ── Public shop routes ─────────────────────────────────────────────────────
@@ -85,11 +87,17 @@ Route::middleware('auth')->prefix('account')->name('account.')->group(function (
         $loyaltyPoints = $user->total_loyalty_points;
         return view('shop.account.profile', compact('user', 'loyaltyPoints'));
     })->name('profile');
-    Route::get('/addresses', fn() => view('shop.account.addresses'))->name('addresses');
     Route::get('/wishlist', fn() => view('shop.account.wishlist'))->name('wishlist');
+    Route::get('/addresses', fn() => view('shop.account.addresses'))->name('addresses');
     Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');
-    Route::post('/wishlist/{product}', [AccountController::class, 'toggleWishlist'])->name('wishlist.toggle');
 });
+
+// Named without the 'account.' prefix because shop/products/show.blade.php calls
+// route('wishlist.toggle') directly from the product page's heart icon.
+// Still auth-protected — that's the part that was missing before.
+Route::post('/wishlist/{product}', [AccountController::class, 'toggleWishlist'])
+    ->middleware('auth')
+    ->name('wishlist.toggle');
 
 // ── Payment callbacks ──────────────────────────────────────────────────────
 Route::prefix('payment')->name('payment.')->group(function () {
@@ -104,17 +112,15 @@ Route::middleware('guest')->prefix('auth')->name('auth.')->group(function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('throttle:5,1');
     Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post')->middleware('throttle:5,1');
     Route::get('/otp', [AuthController::class, 'otpForm'])->name('otp');
-    Route::post('/otp/send', [AuthController::class, 'sendOtp'])->name('otp.send');
-    Route::post('/otp/verify', [AuthController::class, 'verifyOtp'])->name('otp.verify');
+    Route::post('/otp/send', [AuthController::class, 'sendOtp'])->name('otp.send')->middleware('throttle:5,1');
+    Route::post('/otp/verify', [AuthController::class, 'verifyOtp'])->name('otp.verify')->middleware('throttle:5,1');
     Route::get('/forgot-password', [AuthController::class, 'forgotForm'])->name('forgot');
-    Route::post('/forgot-password/send', [AuthController::class, 'forgotSendOtp'])->name('forgot.send');
-    Route::post('/forgot-password/reset', [AuthController::class, 'forgotReset'])->name('forgot.reset');
+    Route::post('/forgot-password/send', [AuthController::class, 'forgotSendOtp'])->name('forgot.send')->middleware('throttle:5,1');
+    Route::post('/forgot-password/reset', [AuthController::class, 'forgotReset'])->name('forgot.reset')->middleware('throttle:5,1');
 
 });
-Route::post('/wishlist/{product}', [AccountController::class, 'toggleWishlist'])->name('wishlist.toggle');
-Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 // ── Admin ──────────────────────────────────────────────────────────────────
@@ -133,6 +139,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::delete('/products/{id}/force', [AdminProductController::class, 'forceDelete'])->name('products.force-delete');
 
     Route::resource('products', AdminProductController::class)->except(['show']);
+
+    // ── Landing Pages ──────────────────────────────────────────
+    Route::post('/landing-pages/{landingPage}/duplicate', [AdminLandingPageController::class, 'duplicate'])->name('landing-pages.duplicate');
+    Route::resource('landing-pages', AdminLandingPageController::class)->except(['show']);
 
     // ── Orders — specific routes BEFORE {order} wildcard ──────
     Route::get('/orders/create', [ManualOrderController::class, 'create'])->name('orders.create');
@@ -162,11 +172,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
 
-    // ── Staff Management ─────────────────────────────────────
-    Route::get('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'index'])->name('staff.index');
-    Route::post('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'store'])->name('staff.store');
-    Route::patch('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'update'])->name('staff.update');
-    Route::delete('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'destroy'])->name('staff.destroy');
+    // ── Staff Management (admin only — managers must not be able to create/edit admin accounts) ──
+    Route::middleware('admin')->group(function () {
+        Route::get('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'index'])->name('staff.index');
+        Route::post('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'store'])->name('staff.store');
+        Route::patch('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'update'])->name('staff.update');
+        Route::delete('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'destroy'])->name('staff.destroy');
+    });
 
     // ── Prescriptions ─────────────────────────────────────────
     Route::get('/prescriptions', [PrescriptionController::class, 'index'])->name('prescriptions');
@@ -178,6 +190,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::patch('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::patch('/reviews/{review}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
     Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::post('/reviews/import-csv', [ReviewController::class, 'importCsv'])->name('reviews.import-csv');
+    Route::get('/reviews/import-template', [ReviewController::class, 'importTemplate'])->name('reviews.import-template');
 
     // ── Customization ────────────────────────────────────────────
     Route::get('/customization', [SettingsController::class, 'customization'])->name('customization.index');
@@ -228,3 +242,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
         ]);
     })->name('sms-logs');
 });
+
+// ── Dynamic landing pages (admin-built) ─────────────────────────────────────
+Route::post('/order/lp/{landingPage:slug}', [LandingPageController::class, 'quickOrder'])
+    ->middleware('throttle:10,1')
+    ->name('landing.quick-order');
+Route::post('/order/lp/{landingPage:slug}/delivery-charge', [LandingPageController::class, 'deliveryCharge'])
+    ->name('landing.delivery-charge');
+
+// MUST STAY LAST IN THIS FILE — this catches any single-segment path not already
+// matched above (e.g. /the-ordinary-salicylic-acid-30ml) and looks it up as a
+// published landing page slug. Adding any new top-level GET route below this
+// line will make it unreachable.
+Route::get('/{slug}', [LandingPageController::class, 'show'])
+    ->where('slug', '[a-z0-9\-]+')
+    ->name('landing.show');

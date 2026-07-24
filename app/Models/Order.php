@@ -11,6 +11,7 @@ class Order extends Model
     protected $fillable = [
         'order_number',
         'user_id',
+        'landing_page_id',
         'guest_name',
         'guest_email',
         'guest_phone',
@@ -102,6 +103,10 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    public function landingPage(): BelongsTo
+    {
+        return $this->belongsTo(LandingPage::class);
     }
     public function items(): HasMany
     {

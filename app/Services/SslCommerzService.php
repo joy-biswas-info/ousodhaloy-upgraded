@@ -69,13 +69,16 @@ class SslCommerzService
 
         $res = Http::asForm()->post("{$this->baseUrl}/gwprocess/v4/api.php", $data);
 
-        // Log full response so we can debug any SSL Commerz issues
+        // Log gateway response for debugging — deliberately excludes the customer
+        // PII (name/address/phone) we submitted, only the gateway's own reply fields.
         Log::channel('single')->info('SSLCommerz initiatePayment', [
             'order' => $order->order_number,
             'store_id' => $this->storeId,
             'is_live' => $this->isLive,
-            'status' => $res->status(),
-            'body' => $res->json() ?? $res->body(),
+            'http_status' => $res->status(),
+            'gateway_status' => $res->json('status'),
+            'gateway_url' => $res->json('GatewayPageURL'),
+            'failed_reason' => $res->json('failedreason') ?? $res->json('desc'),
         ]);
 
         if ($res->json('status') === 'SUCCESS') {

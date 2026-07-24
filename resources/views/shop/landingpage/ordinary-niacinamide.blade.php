@@ -1,12 +1,31 @@
 <!doctype html>
 <html lang="bn">
+@php
+    $metaTitle = 'The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক';
+    $metaDescription = 'Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳999।';
+    $metaImage = asset('storage/media/niacinamide.jpg');
+@endphp
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক</title>
-    <meta name="description"
-        content="Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳999।" />
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}" />
+    <link rel="canonical" href="{{ url()->current() }}" />
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml" />
+
+    {{-- Open Graph / Twitter — matters here since this page is a Meta Ads landing target --}}
+    <meta property="og:type" content="product" />
+    <meta property="og:title" content="{{ $metaTitle }}" />
+    <meta property="og:description" content="{{ $metaDescription }}" />
+    <meta property="og:image" content="{{ $metaImage }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:locale" content="bn_BD" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $metaTitle }}" />
+    <meta name="twitter:description" content="{{ $metaDescription }}" />
+    <meta name="twitter:image" content="{{ $metaImage }}" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap"
@@ -1141,8 +1160,10 @@
         }
     </style>
     @include('partials.meta-pixel')
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    {{-- No @vite here on purpose: this is a standalone landing page with its own
+         inline CSS/JS and no Alpine/Tailwind usage. Pulling the site-wide bundle
+         would ship the whole app's CSS/JS (and a duplicate Google Fonts fetch)
+         to ad traffic for nothing. --}}
 </head>
 @php
     $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
@@ -1176,8 +1197,9 @@
      
 
         <div class="hero-img-wrap">
-            <img src="{{ asset('storage/media/niacinamide.jpg') }}"
+            <img src="{{ asset('storage/media/the_ordinary_ousodhaloy.jpg') }}"
                 alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
+                fetchpriority="high" decoding="async"
                 onerror="
         this.style.display = 'none';
         this.nextElementSibling.style.display = 'flex';
@@ -1655,6 +1677,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
+            // ── Countdown ──
             var KEY = "niacinamide_sale_end";
             var newEnd = new Date("2026-07-30T23:59:59").getTime();
             var stored = localStorage.getItem(KEY);
@@ -1683,19 +1706,34 @@
 
             tick();
             setInterval(tick, 1000);
+
+            // ── ViewContent pixel event ──
+            @if ($pixelViewContent ?? false)
+                if (window.fbTrack) {
+                    window.fbTrack('ViewContent', {
+                        content_ids: ['{{ $product->id }}'],
+                        content_name: '{{ addslashes($product->name) }}',
+                        content_type: 'product',
+                        value: {{ $product->effective_price }},
+                        currency: 'BDT'
+                    });
+                }
+            @endif
         });
 
         let qty = 1;
 
         const productId = {{ $product->id }};
+        // There are three "buy now" buttons on this page (price card, sticky bar,
+        // final CTA) — all of them need to reflect the chosen quantity and fire
+        // the AddToCart pixel event, not just the price-card one.
+        const buyButtons = document.querySelectorAll('.buynow-btn');
 
         function updateQty() {
             document.getElementById('qty-num').textContent = qty;
-
-            document.getElementById('buynow-btn').href =
-
-                `/buy-now/${productId}/${qty}`;
-
+            buyButtons.forEach(function(btn) {
+                btn.href = `/buy-now/${productId}/${qty}`;
+            });
         }
 
         document.getElementById('qty-down').addEventListener('click', function(e) {
@@ -1769,23 +1807,11 @@
             }
 
         }
-        document.getElementById('buynow-btn').addEventListener('click', function() {
-            trackAddToCart(product, qty);
-        });
-
-        @if ($pixelViewContent ?? false)
-            document.addEventListener('DOMContentLoaded', function() {
-                if (window.fbTrack) {
-                    window.fbTrack('ViewContent', {
-                        content_ids: ['{{ $product->id }}'],
-                        content_name: '{{ addslashes($product->name) }}',
-                        content_type: 'product',
-                        value: {{ $product->effective_price }},
-                        currency: 'BDT'
-                    });
-                }
+        buyButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                trackAddToCart(product, qty);
             });
-        @endif
+        });
     </script>
 </body>
 

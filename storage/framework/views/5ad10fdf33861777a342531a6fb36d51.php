@@ -64,7 +64,7 @@
 
                         <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
                             style="background:var(--teal)">
-                            <?php echo e(strtoupper(substr($review->user->name, 0, 1))); ?>
+                            <?php echo e(strtoupper(substr($review->display_name, 0, 1))); ?>
 
                         </div>
 
@@ -74,7 +74,7 @@
 
                                 <div>
                                     <span class="text-sm font-bold text-gray-800">
-                                        <?php echo e($review->user->name); ?>
+                                        <?php echo e($review->display_name); ?>
 
                                     </span>
 

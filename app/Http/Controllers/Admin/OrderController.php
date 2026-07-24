@@ -72,7 +72,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|string',
+            'status' => 'required|string|in:' . implode(',', array_keys(Order::STATUS_LABELS)),
             'note' => 'nullable|string|max:500',
             'notify_customer' => 'nullable|boolean',
         ]);

@@ -1,12 +1,31 @@
 <!doctype html>
 <html lang="bn">
+<?php
+    $metaTitle = 'The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক';
+    $metaDescription = 'Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳999।';
+    $metaImage = asset('storage/media/niacinamide.jpg');
+?>
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক</title>
-    <meta name="description"
-        content="Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳1,099।" />
+    <title><?php echo e($metaTitle); ?></title>
+    <meta name="description" content="<?php echo e($metaDescription); ?>" />
+    <link rel="canonical" href="<?php echo e(url()->current()); ?>" />
+    <link rel="icon" href="<?php echo e(asset('favicon.svg')); ?>" type="image/svg+xml" />
+
+    
+    <meta property="og:type" content="product" />
+    <meta property="og:title" content="<?php echo e($metaTitle); ?>" />
+    <meta property="og:description" content="<?php echo e($metaDescription); ?>" />
+    <meta property="og:image" content="<?php echo e($metaImage); ?>" />
+    <meta property="og:url" content="<?php echo e(url()->current()); ?>" />
+    <meta property="og:locale" content="bn_BD" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="<?php echo e($metaTitle); ?>" />
+    <meta name="twitter:description" content="<?php echo e($metaDescription); ?>" />
+    <meta name="twitter:image" content="<?php echo e($metaImage); ?>" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap"
@@ -336,7 +355,7 @@
 
         /* PRICE SECTION */
         .price-section {
-            padding: 32px 20px 0;
+            padding: 12px 20px 0;
         }
 
         .price-card {
@@ -1141,8 +1160,7 @@
         }
     </style>
     <?php echo $__env->make('partials.meta-pixel', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
-
+    
 </head>
 <?php
     $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
@@ -1160,6 +1178,7 @@
         <div class="hero-img-wrap">
             <img src="<?php echo e(asset('storage/media/the_ordinary_ousodhaloy.jpg')); ?>"
                 alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
+                fetchpriority="high" decoding="async"
                 onerror="
         this.style.display = 'none';
         this.nextElementSibling.style.display = 'flex';
@@ -1205,17 +1224,16 @@
     <!-- PRICE CARD -->
     <section class="price-section" id="order">
         <div class="price-card">
-            <div class="sale-badge">🔥 Flash Sale — সীমিত সময়</div>
+            <div class="sale-badge">🔥 Clearance Sale — সীমিত সময়</div>
 
             <div class="price-row">
-                <div class="price-now">৳1,099</div>
+                <div class="price-now">৳999</div>
                 <div class="price-was">৳1,620</div>
-                <div class="price-save">37.04% OFF</div>
+                <div class="price-save">42.04% OFF</div>
                 <div class="price-per">
                 30ml
             </div>
             </div>
-            
 
             <div class="countdown">
                 <div class="cd-label">⏰ অফার শেষ হবে:</div>
@@ -1250,9 +1268,7 @@
                 </div>
                 <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn cta-main"
                     id="buynow-btn" data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
-                    data-price="<?php echo e($product->effective_price); ?>">
-
-এখনই অর্ডার করুন ⚡
+                    data-price="<?php echo e($product->effective_price); ?>">এখনই অর্ডার করুন ⚡
                 </a>
             </div>
 
@@ -1589,7 +1605,7 @@
         </p>
         <a href="<?php echo e(route('buy.now', ['product' => $product->id, 'qty' => 1])); ?>" class="buynow-btn cta-final-btn"
             data-id="<?php echo e($product->id); ?>" data-name="<?php echo e($product->name); ?>"
-            data-price="<?php echo e($product->effective_price); ?>"> ⚡ মাত্র ৳1,099 —
+            data-price="<?php echo e($product->effective_price); ?>"> ⚡ মাত্র ৳999 —
              Order Now
         </a>
         <div>
@@ -1616,7 +1632,7 @@
         <div class="s-info">
             <div class="s-name">Niacinamide 10% + Zinc 1% · 30ml</div>
             <div class="s-price">
-                ৳1,099
+                ৳999
                 <span
                     style="font-size: 12px; color: var(--gray2); text-decoration: line-through; font-weight: 400;">৳১,২০০</span>
             </div>
@@ -1630,6 +1646,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
+            // ── Countdown ──
             var KEY = "niacinamide_sale_end";
             var newEnd = new Date("2026-07-30T23:59:59").getTime();
             var stored = localStorage.getItem(KEY);
@@ -1658,19 +1675,34 @@
 
             tick();
             setInterval(tick, 1000);
+
+            // ── ViewContent pixel event ──
+            <?php if($pixelViewContent ?? false): ?>
+                if (window.fbTrack) {
+                    window.fbTrack('ViewContent', {
+                        content_ids: ['<?php echo e($product->id); ?>'],
+                        content_name: '<?php echo e(addslashes($product->name)); ?>',
+                        content_type: 'product',
+                        value: <?php echo e($product->effective_price); ?>,
+                        currency: 'BDT'
+                    });
+                }
+            <?php endif; ?>
         });
 
         let qty = 1;
 
         const productId = <?php echo e($product->id); ?>;
+        // There are three "buy now" buttons on this page (price card, sticky bar,
+        // final CTA) — all of them need to reflect the chosen quantity and fire
+        // the AddToCart pixel event, not just the price-card one.
+        const buyButtons = document.querySelectorAll('.buynow-btn');
 
         function updateQty() {
             document.getElementById('qty-num').textContent = qty;
-
-            document.getElementById('buynow-btn').href =
-
-                `/buy-now/${productId}/${qty}`;
-
+            buyButtons.forEach(function(btn) {
+                btn.href = `/buy-now/${productId}/${qty}`;
+            });
         }
 
         document.getElementById('qty-down').addEventListener('click', function(e) {
@@ -1745,23 +1777,11 @@
             }
 
         }
-        document.getElementById('buynow-btn').addEventListener('click', function() {
-            trackAddToCart(product, qty);
-        });
-
-        <?php if($pixelViewContent ?? false): ?>
-            document.addEventListener('DOMContentLoaded', function() {
-                if (window.fbTrack) {
-                    window.fbTrack('ViewContent', {
-                        content_ids: ['<?php echo e($product->id); ?>'],
-                        content_name: '<?php echo e(addslashes($product->name)); ?>',
-                        content_type: 'product',
-                        value: <?php echo e($product->effective_price); ?>,
-                        currency: 'BDT'
-                    });
-                }
+        buyButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                trackAddToCart(product, qty);
             });
-        <?php endif; ?>
+        });
     </script>
 </body>
 

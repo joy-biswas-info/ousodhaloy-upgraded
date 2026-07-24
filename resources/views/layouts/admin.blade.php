@@ -328,6 +328,7 @@
                     ['route' => 'admin.orders.create', 'icon' => 'plus-circle', 'label' => 'New Order'],
                     ['route' => 'admin.products.index', 'icon' => 'pills', 'label' => 'Products'],
                     ['route' => 'admin.products.bulk', 'icon' => 'file-import', 'label' => 'Bulk Import'],
+                    ['route' => 'admin.landing-pages.index', 'icon' => 'bolt', 'label' => 'Landing Pages'],
                     ['route' => 'admin.categories.index', 'icon' => 'th-large', 'label' => 'Categories'],
                     ['route' => 'admin.brands.index', 'icon' => 'trademark', 'label' => 'Brands'],
                     ['route' => 'admin.users.index', 'icon' => 'users', 'label' => 'Customers'],

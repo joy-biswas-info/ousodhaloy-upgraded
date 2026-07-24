@@ -83,7 +83,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         
                         <div>
                             <label class="form-label">Phone Number *</label>
-                            <input type="tel" name="shipping_phone"
+                            <input type="tel" name="shipping_phone" id="shipping-phone-input"
                                 value="<?php echo e(old('shipping_phone', auth()->user()?->phone)); ?>"
                                 class="form-input <?php $__errorArgs = ['shipping_phone'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -102,6 +102,7 @@ $message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            <p class="form-error hidden" id="phone-live-error">Please enter a valid Bangladeshi phone number (01XXXXXXXXX)</p>
                         </div>
 
                         
@@ -303,9 +304,9 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <p class="text-xs text-gray-500">Visa, Mastercard, bKash, Nagad, Rocket, Net Banking</p>
                             </div>
                             <div class="flex gap-1.5 flex-shrink-0 items-center">
-                                
+
                                 <span style="background:#E2136E;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:.3px">bKash</span>
-                                
+
                                 <span style="background:#F16322;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:3px;letter-spacing:.3px">Nagad</span>
                             </div>
                         </label>
@@ -331,7 +332,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         </div>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
-                </div>
+                </div> 
             </div>
 
             
@@ -382,21 +383,60 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-primary w-full py-3.5 mt-4 text-base">
+                    <button type="submit" class="btn-primary w-full py-3.5 mt-4 text-base hidden lg:flex">
                         <i class="fas fa-lock mr-2"></i>Place Order
                     </button>
-                    <p class="text-center text-xs text-gray-400 mt-2">
+                    <p class="text-center text-xs text-gray-400 mt-2 hidden lg:block">
                         <i class="fas fa-shield-alt mr-1 text-teal-500"></i>Secure & encrypted checkout
                     </p>
                 </div>
             </div>
         </div>
+
+        
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t shadow-[0_-4px_24px_rgba(0,0,0,0.08)] px-4 py-3 flex items-center gap-3">
+            <div class="min-w-0">
+                <p class="text-[11px] text-gray-500 leading-none mb-1">Total</p>
+                <p class="text-lg font-black text-teal-700 leading-none" id="sticky-total-amt">৳<?php echo e(number_format($sub + $charge, 2)); ?></p>
+            </div>
+            <button type="submit" class="btn-primary flex-1 py-3 text-sm">
+                <i class="fas fa-lock mr-1.5"></i>Place Order
+            </button>
+        </div>
     </form>
+    
+    <div class="lg:hidden h-20"></div>
 </div>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
 <script>
+// Scroll to the first invalid field after a failed submit (validation errors
+// re-render the page but don't otherwise draw attention to a field below the fold)
+document.addEventListener('DOMContentLoaded', () => {
+    const firstError = document.querySelector('.border-red-400');
+    if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstError.focus({ preventScroll: true });
+    }
+});
+
+// Live phone format check on blur — catches typos before the server round trip
+const phoneInput = document.getElementById('shipping-phone-input');
+const phoneLiveError = document.getElementById('phone-live-error');
+const BD_PHONE_REGEX = /^01[3-9]\d{8}$/;
+phoneInput?.addEventListener('blur', () => {
+    const valid = phoneInput.value === '' || BD_PHONE_REGEX.test(phoneInput.value);
+    phoneLiveError.classList.toggle('hidden', valid);
+    phoneInput.classList.toggle('border-red-400', !valid);
+});
+phoneInput?.addEventListener('input', () => {
+    if (!phoneLiveError.classList.contains('hidden') && BD_PHONE_REGEX.test(phoneInput.value)) {
+        phoneLiveError.classList.add('hidden');
+        phoneInput.classList.remove('border-red-400');
+    }
+});
+
 const BD_DISTRICTS = <?php echo json_encode(config('bd.districts')??[], 15, 512) ?>;
 
 // Populate districts when division changes — also triggers delivery recalc
@@ -434,6 +474,7 @@ async function recalcDelivery() {
 
         const deliveryEl = document.getElementById('delivery-amt');
         const totalEl    = document.getElementById('total-amt');
+        const stickyTotalEl = document.getElementById('sticky-total-amt');
         const zoneEl     = document.getElementById('zone-info');
 
         if (deliveryEl) {
@@ -444,6 +485,9 @@ async function recalcDelivery() {
         }
         if (totalEl) {
             totalEl.textContent = '৳' + parseFloat(data.total).toFixed(2);
+        }
+        if (stickyTotalEl) {
+            stickyTotalEl.textContent = '৳' + parseFloat(data.total).toFixed(2);
         }
         if (zoneEl) {
             zoneEl.textContent = data.zone_name + ' · Est. ' + data.estimated_days + ' day(s)';

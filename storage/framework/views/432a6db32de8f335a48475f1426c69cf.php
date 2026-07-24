@@ -22,6 +22,30 @@
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
 
+    
+    <div class="bg-white rounded-xl border p-5">
+        <div class="flex items-start justify-between flex-wrap gap-3 mb-3">
+            <div>
+                <h3 class="font-bold text-gray-800">Bulk Import Reviews</h3>
+                <p class="text-xs text-gray-500 mt-0.5">
+                    Carry over real reviews from your parent site — CSV, matched by SKU or product name.
+                    Imported rows are tagged <span class="font-semibold text-indigo-500">Imported</span> in the list below.
+                </p>
+            </div>
+            <a href="<?php echo e(route('admin.reviews.import-template')); ?>" class="btn-outline btn-sm text-xs whitespace-nowrap">
+                <i class="fas fa-download mr-1"></i>Download CSV template
+            </a>
+        </div>
+        <form method="POST" action="<?php echo e(route('admin.reviews.import-csv')); ?>" enctype="multipart/form-data"
+            class="flex items-center gap-3 flex-wrap">
+            <?php echo csrf_field(); ?>
+            <input type="file" name="csv_file" accept=".csv,.txt" required class="form-input flex-1 min-w-[200px]">
+            <button type="submit" class="btn-primary btn-sm">
+                <i class="fas fa-upload mr-1.5"></i>Import
+            </button>
+        </form>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         
@@ -67,8 +91,12 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <p class="font-semibold text-sm"><?php echo e($review->user->name); ?></p>
-                                    <p class="text-xs text-gray-400"><?php echo e($review->user->phone); ?></p>
+                                    <p class="font-semibold text-sm"><?php echo e($review->display_name); ?></p>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($review->is_imported): ?>
+                                        <span class="text-[10px] font-semibold text-indigo-500 bg-indigo-50 rounded px-1.5 py-0.5">Imported</span>
+                                    <?php else: ?>
+                                        <p class="text-xs text-gray-400"><?php echo e($review->user->phone ?? '—'); ?></p>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </td>
                                 <td>
                                     <div class="flex gap-0.5">
@@ -184,18 +212,30 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
-                <div>
-                    <label class="form-label">Customer *</label>
-                    <select name="user_id" class="form-select" required>
-                        <option value="">Select customer…</option>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = \App\Models\User::where('role','customer')->orderBy('name')->get(['id','name','phone']); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($u->id); ?>" <?php if(old('user_id')==$u->id): echo 'selected'; endif; ?>>
-                            <?php echo e($u->name); ?> <?php echo e($u->phone ? '('.$u->phone.')' : ''); ?>
+                <div x-data="{ mode: '<?php echo e(old('reviewer_name') ? 'name' : 'customer'); ?>' }">
+                    <label class="form-label">Reviewer *</label>
+                    <div class="flex gap-2 mb-2">
+                        <button type="button" @click="mode='customer'"
+                            :class="mode==='customer' ? 'btn-primary' : 'btn-outline'" class="btn-sm text-xs flex-1">
+                            Existing customer
+                        </button>
+                        <button type="button" @click="mode='name'"
+                            :class="mode==='name' ? 'btn-primary' : 'btn-outline'" class="btn-sm text-xs flex-1">
+                            Name only (imported)
+                        </button>
+                    </div>
 
-                        </option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    </select>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['user_id'];
+                    <div x-show="mode==='customer'">
+                        <select name="user_id" class="form-select" :required="mode==='customer'">
+                            <option value="">Select customer…</option>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = \App\Models\User::where('role','customer')->orderBy('name')->get(['id','name','phone']); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($u->id); ?>" <?php if(old('user_id')==$u->id): echo 'selected'; endif; ?>>
+                                <?php echo e($u->name); ?> <?php echo e($u->phone ? '('.$u->phone.')' : ''); ?>
+
+                            </option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        </select>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['user_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -203,6 +243,20 @@ $message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
+
+                    <div x-show="mode==='name'" x-cloak>
+                        <input type="text" name="reviewer_name" value="<?php echo e(old('reviewer_name')); ?>"
+                            :required="mode==='name'" class="form-input" placeholder="e.g. Rafiq Ahmed">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['reviewer_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
                 </div>
 
                 <div>

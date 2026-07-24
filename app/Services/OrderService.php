@@ -79,6 +79,7 @@ class OrderService
             // 4. Create order
             $order = Order::create([
                 'user_id' => $userId,
+                'landing_page_id' => $data['landing_page_id'] ?? null,
                 'guest_name' => $userId ? null : ($data['guest_name'] ?? $data['shipping_name']),
                 'guest_email' => $userId ? null : ($data['guest_email'] ?? null),
                 'guest_phone' => $userId ? null : ($data['shipping_phone']),
@@ -171,6 +172,8 @@ class OrderService
      */
     public function updateStatus(Order $order, string $newStatus, string $note = '', bool $notifyCustomer = true): bool
     {
+        if (!array_key_exists($newStatus, Order::STATUS_LABELS))
+            return false;
         if ($order->status === $newStatus)
             return false;
 
