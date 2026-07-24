@@ -1,4 +1,4 @@
-@extends('layouts.shop')
+@extends('layouts.checkout')
 @php
     $cart   = session('cart', []);
     $sub    = collect($cart)->sum(fn($i) => $i['price'] * $i['qty']);
@@ -37,7 +37,7 @@
             <div class="lg:col-span-2 space-y-4">
 
                 {{-- Guest notice --}}
-                @guest
+                {{-- @guest
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
                     <p class="font-semibold text-blue-800 mb-1">Checking out as guest</p>
                     <p class="text-blue-700 text-xs">
@@ -45,7 +45,7 @@
                         <a href="{{ route('auth.register') }}" class="font-bold underline">register</a> to track your orders easily.
                     </p>
                 </div>
-                @endguest
+                @endguest --}}
 
                 {{-- Delivery Info --}}
                 <div class="bg-white rounded-xl border p-5">

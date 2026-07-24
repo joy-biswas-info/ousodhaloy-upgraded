@@ -36,15 +36,7 @@
             <div class="lg:col-span-2 space-y-4">
 
                 
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm">
-                    <p class="font-semibold text-blue-800 mb-1">Checking out as guest</p>
-                    <p class="text-blue-700 text-xs">
-                        <a href="<?php echo e(route('auth.login', ['redirect' => url()->current()])); ?>" class="font-bold underline">Login</a> or
-                        <a href="<?php echo e(route('auth.register')); ?>" class="font-bold underline">register</a> to track your orders easily.
-                    </p>
-                </div>
-                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                
 
                 
                 <div class="bg-white rounded-xl border p-5">
@@ -520,4 +512,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 <?php $__env->stopPush(); ?>
-<?php echo $__env->make('layouts.shop', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/checkout/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.checkout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/shop/checkout/index.blade.php ENDPATH**/ ?>

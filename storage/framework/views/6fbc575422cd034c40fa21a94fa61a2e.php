@@ -85,14 +85,6 @@
             <div style="height:52px;display:flex;align-items:center;gap:6px;padding:0 12px;">
 
                 
-                <button onclick="toggleSidebar()" aria-label="Categories"
-                    style="background:rgba(255,255,255,.18);border:none;color:#fff;width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">
-                    <i class="fas fa-bars" style="font-size:16px"></i>
-                </button>
-                
-                
-                
-                
                 <a href="<?php echo e(route('home')); ?>"
                     style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
                     <div
@@ -144,7 +136,6 @@
 
     
     <header class="site-header hidden lg:block px-4 my-auto">
-        
         <div class="header-inner" x-data="{ userMenu: false }">
             
             <a href="<?php echo e(route('home')); ?>"
@@ -278,165 +269,86 @@
                 </div>
             </div>
         </div>
-        
     </header>
-<div class="subnav">
-  <div class="subnav-inner">
-    <a href="<?php echo e(route('shop.index')); ?>"
-      class="snav-item <?php echo e(request()->routeIs('shop.index')&&!request()->has('category')?'active':''); ?>">
-      🏠 All
-    </a>
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = \App\Models\Category::active()->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-    <a href="<?php echo e(route('shop.index',['category'=>$cat->slug])); ?>"
-      class="snav-item <?php echo e(request('category')===$cat->slug?'active':''); ?>">
-      <?php echo e($cat->icon); ?> <?php echo e($cat->name); ?>
-
-    </a>
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-  </div>
-</div>
 
     
-    <div style="display:flex;min-height:calc(100vh - 60px)">
-
-        
-        <aside class="shop-sidebar" id="shop-sidebar" style="background:#fff;border-right:1px solid #e5e7eb;">
-
-            
-            <div id="sidebar-mobile-header"
-                style="display:none;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f3f4f6;background-color:var(--teal)">
-                
-                
-                
-                <a href="<?php echo e(route('home')); ?>"
-                    style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
-                    <div
-                        style=" border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
-                        ঔষ<span class=" text-red-500">ধা</span>লয়
-                    </div>
-                </a>
-                <button class="text-white" onclick="toggleSidebar()"
-                    style="background:none;border:none;font-size:22px;color:#9ca3af;cursor:pointer;line-height:1">&times;</button>
-            </div>
-
-            <!-- <div style="padding:14px 14px 6px">
-                <p style="font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:1px">Shop
-                    by Category</p>
-            </div> -->
-
-            <nav class="px-1">
-                <a href="<?php echo e(route('shop.index')); ?>"
-                    class="cat-nav-link <?php echo e(request()->routeIs('shop.index') && !request()->has('category') ? 'active' : ''); ?>">
-                    <span class="cat-nav-icon">🏠</span>
-                    <span style="flex:1">All Products</span>
-                </a>
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = \App\Models\Category::active()->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <a href="<?php echo e(route('shop.index', ['category' => $cat->slug])); ?>"
-                        class="border-b border-gray-100 cat-nav-link <?php echo e(request('category') === $cat->slug ? 'active' : ''); ?>"
-                        onclick="if(window.innerWidth<1024)toggleSidebar()">
-                        <span class="cat-nav-icon"><?php echo e($cat->icon); ?></span>
-                        <span
-                            style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?php echo e($cat->name); ?></span>
-                        
-                    </a>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-            </nav>
-
-            
-            <div style="margin:14px 10px;padding:14px;background:var(--teal-bg);border-radius:12px;text-align:center">
-                <div style="font-size:26px;margin-bottom:6px">💊</div>
-                <p style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:3px">Need a prescription?</p>
-                <p style="font-size:11px;color:#6b7280;margin-bottom:10px;line-height:1.4">Upload your Rx — we'll pick
-                    the right medicines</p>
-                <a href="<?php echo e(route('checkout.index')); ?>"
-                    style="display:block;background:var(--teal);color:#fff;font-size:12px;font-weight:700;padding:9px;border-radius:8px;text-decoration:none">
-                    Upload Prescription
-                </a>
-            </div>
-        </aside>
-
-        
-        <main style="flex:1;overflow-x:auto">
-            <section class="container sm:px-1 md:px-3 lg:px-4 full-width" style="min-height: 90vh">
-                <?php echo $__env->yieldContent('content'); ?>
-            </section>
-            
-
-            <footer style="background:#111827;color:#9ca3af;padding:0 0px 40px 0px;margin-top:0">
-                <div style="background:#fff;border-bottom:1px solid #e5e7eb" class=" w-full">
-                    <div style="margin:0 auto;padding:10px 16px">
-                        <div
-                            style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['fas fa-truck', 'Fast Delivery', '24-48hrs'], ['fas fa-headset', '24/7 Support', 'Always here'], ['fas fa-shield-alt', 'Secure Pay', 'bKash · Card']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$icon, $text, $sub]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
-                                    <i class="<?php echo e($icon); ?>" style="color:var(--teal);font-size:10px"></i>
-                                    <div>
-                                        <p style="font-size:10px;font-weight:700;color:#1f2937;margin:0">
-                                            <?php echo e($text); ?></p>
-                                        <p style="font-size:10px;color:#9ca3af;margin:0"><?php echo e($sub); ?></p>
-                                    </div>
-                                </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                <div style="max-width:1400px;margin:0 auto;padding:16px">
-                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-bottom:32px">
-                        <div style="grid-column:1/-1">
-                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-                                <div
-                                    style="width:64px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
-                                    ঔষ<span class=" text-red-400">ধা</span>লয়
-                                </div>
-                            </div>
-                            <p style="font-size:12px;line-height:1.7;margin-bottom:8px">Trusted Health and Wellness
-                                Shop in Bangladesh</p>
-                        </div>
-                        <div>
-                            <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account'], ['legal.privacy', 'Privacy Policy'], ['legal.terms', 'Terms'], ['legal.returns', 'Return Policy']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$rt, $lb]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <a href="<?php echo e(route($rt)); ?>"
-                                    style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
-                                    @mouseenter="$el.style.color='#fff'"
-                                    @mouseleave="$el.style.color='#9ca3af'"><?php echo e($lb); ?></a>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                        </div>
-                        <div>
-                            <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Contact</p>
-                            <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-phone"
-                                    style="color:var(--teal-light);margin-right:6px"></i><?php echo e(\App\Models\Setting::get('site_phone', '09610016778')); ?>
-
-                            </p>
-                            <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-envelope"
-                                    style="color:var(--teal-light);margin-right:6px"></i><?php echo e(\App\Models\Setting::get('site_email', 'info@ousodhaloy.com')); ?>
-
-                            </p>
-                            <p style="font-size:12px"><i class="fas fa-map-marker-alt"
-                                    style="color:var(--teal-light);margin-right:6px"></i><?php echo e(\App\Models\Setting::get('site_address', 'Dhaka, Bangladesh')); ?>
-
-                            </p>
-                        </div>
-                    </div>
-                    <div
-                        style="border-top:1px solid #1f2937;padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px">
-                        <p>© <?php echo e(date('Y')); ?> <?php echo e(\App\Models\Setting::get('site_name', 'Ousodhaloy')); ?> Ltd. All
-                            rights
-                            reserved.
-                        </p>
-                        <div style="display:flex;gap:14px">
-                            <span><i class="fas fa-lock" style="color:var(--teal-light);margin-right:4px"></i>SSL
-                                Secured</span>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-        </main>
-    </div>
+    
+    <main style="overflow-x:auto; margin: 0 auto; padding: 0 20px; min-height: 80vh;">
+        <?php echo $__env->yieldContent('content'); ?>
+    </main>
 
     
     <div id="sidebar-overlay" onclick="toggleSidebar()"
         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199">
     </div>
+    
+    <footer style="background:#111827;color:#9ca3af;padding:0 0px 40px 0px;margin-top:0">
+        <div style="background:#fff;border-bottom:1px solid #e5e7eb" class=" w-full">
+            <div style="margin:0 auto;padding:10px 16px">
+                <div style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['fas fa-truck', 'Fast Delivery', '24-48hrs'], ['fas fa-headset', '24/7 Support', 'Always here'], ['fas fa-shield-alt', 'Secure Pay', 'bKash · Card']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$icon, $text, $sub]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+                            <i class="<?php echo e($icon); ?>" style="color:var(--teal);font-size:10px"></i>
+                            <div>
+                                <p style="font-size:10px;font-weight:700;color:#1f2937;margin:0">
+                                    <?php echo e($text); ?></p>
+                                <p style="font-size:10px;color:#9ca3af;margin:0"><?php echo e($sub); ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <div style="padding:20px">
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-bottom:32px">
+                <div style="grid-column:1/-1">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+                        <div
+                            style="width:64px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
+                            ঔষ<span class=" text-red-400">ধা</span>লয়
+                        </div>
+                    </div>
+                    <p style="font-size:12px;line-height:1.7;margin-bottom:8px">Trusted Health and Wellness
+                        Shop in Bangladesh</p>
+                </div>
+                <div>
+                    <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account'], ['legal.privacy', 'Privacy Policy'], ['legal.terms', 'Terms'], ['legal.returns', 'Return Policy']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$rt, $lb]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <a href="<?php echo e(route($rt)); ?>"
+                            style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
+                            @mouseenter="$el.style.color='#fff'"
+                            @mouseleave="$el.style.color='#9ca3af'"><?php echo e($lb); ?></a>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+                <div>
+                    <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Contact</p>
+                    <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-phone"
+                            style="color:var(--teal-light);margin-right:6px"></i><?php echo e(\App\Models\Setting::get('site_phone', '09610016778')); ?>
+
+                    </p>
+                    <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-envelope"
+                            style="color:var(--teal-light);margin-right:6px"></i><?php echo e(\App\Models\Setting::get('site_email', 'info@ousodhaloy.com')); ?>
+
+                    </p>
+                    <p style="font-size:12px"><i class="fas fa-map-marker-alt"
+                            style="color:var(--teal-light);margin-right:6px"></i><?php echo e(\App\Models\Setting::get('site_address', 'Dhaka, Bangladesh')); ?>
+
+                    </p>
+                </div>
+            </div>
+            <div
+                style="border-top:1px solid #1f2937;padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px">
+                <p>© <?php echo e(date('Y')); ?> <?php echo e(\App\Models\Setting::get('site_name', 'Ousodhaloy')); ?> Ltd. All
+                    rights
+                    reserved.
+                </p>
+                <div style="display:flex;gap:14px">
+                    <span><i class="fas fa-lock" style="color:var(--teal-light);margin-right:4px"></i>SSL
+                        Secured</span>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($messengerUrl): ?>
