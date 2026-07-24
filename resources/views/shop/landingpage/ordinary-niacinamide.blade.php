@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক</title>
     <meta name="description"
-        content="Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳1,099।" />
+        content="Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳999।" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap"
@@ -336,7 +336,7 @@
 
         /* PRICE SECTION */
         .price-section {
-            padding: 32px 20px 0;
+            padding: 12px 20px 0;
         }
 
         .price-card {
@@ -1163,7 +1163,7 @@
                 </a>
             </div>
             <div class="nav-right">
-                <div class="nav-price">৳1,099</div>
+                <div class="nav-price">৳999</div>
                 <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn nav-cta"
                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                     data-price="{{ $product->effective_price }}">অর্ডার করুন</a>
@@ -1176,7 +1176,7 @@
      
 
         <div class="hero-img-wrap">
-            <img src="{{ asset('storage/media/the_ordinary_ousodhaloy.jpg') }}"
+            <img src="{{ asset('storage/media/niacinamide.jpg') }}"
                 alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
                 onerror="
         this.style.display = 'none';
@@ -1223,17 +1223,16 @@
     <!-- PRICE CARD -->
     <section class="price-section" id="order">
         <div class="price-card">
-            <div class="sale-badge">🔥 Flash Sale — সীমিত সময়</div>
+            <div class="sale-badge">🔥 Clearance Sale — সীমিত সময়</div>
 
             <div class="price-row">
-                <div class="price-now">৳1,099</div>
+                <div class="price-now">৳999</div>
                 <div class="price-was">৳1,620</div>
-                <div class="price-save">37.04% OFF</div>
+                <div class="price-save">42.04% OFF</div>
                 <div class="price-per">
                 30ml
             </div>
             </div>
-            
 
             <div class="countdown">
                 <div class="cd-label">⏰ অফার শেষ হবে:</div>
@@ -1268,9 +1267,7 @@
                 </div>
                 <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn cta-main"
                     id="buynow-btn" data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                    data-price="{{ $product->effective_price }}">
-
-এখনই অর্ডার করুন ⚡
+                    data-price="{{ $product->effective_price }}">এখনই অর্ডার করুন ⚡
                 </a>
             </div>
 
@@ -1617,7 +1614,7 @@
         </p>
         <a href="{{ route('buy.now', ['product' => $product->id, 'qty' => 1]) }}" class="buynow-btn cta-final-btn"
             data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-            data-price="{{ $product->effective_price }}"> ⚡ মাত্র ৳1,099 —
+            data-price="{{ $product->effective_price }}"> ⚡ মাত্র ৳999 —
              Order Now
         </a>
         <div>
@@ -1644,7 +1641,7 @@
         <div class="s-info">
             <div class="s-name">Niacinamide 10% + Zinc 1% · 30ml</div>
             <div class="s-price">
-                ৳1,099
+                ৳999
                 <span
                     style="font-size: 12px; color: var(--gray2); text-decoration: line-through; font-weight: 400;">৳১,২০০</span>
             </div>

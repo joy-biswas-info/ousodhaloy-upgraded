@@ -1595,7 +1595,7 @@
         <div>
             <div class="money-back">
                 <strong>✓ &nbsp;·&nbsp;Cash on
-                    Delivery&nbsp;·&nbsp;Free shipping ৳1800+
+                    Delivery&nbsp;
                 </strong>
             </div>
         </div>

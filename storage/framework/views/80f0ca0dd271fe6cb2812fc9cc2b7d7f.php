@@ -37,7 +37,7 @@
                             class="fas fa-star text-[10px] <?php echo e($i <= $product->average_rating ? 'text-yellow-400' : 'text-gray-200'); ?>"></i>
                     <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                <span class="text-[10px] text-gray-400">(<?php echo e($product->rating_count); ?>)</span>
+                <span class="text-[10px] text-gray-400">(220+)</span>
             </div>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->is_low_stock): ?>

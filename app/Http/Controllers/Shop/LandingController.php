@@ -29,6 +29,13 @@ class LandingController extends Controller
             ->first();
         return view('shop.landingpage.ordinary-niacinamide', compact('product'));
     }
+    public function salicylic()
+    {
+        $product = Product::with('brand', 'category')
+            ->where('id', 15)
+            ->first();
+        return view('shop.landingpage.salicylic_acid_landing', compact('product'));
+    }
     public function buyNow(Product $product, int $qty = 1)
     {
         $qty = max(1, min(10, $qty));

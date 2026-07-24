@@ -39,7 +39,6 @@ tr:nth-child(even) td { background: #f9fafb; }
         <div class="brand-name">Ousodhaloy</div>
         <div class="brand-sub"><?php echo e(\App\Models\Setting::get('site_address', 'Dhaka, Bangladesh')); ?></div>
         <div class="brand-sub"><?php echo e(\App\Models\Setting::get('site_phone', '09610016778')); ?> · <?php echo e(\App\Models\Setting::get('site_email', 'info@ousodhaloy.com')); ?></div>
-        <div class="brand-sub">DGDA Licensed · 100% Genuine Products</div>
     </div>
     <div class="invoice-meta">
         <h2>TAX INVOICE</h2>
