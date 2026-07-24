@@ -31,7 +31,7 @@
         <a href="{{ route('shop.product', $product->slug) }}">
             <h3 class="card-name">{{ $product->name }}</h3>
         </a>
-        @if ($product->average_rating >= 0)
+        @if ($product->average_rating > 0)
             <div class="flex items-center gap-1 mb-1">
                 <div class="flex">
                     @for ($i = 1; $i <= 5; $i++)
@@ -39,7 +39,7 @@
                             class="fas fa-star text-[10px] {{ $i <= $product->average_rating ? 'text-yellow-400' : 'text-gray-200' }}"></i>
                     @endfor
                 </div>
-                <span class="text-[10px] text-gray-400">(220+)</span>
+                <span class="text-[10px] text-gray-400">(200+)</span>
             </div>
         @endif
         @if ($product->is_low_stock)

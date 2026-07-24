@@ -29,7 +29,7 @@
         <a href="<?php echo e(route('shop.product', $product->slug)); ?>">
             <h3 class="card-name"><?php echo e($product->name); ?></h3>
         </a>
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->average_rating >= 0): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->average_rating > 0): ?>
             <div class="flex items-center gap-1 mb-1">
                 <div class="flex">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php for($i = 1; $i <= 5; $i++): ?>
@@ -37,7 +37,7 @@
                             class="fas fa-star text-[10px] <?php echo e($i <= $product->average_rating ? 'text-yellow-400' : 'text-gray-200'); ?>"></i>
                     <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                <span class="text-[10px] text-gray-400">(220+)</span>
+                <span class="text-[10px] text-gray-400">(200+)</span>
             </div>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($product->is_low_stock): ?>
