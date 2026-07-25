@@ -1297,7 +1297,7 @@
                 <div class="pay-badge">💵 Cash on Delivery</div>
             </div>
             <div class="ship-note">
-                <strong>ডেলিভারি ফি ঢাকার ভিতর 80 টাকা, ঢাকার বাইরে 120 টাকা</strong> · ২৪–৪৮ ঘণ্টায়
+                <strong>ডেলিভারি ফি ঢাকার ভিতর 80 টাকা, ঢাকার বাইরে 110 টাকা</strong> · ২৪–৪৮ ঘণ্টায়
                 পৌঁছাবে
             </div>
             <div class="caution-box">

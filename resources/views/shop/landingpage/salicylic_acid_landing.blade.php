@@ -1637,7 +1637,7 @@ $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') 
       </div>
 
       <div class="ship-note">
-        <strong>ডেলিভারি ফি ঢাকার ভিতর ৳80, ঢাকার বাইরে ৳120</strong> · ২৪–৪৮ ঘণ্টায় পৌঁছাবে<br />
+        <strong>ডেলিভারি ফি ঢাকার ভিতর ৳80, ঢাকার বাইরে ৳110</strong> · ২৪–৪৮ ঘণ্টায় পৌঁছাবে<br />
         <span style="color:var(--green-mid);font-weight:600;">৳1,800+ অর্ডারে FREE Delivery সারা Bangladesh</span>
       </div>
 
