@@ -50,26 +50,20 @@ class MediaController extends Controller
 
         foreach ($request->file('files') as $file) {
             try {
-                // SEO filename
-                $seoName = Media::seoFilename($file->getClientOriginalName(), $folder);
-                $path = $file->storeAs($folder, $seoName, 'public');
-
-                // Get image dimensions
-                $width = $height = null;
-                try {
-                    [$width, $height] = getimagesize($file->getRealPath());
-                } catch (\Throwable $e) {
-                }
+                // Resize + convert to WebP — this is the single upload path shared by
+                // the product form and the landing-page hero picker, so optimizing
+                // here means every future upload is fast without a manual pass.
+                $stored = Media::storeUploadedImage($file, $folder);
 
                 $media = Media::create([
-                    'filename' => $seoName,
+                    'filename' => $stored['filename'],
                     'original_name' => $file->getClientOriginalName(),
-                    'path' => $path,
-                    'mime_type' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                    'width' => $width,
-                    'height' => $height,
-                    'alt_text' => $altText ?: pathinfo($seoName, PATHINFO_FILENAME),
+                    'path' => $stored['path'],
+                    'mime_type' => $stored['mime_type'],
+                    'size' => $stored['size'],
+                    'width' => $stored['width'],
+                    'height' => $stored['height'],
+                    'alt_text' => $altText ?: pathinfo($stored['filename'], PATHINFO_FILENAME),
                     'folder' => $folder,
                     'uploaded_by' => Auth::id(),
                 ]);

@@ -139,23 +139,21 @@ class LandingPageController extends Controller
     {
         if ($request->hasFile('hero_image_upload')) {
             $file = $request->file('hero_image_upload');
-            $seoName = Media::seoFilename($file->getClientOriginalName(), 'landing-pages');
-            $path = $file->storeAs('landing-pages', $seoName, 'public');
+            $stored = Media::storeUploadedImage($file, 'landing-pages');
 
-            [$width, $height] = @getimagesize($file->getRealPath()) ?: [null, null];
             Media::create([
-                'filename' => $seoName,
+                'filename' => $stored['filename'],
                 'original_name' => $file->getClientOriginalName(),
-                'path' => $path,
-                'mime_type' => $file->getMimeType(),
-                'size' => $file->getSize(),
-                'width' => $width,
-                'height' => $height,
-                'alt_text' => pathinfo($seoName, PATHINFO_FILENAME),
+                'path' => $stored['path'],
+                'mime_type' => $stored['mime_type'],
+                'size' => $stored['size'],
+                'width' => $stored['width'],
+                'height' => $stored['height'],
+                'alt_text' => pathinfo($stored['filename'], PATHINFO_FILENAME),
                 'folder' => 'landing-pages',
                 'uploaded_by' => auth()->id(),
             ]);
-            $landingPage->update(['hero_image' => $path]);
+            $landingPage->update(['hero_image' => $stored['path']]);
         } elseif ($request->filled('hero_image_media_path')) {
             $landingPage->update(['hero_image' => $request->hero_image_media_path]);
         }

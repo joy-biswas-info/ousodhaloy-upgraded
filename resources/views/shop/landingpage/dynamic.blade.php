@@ -25,6 +25,11 @@
     <link rel="canonical" href="{{ url()->current() }}" />
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml" />
 
+    {{-- Preload the LCP element (hero product image) so the browser fetches it
+         during the preload scan, before it even finishes parsing <head> —
+         this is on top of the fetchpriority="high" already on the <img> tag itself. --}}
+    <link rel="preload" as="image" href="{{ $metaImage }}" fetchpriority="high" />
+
     <meta property="og:type" content="product" />
     <meta property="og:title" content="{{ $metaTitle }}" />
     <meta property="og:description" content="{{ $metaDescription }}" />

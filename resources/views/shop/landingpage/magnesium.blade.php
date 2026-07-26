@@ -1,12 +1,31 @@
 <!doctype html>
 <html lang="bn">
+@php
+    $metaTitle = 'Triple Magnesium Complex — ঘুম। রিল্যাক্স। রিকভারি।';
+    $metaDescription = '৩-in-১ Magnesium Glycinate + Malate + Citrate। 4০০mg প্রতি সার্ভিং। 90 ভেজি ক্যাপস। Flash sale মাত্র ৳999।';
+    $metaImage = asset('storage/media/magnesium-capsules-magnesium-glycinate-magnesium-citrate-magnesium-malate-triple-magnesium-complex-main.webp');
+@endphp
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Triple Magnesium Complex — ঘুম। রিল্যাক্স। রিকভারি।</title>
-    <meta name="description"
-        content="৩-in-১ Magnesium Glycinate + Malate + Citrate। 4০০mg প্রতি সার্ভিং। 90 ভেজি ক্যাপস। Flash sale মাত্র ৳999।" />
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}" />
+    <link rel="canonical" href="{{ url()->current() }}" />
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml" />
+    <link rel="preload" as="image" href="{{ $metaImage }}" fetchpriority="high" />
+
+    <meta property="og:type" content="product" />
+    <meta property="og:title" content="{{ $metaTitle }}" />
+    <meta property="og:description" content="{{ $metaDescription }}" />
+    <meta property="og:image" content="{{ $metaImage }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:locale" content="bn_BD" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $metaTitle }}" />
+    <meta name="twitter:description" content="{{ $metaDescription }}" />
+    <meta name="twitter:image" content="{{ $metaImage }}" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap"
@@ -1208,12 +1227,16 @@
         </div>
 
         <div class="hero-img-wrap">
-            <img src="{{ asset('storage/media/magnesium-capsules-magnesium-glycinate-magnesium-citrate-magnesium-malate-triple-magnesium-complex-main.jpg') }}"
-                alt="Triple Magnesium Complex 400mg — 90 Veggie Capsules" width="270" height="270" loading="eager"
-                onerror="
-        this.style.display = 'none';
-        this.nextElementSibling.style.display = 'flex';
-     " />
+            <picture>
+                <source srcset="{{ asset('storage/media/magnesium-capsules-magnesium-glycinate-magnesium-citrate-magnesium-malate-triple-magnesium-complex-main.webp') }}" type="image/webp">
+                <img src="{{ asset('storage/media/magnesium-capsules-magnesium-glycinate-magnesium-citrate-magnesium-malate-triple-magnesium-complex-main.jpg') }}"
+                    alt="Triple Magnesium Complex 400mg — 90 Veggie Capsules" width="270" height="270" loading="eager"
+                    fetchpriority="high" decoding="async"
+                    onerror="
+            this.closest('picture').style.display = 'none';
+            this.closest('picture').nextElementSibling.style.display = 'flex';
+         " />
+            </picture>
             <div
                 style="
             display: none;

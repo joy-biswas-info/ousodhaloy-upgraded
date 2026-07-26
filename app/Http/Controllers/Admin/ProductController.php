@@ -123,25 +123,17 @@ class ProductController extends Controller
         $request->validate(['image' => 'required|image|mimes:jpeg,png,webp,gif|max:5120']);
 
         $file = $request->file('image');
-        $seoName = \App\Models\Media::seoFilename($file->getClientOriginalName(), 'products');
-        $path = $file->storeAs('products', $seoName, 'public');
-
-        // Dimensions
-        $width = $height = null;
-        try {
-            [$width, $height] = getimagesize($file->getRealPath());
-        } catch (\Throwable $e) {
-        }
+        $stored = \App\Models\Media::storeUploadedImage($file, 'products');
 
         $media = \App\Models\Media::create([
-            'filename' => $seoName,
+            'filename' => $stored['filename'],
             'original_name' => $file->getClientOriginalName(),
-            'path' => $path,
-            'mime_type' => $file->getMimeType(),
-            'size' => $file->getSize(),
-            'width' => $width,
-            'height' => $height,
-            'alt_text' => pathinfo($seoName, PATHINFO_FILENAME),
+            'path' => $stored['path'],
+            'mime_type' => $stored['mime_type'],
+            'size' => $stored['size'],
+            'width' => $stored['width'],
+            'height' => $stored['height'],
+            'alt_text' => pathinfo($stored['filename'], PATHINFO_FILENAME),
             'folder' => 'products',
             'uploaded_by' => auth()->id(),
         ]);
@@ -214,29 +206,22 @@ class ProductController extends Controller
             }
 
             $file = $request->file('thumbnail');
-            $seoName = \App\Models\Media::seoFilename($file->getClientOriginalName(), 'products');
-            $path = $file->storeAs('products', $seoName, 'public');
-
-            $width = $height = null;
-            try {
-                [$width, $height] = getimagesize($file->getRealPath());
-            } catch (\Throwable $e) {
-            }
+            $stored = \App\Models\Media::storeUploadedImage($file, 'products');
 
             \App\Models\Media::create([
-                'filename' => $seoName,
+                'filename' => $stored['filename'],
                 'original_name' => $file->getClientOriginalName(),
-                'path' => $path,
-                'mime_type' => $file->getMimeType(),
-                'size' => $file->getSize(),
-                'width' => $width,
-                'height' => $height,
-                'alt_text' => pathinfo($seoName, PATHINFO_FILENAME),
+                'path' => $stored['path'],
+                'mime_type' => $stored['mime_type'],
+                'size' => $stored['size'],
+                'width' => $stored['width'],
+                'height' => $stored['height'],
+                'alt_text' => pathinfo($stored['filename'], PATHINFO_FILENAME),
                 'folder' => 'products',
                 'uploaded_by' => auth()->id(),
             ]);
 
-            $product->update(['thumbnail' => $path]);
+            $product->update(['thumbnail' => $stored['path']]);
 
         } elseif ($request->filled('thumbnail_media_path')) {
             // Picked from media library — just store the path

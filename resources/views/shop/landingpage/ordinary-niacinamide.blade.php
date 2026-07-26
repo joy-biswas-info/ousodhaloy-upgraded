@@ -3,7 +3,10 @@
 @php
     $metaTitle = 'The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক';
     $metaDescription = 'Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳999।';
-    $metaImage = asset('storage/media/niacinamide.jpg');
+    // Was pointing at niacinamide.jpg, which isn't the image actually shown on the
+    // page (that's the_ordinary_ousodhaloy.jpg in the hero) — fixed so ad/social
+    // link previews match what visitors actually see.
+    $metaImage = asset('storage/media/the_ordinary_ousodhaloy.webp');
 @endphp
 
 <head>
@@ -13,6 +16,7 @@
     <meta name="description" content="{{ $metaDescription }}" />
     <link rel="canonical" href="{{ url()->current() }}" />
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml" />
+    <link rel="preload" as="image" href="{{ asset('storage/media/the_ordinary_ousodhaloy.webp') }}" fetchpriority="high" />
 
     {{-- Open Graph / Twitter — matters here since this page is a Meta Ads landing target --}}
     <meta property="og:type" content="product" />
@@ -1197,13 +1201,16 @@
      
 
         <div class="hero-img-wrap">
-            <img src="{{ asset('storage/media/the_ordinary_ousodhaloy.jpg') }}"
-                alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
-                fetchpriority="high" decoding="async"
-                onerror="
-        this.style.display = 'none';
-        this.nextElementSibling.style.display = 'flex';
-     " />
+            <picture>
+                <source srcset="{{ asset('storage/media/the_ordinary_ousodhaloy.webp') }}" type="image/webp">
+                <img src="{{ asset('storage/media/the_ordinary_ousodhaloy.jpg') }}"
+                    alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
+                    fetchpriority="high" decoding="async"
+                    onerror="
+            this.closest('picture').style.display = 'none';
+            this.closest('picture').nextElementSibling.style.display = 'flex';
+         " />
+            </picture>
             <div
                 style="
             display: none;

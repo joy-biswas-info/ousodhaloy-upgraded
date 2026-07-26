@@ -87,4 +87,66 @@ class Media extends Model
             ->orWhere('original_name', $filename)
             ->first();
     }
+
+    /**
+     * Resize + re-encode an uploaded image as WebP and store it. Cuts typical
+     * product/hero photo weight by 70-90% with no visible quality loss — this is
+     * the single choke point (MediaController::store) that both the product form
+     * and the landing-page hero picker upload through, so fixing it here means
+     * every future upload is fast by default instead of needing a manual pass.
+     * Not used for prescriptions — those must stay as the customer uploaded them.
+     */
+    public static function storeOptimizedImage(
+        \Illuminate\Http\UploadedFile $file,
+        string $folder = 'media',
+        int $maxDimension = 1600,
+        int $quality = 82
+    ): array {
+        $base = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'image';
+
+        $candidate = "{$base}.webp";
+        $counter = 2;
+        while (Storage::disk('public')->exists("{$folder}/{$candidate}")) {
+            $candidate = "{$base}-{$counter}.webp";
+            $counter++;
+        }
+
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $image = $manager->read($file->getRealPath());
+        $image->scaleDown(width: $maxDimension, height: $maxDimension);
+        $encoded = (string) $image->toWebp(quality: $quality);
+
+        $path = "{$folder}/{$candidate}";
+        Storage::disk('public')->put($path, $encoded);
+
+        return [
+            'filename' => $candidate,
+            'path' => $path,
+            'mime_type' => 'image/webp',
+            'size' => strlen($encoded),
+            'width' => $image->width(),
+            'height' => $image->height(),
+        ];
+    }
+
+    /**
+     * Store an uploaded image, optimizing it unless it's a GIF (animated GIFs
+     * would silently lose their animation if re-encoded to WebP here, so those
+     * are stored as-is). Shared by every controller that accepts an image upload
+     * so none of them have to duplicate the "except GIF" branch themselves.
+     */
+    public static function storeUploadedImage(\Illuminate\Http\UploadedFile $file, string $folder = 'media'): array
+    {
+        if (strtolower($file->getClientOriginalExtension()) === 'gif') {
+            $seoName = static::seoFilename($file->getClientOriginalName(), $folder);
+            $path = $file->storeAs($folder, $seoName, 'public');
+            [$width, $height] = @getimagesize($file->getRealPath()) ?: [null, null];
+            return [
+                'filename' => $seoName, 'path' => $path, 'mime_type' => $file->getMimeType(),
+                'size' => $file->getSize(), 'width' => $width, 'height' => $height,
+            ];
+        }
+
+        return static::storeOptimizedImage($file, $folder);
+    }
 }

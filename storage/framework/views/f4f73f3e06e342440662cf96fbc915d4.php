@@ -25,6 +25,9 @@
     <link rel="canonical" href="<?php echo e(url()->current()); ?>" />
     <link rel="icon" href="<?php echo e(asset('favicon.svg')); ?>" type="image/svg+xml" />
 
+    
+    <link rel="preload" as="image" href="<?php echo e($metaImage); ?>" fetchpriority="high" />
+
     <meta property="og:type" content="product" />
     <meta property="og:title" content="<?php echo e($metaTitle); ?>" />
     <meta property="og:description" content="<?php echo e($metaDescription); ?>" />
