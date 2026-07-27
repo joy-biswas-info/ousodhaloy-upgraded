@@ -11,6 +11,8 @@
     $discountPercent = $landingPage->discount_percent;
     $messengerUrl = \App\Models\Setting::get('messenger_url');
     $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
+    $pixelAddToCart = \App\Models\Setting::get('meta_pixel_add_to_cart', 'true') === 'true';
+    $pixelInitiateCheckout = \App\Models\Setting::get('meta_pixel_initiate_checkout', 'true') === 'true';
 @endphp
 
 <head>
@@ -74,7 +76,7 @@
         button { font-family: inherit; cursor: pointer; border: none; outline: none; }
         input, select, textarea { font-family: inherit; font-size: 14px; }
 
-        .hero { padding: 44px 20px 0; background: radial-gradient(ellipse 80% 55% at 50% -5%, color-mix(in srgb, var(--accent) 16%, transparent) 0%, transparent 70%), var(--bg); text-align: center; overflow: hidden; }
+        .hero { padding: 44px 20px 40px; background: radial-gradient(ellipse 80% 55% at 50% -5%, color-mix(in srgb, var(--accent) 16%, transparent) 0%, transparent 70%), var(--bg); text-align: center; overflow: hidden; }
         .eyebrow { display: inline-flex; align-items: center; gap: 7px; background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); color: var(--accent-bright); padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 20px; }
         .blink { width: 7px; height: 7px; border-radius: 50%; background: var(--danger); animation: bl 1s infinite; }
         @keyframes bl { 0%,100% { opacity: 1; } 50% { opacity: .15; } }
@@ -84,7 +86,7 @@
         .problems { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 36px; }
         .prob { background: rgba(139,90,80,.08); border: 1px solid rgba(139,90,80,.16); border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 600; color: var(--muted); }
 
-        .hero-img-wrap { position: relative; display: inline-block; margin-bottom: -10px; }
+        .hero-img-wrap { position: relative; display: inline-block; margin-bottom: 22px; }
         .hero-img-wrap img { width: clamp(260px, 90vw, 560px); border-radius: 16px; filter: drop-shadow(0 20px 55px rgba(197,90,120,.28)); animation: flt 4s ease-in-out infinite; margin: 0 auto; }
         @keyframes flt { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
         .fbadge { position: absolute; background: rgba(255,255,255,.96); border: 1px solid rgba(139,90,80,.16); border-radius: 12px; padding: 9px 13px; display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; animation: flt2 3.5s ease-in-out infinite; box-shadow: 0 4px 20px rgba(139,90,80,.18); }
@@ -95,6 +97,14 @@
         .fbadge-t { font-size: 11px; font-weight: 700; }
         .fbadge-s { font-size: 10px; color: var(--muted); }
         @media (max-width: 540px) { .fbadge.f1 { right: -6px; } .fbadge.f2 { left: -6px; } }
+
+        {{-- Compact price + CTA shown in the hero, ahead of the full order
+             form further down the page — gives price transparency and a
+             fast path to order without opening with a bare checkout form. --}}
+        .hero-price-teaser { max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+        .hero-price-teaser .price-row { margin-bottom: 0; }
+        .hero-price-teaser .countdown { width: 100%; margin-bottom: 0; }
+        .hero-price-teaser .final-cta-btn { max-width: none; }
 
         .trust-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; padding: 28px 0; }
         .tpill { background: rgba(13,118,116,.1); border: 1px solid rgba(13,118,116,.25); color: var(--cta-bright); font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
@@ -238,7 +248,27 @@
     <div class="preview-banner">👁 PREVIEW — this page is a draft, not live to the public</div>
     @endif
 
-    <section class="hero">
+    {{-- Redesigned hero: hook (headline/problem) and product BEFORE the price
+         ask, so a cold ad click gets context first instead of a bare form.
+         The full order form now lives near the bottom, past the trust content —
+         this teaser + sticky bar + final CTA all just scroll down to it. --}}
+    <section class="hero" id="hero">
+        @if($landingPage->eyebrow_text)
+        <div class="eyebrow"><div class="blink"></div>{{ $landingPage->eyebrow_text }}</div>
+        @endif
+        <h1 class="hero-h1">{{ $landingPage->headline }}</h1>
+        @if($landingPage->subheadline)
+        <p class="hero-sub">{{ $landingPage->subheadline }}</p>
+        @endif
+
+        @if($landingPage->sectionEnabled('problems') && count($landingPage->section('problems')['items'] ?? []))
+        <div class="problems">
+            @foreach($landingPage->section('problems')['items'] as $prob)
+            <div class="prob">{{ $prob['icon'] ?? '' }} {{ $prob['text'] ?? '' }}</div>
+            @endforeach
+        </div>
+        @endif
+
         <div class="hero-img-wrap">
             <img src="{{ $metaImage }}" alt="{{ $product->name }}" width="370" height="370" loading="eager"
                 fetchpriority="high" decoding="async"
@@ -256,8 +286,189 @@
             </div>
             @endif
         </div>
+
+        <div class="hero-price-teaser">
+            @if($landingPage->badge_text)
+            <div class="sale-badge">{{ $landingPage->badge_text }}</div>
+            @endif
+
+            <div class="price-row" style="justify-content:center">
+                <div class="price-now">৳{{ number_format($price, 0) }}</div>
+                @if($comparePrice)
+                <div class="price-was">৳{{ number_format($comparePrice, 0) }}</div>
+                @endif
+                @if($discountPercent > 0)
+                <div class="price-save">{{ $discountPercent }}% OFF</div>
+                @endif
+            </div>
+
+            @if($landingPage->countdown_end_at)
+            <div class="countdown" style="width:100%">
+                <div class="cd-label">⏰ অফার শেষ হবে:</div>
+                <div class="cd-timer">
+                    <div class="cd-unit"><div class="cd-num" id="cd-d">00</div><div class="cd-lbl">দিন</div></div>
+                    <div class="cd-sep">:</div>
+                    <div class="cd-unit"><div class="cd-num" id="cd-h">00</div><div class="cd-lbl">ঘণ্টা</div></div>
+                    <div class="cd-sep">:</div>
+                    <div class="cd-unit"><div class="cd-num" id="cd-m">00</div><div class="cd-lbl">মিনিট</div></div>
+                    <div class="cd-sep">:</div>
+                    <div class="cd-unit"><div class="cd-num" id="cd-s">00</div><div class="cd-lbl">সেকেন্ড</div></div>
+                </div>
+            </div>
+            @endif
+
+            <a href="#order" class="final-cta-btn">⚡ এখনই অর্ডার করুন</a>
+        </div>
     </section>
 
+    @if($landingPage->sectionEnabled('trust_badges') && count($landingPage->section('trust_badges')['items'] ?? []))
+    <div class="trust-pills">
+        @foreach($landingPage->section('trust_badges')['items'] as $badge)
+        <div class="tpill">{{ $badge }}</div>
+        @endforeach
+    </div>
+    @endif
+
+    @if($landingPage->sectionEnabled('formula') && count($landingPage->section('formula')['items'] ?? []))
+    @php $formulaSec = $landingPage->section('formula'); @endphp
+    <section class="sec" style="background: radial-gradient(ellipse 60% 50% at 50% 100%, color-mix(in srgb, var(--accent) 7%, transparent) 0%, transparent 70%);">
+        @if($formulaSec['label']) <div class="sec-label">{{ $formulaSec['label'] }}</div> @endif
+        @if($formulaSec['heading']) <h2 class="sec-h2">{{ $formulaSec['heading'] }}</h2> @endif
+        @if($formulaSec['subheading']) <p class="sec-sub">{{ $formulaSec['subheading'] }}</p> @endif
+        <div class="grid-cards">
+            @foreach($landingPage->section('formula')['items'] as $f)
+            <div class="g-card">
+                <div class="g-icon">{{ $f['icon'] ?? '✨' }}</div>
+                <div class="g-title">{{ $f['title_en'] ?? '' }}</div>
+                @if(!empty($f['tag']))<div class="g-tag">{{ $f['tag'] }}</div>@endif
+                <div class="g-desc">{{ $f['desc'] ?? '' }}</div>
+            </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
+    @if($landingPage->sectionEnabled('benefits') && count($landingPage->section('benefits')['items'] ?? []))
+    @php $benefitsSec = $landingPage->section('benefits'); @endphp
+    <section class="sec" style="padding-top: 8px">
+        @if($benefitsSec['label']) <div class="sec-label">{{ $benefitsSec['label'] }}</div> @endif
+        @if($benefitsSec['heading']) <h2 class="sec-h2">{{ $benefitsSec['heading'] }}</h2> @endif
+        @if($benefitsSec['subheading']) <p class="sec-sub">{{ $benefitsSec['subheading'] }}</p> @endif
+        <div class="benefit-list">
+            @foreach($landingPage->section('benefits')['items'] as $b)
+            <div class="benefit">
+                <div class="b-icon">{{ $b['icon'] ?? '✨' }}</div>
+                <div>
+                    <div class="b-title">{{ $b['title_en'] ?? '' }}</div>
+                    <div class="b-desc">{{ $b['desc'] ?? '' }}</div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
+    @if($landingPage->sectionEnabled('how_to_use') && count($landingPage->section('how_to_use')['items'] ?? []))
+    @php $howToUseSec = $landingPage->section('how_to_use'); @endphp
+    <section class="sec" style="padding-top: 0">
+        @if($howToUseSec['label']) <div class="sec-label">{{ $howToUseSec['label'] }}</div> @endif
+        @if($howToUseSec['heading']) <h2 class="sec-h2">{{ $howToUseSec['heading'] }}</h2> @endif
+        @if($howToUseSec['subheading']) <p class="sec-sub">{{ $howToUseSec['subheading'] }}</p> @endif
+        <div class="how-grid">
+            @foreach($landingPage->section('how_to_use')['items'] as $i => $h)
+            <div class="how-card">
+                <div class="how-num">{{ $i + 1 }}</div>
+                <div class="how-title">{{ $h['title_en'] ?? '' }}</div>
+                <div class="how-desc">{{ $h['desc'] ?? '' }}</div>
+            </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
+    @if($landingPage->sectionEnabled('ingredients') && !empty($landingPage->section('ingredients')['text']))
+    @php $ingredientsSec = $landingPage->section('ingredients'); @endphp
+    <section class="sec" style="padding-top: 0">
+        @if($ingredientsSec['label']) <div class="sec-label">{{ $ingredientsSec['label'] }}</div> @endif
+        @if($ingredientsSec['heading']) <h2 class="sec-h2" style="margin-bottom: 22px">{{ $ingredientsSec['heading'] }}</h2> @endif
+        @if($ingredientsSec['subheading']) <p class="sec-sub">{{ $ingredientsSec['subheading'] }}</p> @endif
+        <div class="inci-box"><p>{{ $ingredientsSec['text'] }}</p></div>
+        @if(!empty($ingredientsSec['caution']))
+        <div class="caution-box" style="max-width:680px"><strong>⚠ সতর্কতা:</strong> {{ $ingredientsSec['caution'] }}</div>
+        @endif
+    </section>
+    @endif
+
+    @if($landingPage->sectionEnabled('reviews') && $reviews->isNotEmpty())
+    @php $reviewsSec = $landingPage->section('reviews'); @endphp
+    <section class="sec" style="padding-top: 0">
+        @if($reviewsSec['label']) <div class="sec-label">{{ $reviewsSec['label'] }}</div> @endif
+        @if($reviewsSec['heading']) <h2 class="sec-h2" style="margin-bottom: 22px">{{ $reviewsSec['heading'] }}</h2> @endif
+        <div class="stars-row">
+            <div class="stars">{{ str_repeat('★', round($product->average_rating)) }}{{ str_repeat('☆', 5 - round($product->average_rating)) }}</div>
+            <div class="stars-txt"><strong>{{ number_format($product->average_rating, 1) }}/৫</strong> — {{ $product->rating_count }}+ Verified Buyer-এর রেটিং</div>
+        </div>
+        <div class="reviews">
+            @foreach($reviews as $r)
+            <div class="review">
+                <div class="rev-stars">{{ str_repeat('★', $r->rating) }}{{ str_repeat('☆', 5 - $r->rating) }}</div>
+                @if($r->body)<div class="rev-body">"{{ $r->body }}"</div>@endif
+                <div class="rev-author">
+                    <div class="rev-av">{{ mb_strtoupper(mb_substr($r->display_name, 0, 1)) }}</div>
+                    <div class="rev-name">{{ $r->display_name }}</div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
+    @if($landingPage->sectionEnabled('trust_badges') && count($landingPage->section('trust_badges')['items'] ?? []))
+    <div class="vstrip">
+        @foreach($landingPage->section('trust_badges')['items'] as $badge)
+        <div class="vi">{{ $badge }}</div>
+        @endforeach
+    </div>
+    @endif
+
+    @if($landingPage->sectionEnabled('gallery') && count($landingPage->section('gallery')['images'] ?? []))
+    @php $gallerySec = $landingPage->section('gallery'); @endphp
+    <section class="sec" style="padding-top: 0">
+        @if($gallerySec['label']) <div class="sec-label">{{ $gallerySec['label'] }}</div> @endif
+        @if($gallerySec['heading']) <h2 class="sec-h2" style="margin-bottom: 26px">{{ $gallerySec['heading'] }}</h2> @endif
+        <div class="gallery-grid">
+            @foreach($landingPage->section('gallery')['images'] as $img)
+            <img src="{{ asset('storage/' . $img) }}" alt="{{ $product->name }}">
+            @endforeach
+        </div>
+    </section>
+    @endif
+
+    @if($landingPage->sectionEnabled('faq') && count($landingPage->section('faq')['items'] ?? []))
+    @php $faqSec = $landingPage->section('faq'); @endphp
+    <section class="sec">
+        @if($faqSec['label']) <div class="sec-label">{{ $faqSec['label'] }}</div> @endif
+        @if($faqSec['heading']) <h2 class="sec-h2" style="margin-bottom: 32px">{{ $faqSec['heading'] }}</h2> @endif
+        @if($faqSec['subheading']) <p class="sec-sub">{{ $faqSec['subheading'] }}</p> @endif
+        <div class="faq-list">
+            @foreach($landingPage->section('faq')['items'] as $faq)
+            <div class="faq-item">
+                <button class="faq-q" type="button">{{ $faq['q'] ?? '' }} <span class="ico">+</span></button>
+                <div class="faq-a">{{ $faq['a'] ?? '' }}</div>
+            </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
+    <section class="final-cta" style="padding-bottom: 8px">
+        <h2>আজই অর্ডার করুন <em>{{ $product->name }}</em></h2>
+        <p>{{ $landingPage->subheadline ?: 'সীমিত স্টক, সীমিত সময়ের অফার।' }}</p>
+    </section>
+
+    {{-- Full order form — reached here after the reader has seen the problem,
+         formula, benefits, ingredients, reviews and FAQ, plus via the hero
+         teaser CTA / sticky bar for anyone who wants to skip straight here. --}}
     <section class="price-section" id="order">
         <div class="price-card">
             @if($landingPage->badge_text)
@@ -273,21 +484,6 @@
                 <div class="price-save">{{ $discountPercent }}% OFF</div>
                 @endif
             </div>
-
-            @if($landingPage->countdown_end_at)
-            <div class="countdown">
-                <div class="cd-label">⏰ অফার শেষ হবে:</div>
-                <div class="cd-timer">
-                    <div class="cd-unit"><div class="cd-num" id="cd-d">00</div><div class="cd-lbl">দিন</div></div>
-                    <div class="cd-sep">:</div>
-                    <div class="cd-unit"><div class="cd-num" id="cd-h">00</div><div class="cd-lbl">ঘণ্টা</div></div>
-                    <div class="cd-sep">:</div>
-                    <div class="cd-unit"><div class="cd-num" id="cd-m">00</div><div class="cd-lbl">মিনিট</div></div>
-                    <div class="cd-sep">:</div>
-                    <div class="cd-unit"><div class="cd-num" id="cd-s">00</div><div class="cd-lbl">সেকেন্ড</div></div>
-                </div>
-            </div>
-            @endif
 
             <div id="order-form-wrap">
                 <div class="qty-row">
@@ -388,170 +584,6 @@
         </div>
     </section>
 
-    @if($landingPage->sectionEnabled('trust_badges') && count($landingPage->section('trust_badges')['items'] ?? []))
-    <div class="trust-pills">
-        @foreach($landingPage->section('trust_badges')['items'] as $badge)
-        <div class="tpill">{{ $badge }}</div>
-        @endforeach
-    </div>
-    @endif
-
-    <section class="hero">
-        @if($landingPage->eyebrow_text)
-        <div class="eyebrow"><div class="blink"></div>{{ $landingPage->eyebrow_text }}</div>
-        @endif
-        <h1 class="hero-h1">{{ $landingPage->headline }}</h1>
-        @if($landingPage->subheadline)
-        <p class="hero-sub">{{ $landingPage->subheadline }}</p>
-        @endif
-
-        @if($landingPage->sectionEnabled('problems') && count($landingPage->section('problems')['items'] ?? []))
-        <div class="problems">
-            @foreach($landingPage->section('problems')['items'] as $prob)
-            <div class="prob">{{ $prob['icon'] ?? '' }} {{ $prob['text'] ?? '' }}</div>
-            @endforeach
-        </div>
-        @endif
-    </section>
-
-    @if($landingPage->sectionEnabled('formula') && count($landingPage->section('formula')['items'] ?? []))
-    @php $formulaSec = $landingPage->section('formula'); @endphp
-    <section class="sec" style="background: radial-gradient(ellipse 60% 50% at 50% 100%, color-mix(in srgb, var(--accent) 7%, transparent) 0%, transparent 70%);">
-        @if($formulaSec['label']) <div class="sec-label">{{ $formulaSec['label'] }}</div> @endif
-        @if($formulaSec['heading']) <h2 class="sec-h2">{{ $formulaSec['heading'] }}</h2> @endif
-        @if($formulaSec['subheading']) <p class="sec-sub">{{ $formulaSec['subheading'] }}</p> @endif
-        <div class="grid-cards">
-            @foreach($landingPage->section('formula')['items'] as $f)
-            <div class="g-card">
-                <div class="g-icon">{{ $f['icon'] ?? '✨' }}</div>
-                <div class="g-title">{{ $f['title_en'] ?? '' }}</div>
-                @if(!empty($f['tag']))<div class="g-tag">{{ $f['tag'] }}</div>@endif
-                <div class="g-desc">{{ $f['desc'] ?? '' }}</div>
-            </div>
-            @endforeach
-        </div>
-    </section>
-    @endif
-
-    @if($landingPage->sectionEnabled('benefits') && count($landingPage->section('benefits')['items'] ?? []))
-    @php $benefitsSec = $landingPage->section('benefits'); @endphp
-    <section class="sec" style="padding-top: 8px">
-        @if($benefitsSec['label']) <div class="sec-label">{{ $benefitsSec['label'] }}</div> @endif
-        @if($benefitsSec['heading']) <h2 class="sec-h2">{{ $benefitsSec['heading'] }}</h2> @endif
-        @if($benefitsSec['subheading']) <p class="sec-sub">{{ $benefitsSec['subheading'] }}</p> @endif
-        <div class="benefit-list">
-            @foreach($landingPage->section('benefits')['items'] as $b)
-            <div class="benefit">
-                <div class="b-icon">{{ $b['icon'] ?? '✨' }}</div>
-                <div>
-                    <div class="b-title">{{ $b['title_en'] ?? '' }}</div>
-                    <div class="b-desc">{{ $b['desc'] ?? '' }}</div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </section>
-    @endif
-
-    @if($landingPage->sectionEnabled('how_to_use') && count($landingPage->section('how_to_use')['items'] ?? []))
-    @php $howToUseSec = $landingPage->section('how_to_use'); @endphp
-    <section class="sec" style="padding-top: 0">
-        @if($howToUseSec['label']) <div class="sec-label">{{ $howToUseSec['label'] }}</div> @endif
-        @if($howToUseSec['heading']) <h2 class="sec-h2">{{ $howToUseSec['heading'] }}</h2> @endif
-        @if($howToUseSec['subheading']) <p class="sec-sub">{{ $howToUseSec['subheading'] }}</p> @endif
-        <div class="how-grid">
-            @foreach($landingPage->section('how_to_use')['items'] as $i => $h)
-            <div class="how-card">
-                <div class="how-num">{{ $i + 1 }}</div>
-                <div class="how-title">{{ $h['title_en'] ?? '' }}</div>
-                <div class="how-desc">{{ $h['desc'] ?? '' }}</div>
-            </div>
-            @endforeach
-        </div>
-    </section>
-    @endif
-
-    @if($landingPage->sectionEnabled('ingredients') && !empty($landingPage->section('ingredients')['text']))
-    @php $ingredientsSec = $landingPage->section('ingredients'); @endphp
-    <section class="sec" style="padding-top: 0">
-        @if($ingredientsSec['label']) <div class="sec-label">{{ $ingredientsSec['label'] }}</div> @endif
-        @if($ingredientsSec['heading']) <h2 class="sec-h2" style="margin-bottom: 22px">{{ $ingredientsSec['heading'] }}</h2> @endif
-        @if($ingredientsSec['subheading']) <p class="sec-sub">{{ $ingredientsSec['subheading'] }}</p> @endif
-        <div class="inci-box"><p>{{ $ingredientsSec['text'] }}</p></div>
-        @if(!empty($ingredientsSec['caution']))
-        <div class="caution-box" style="max-width:680px"><strong>⚠ সতর্কতা:</strong> {{ $ingredientsSec['caution'] }}</div>
-        @endif
-    </section>
-    @endif
-
-    @if($landingPage->sectionEnabled('reviews') && $reviews->isNotEmpty())
-    @php $reviewsSec = $landingPage->section('reviews'); @endphp
-    <section class="sec" style="padding-top: 0">
-        @if($reviewsSec['label']) <div class="sec-label">{{ $reviewsSec['label'] }}</div> @endif
-        @if($reviewsSec['heading']) <h2 class="sec-h2" style="margin-bottom: 22px">{{ $reviewsSec['heading'] }}</h2> @endif
-        <div class="stars-row">
-            <div class="stars">{{ str_repeat('★', round($product->average_rating)) }}{{ str_repeat('☆', 5 - round($product->average_rating)) }}</div>
-            <div class="stars-txt"><strong>{{ number_format($product->average_rating, 1) }}/৫</strong> — {{ $product->rating_count }}+ Verified Buyer-এর রেটিং</div>
-        </div>
-        <div class="reviews">
-            @foreach($reviews as $r)
-            <div class="review">
-                <div class="rev-stars">{{ str_repeat('★', $r->rating) }}{{ str_repeat('☆', 5 - $r->rating) }}</div>
-                @if($r->body)<div class="rev-body">"{{ $r->body }}"</div>@endif
-                <div class="rev-author">
-                    <div class="rev-av">{{ strtoupper(substr($r->display_name, 0, 1)) }}</div>
-                    <div class="rev-name">{{ $r->display_name }}</div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </section>
-    @endif
-
-    @if($landingPage->sectionEnabled('trust_badges') && count($landingPage->section('trust_badges')['items'] ?? []))
-    <div class="vstrip">
-        @foreach($landingPage->section('trust_badges')['items'] as $badge)
-        <div class="vi">{{ $badge }}</div>
-        @endforeach
-    </div>
-    @endif
-
-    @if($landingPage->sectionEnabled('gallery') && count($landingPage->section('gallery')['images'] ?? []))
-    @php $gallerySec = $landingPage->section('gallery'); @endphp
-    <section class="sec" style="padding-top: 0">
-        @if($gallerySec['label']) <div class="sec-label">{{ $gallerySec['label'] }}</div> @endif
-        @if($gallerySec['heading']) <h2 class="sec-h2" style="margin-bottom: 26px">{{ $gallerySec['heading'] }}</h2> @endif
-        <div class="gallery-grid">
-            @foreach($landingPage->section('gallery')['images'] as $img)
-            <img src="{{ asset('storage/' . $img) }}" alt="{{ $product->name }}">
-            @endforeach
-        </div>
-    </section>
-    @endif
-
-    @if($landingPage->sectionEnabled('faq') && count($landingPage->section('faq')['items'] ?? []))
-    @php $faqSec = $landingPage->section('faq'); @endphp
-    <section class="sec">
-        @if($faqSec['label']) <div class="sec-label">{{ $faqSec['label'] }}</div> @endif
-        @if($faqSec['heading']) <h2 class="sec-h2" style="margin-bottom: 32px">{{ $faqSec['heading'] }}</h2> @endif
-        @if($faqSec['subheading']) <p class="sec-sub">{{ $faqSec['subheading'] }}</p> @endif
-        <div class="faq-list">
-            @foreach($landingPage->section('faq')['items'] as $faq)
-            <div class="faq-item">
-                <button class="faq-q" type="button">{{ $faq['q'] ?? '' }} <span class="ico">+</span></button>
-                <div class="faq-a">{{ $faq['a'] ?? '' }}</div>
-            </div>
-            @endforeach
-        </div>
-    </section>
-    @endif
-
-    <section class="final-cta">
-        <h2>আজই অর্ডার করুন <em>{{ $product->name }}</em></h2>
-        <p>{{ $landingPage->subheadline ?: 'সীমিত স্টক, সীমিত সময়ের অফার।' }}</p>
-        <a href="#order" class="final-cta-btn">⚡ মাত্র ৳{{ number_format($price, 0) }} — Order Now</a>
-    </section>
-
     <footer>
         <p>© {{ date('Y') }} Ousodhaloy.com · Bangladesh</p>
         <div class="footer-links">
@@ -622,6 +654,35 @@
         recalcDelivery();
     });
     document.getElementById('district-select').addEventListener('change', recalcDelivery);
+
+    // ── AddToCart pixel — fired once, on first "buy now" CTA click ──
+    // (this one-page flow has no literal cart, so a CTA click is the intent signal)
+    @if($pixelAddToCart)
+    var addToCartFired = false;
+    function trackAddToCart() {
+        if (addToCartFired || !window.fbTrack) return;
+        addToCartFired = true;
+        window.fbTrack('AddToCart', {
+            content_ids: ['{{ $product->id }}'], content_name: @json($product->name),
+            content_type: 'product', value: unitPrice * qty, currency: 'BDT'
+        });
+    }
+    document.querySelectorAll('a[href="#order"]').forEach(function (el) {
+        el.addEventListener('click', trackAddToCart);
+    });
+    @endif
+
+    // ── InitiateCheckout pixel — fired once, on first interaction with the order form ──
+    // (there's no separate checkout page here, so "starts filling the form" is the equivalent moment)
+    @if($pixelInitiateCheckout)
+    document.getElementById('order-form').addEventListener('focusin', function () {
+        if (!window.fbTrack) return;
+        window.fbTrack('InitiateCheckout', {
+            content_ids: ['{{ $product->id }}'], content_type: 'product',
+            num_items: qty, value: unitPrice * qty, currency: 'BDT'
+        });
+    }, { once: true });
+    @endif
 
     async function recalcDelivery() {
         var division = document.getElementById('division-select').value;
@@ -700,11 +761,13 @@
         }
     });
 
-    // ── Sticky bar ──
+    // ── Sticky bar ── shows once the hero scrolls out of view, so it stays
+    // available through all the content sections leading up to the order
+    // form (which now sits near the bottom, not right under the hero).
     var stickyObserver = new IntersectionObserver(function (entries) {
         document.getElementById('sticky').classList.toggle('show', !entries[0].isIntersecting);
     }, { threshold: 0 });
-    stickyObserver.observe(document.getElementById('order'));
+    stickyObserver.observe(document.getElementById('hero'));
 
     // ── FAQ accordion ──
     document.querySelectorAll('.faq-q').forEach(function (btn) {
