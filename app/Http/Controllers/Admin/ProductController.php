@@ -267,9 +267,14 @@ class ProductController extends Controller
         if (!$tabs)
             return [];
 
+        $cachePath = storage_path('app/htmlpurifier');
+        if (!is_dir($cachePath)) {
+            mkdir($cachePath, 0755, true);
+        }
+
         $config = \HTMLPurifier_Config::createDefault();
         $config->set('HTML.Allowed', 'p,br,strong,b,em,i,u,ul,ol,li,h3,h4,h5,h6,a[href],span,table,thead,tbody,tr,td,th,img[src|alt]');
-        $config->set('Cache.SerializerPath', storage_path('app/htmlpurifier'));
+        $config->set('Cache.SerializerPath', $cachePath);
         $purifier = new \HTMLPurifier($config);
 
         return array_map(function ($tab) use ($purifier) {
