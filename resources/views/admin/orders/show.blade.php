@@ -207,6 +207,15 @@
                     @else
                         <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded mt-1 inline-block">Guest</span>
                     @endif
+
+                    {{-- Pathao delivery history — fetched as soon as the page loads, not
+                         just when pushing, so it's visible while deciding anything about
+                         this order. See PathaoService::getUserSuccessRate() for the caveat
+                         about this endpoint not being from official Pathao docs. --}}
+                    <div id="pathao-success-rate" class="mt-2 pt-2 border-t rounded-lg text-xs text-gray-400">
+                        <i class="fas fa-spinner fa-spin mr-1"></i> Checking Pathao delivery history…
+                    </div>
+
                     @if($order->landingPage)
                         <div class="mt-2 pt-2 border-t">
                             <p class="text-[10px] text-gray-400 uppercase font-semibold mb-1">Came from</p>
@@ -320,14 +329,6 @@
                     </p>
                 </div>
 
-                {{-- Customer delivery success rate — fetched when the modal opens.
-                     Not from official Pathao docs (see PathaoService comment), so this
-                     degrades quietly to a neutral message rather than blocking the push
-                     if the lookup fails. --}}
-                <div id="pathao-success-rate" class="rounded-xl p-3 text-xs border bg-gray-50 text-gray-500">
-                    <i class="fas fa-spinner fa-spin mr-1"></i> Checking customer delivery history…
-                </div>
-
                 <div>
                     <label class="form-label">Recipient City *</label>
                     <select name="pathao_city_id" id="pathao-city" class="form-select"
@@ -376,55 +377,68 @@
             m.classList.remove('hidden');
             m.classList.add('flex');
             loadPathaoCities();
-            loadPathaoSuccessRate();
+        }
+
+        // Confirmed real response shape (from a live test):
+        // { customer_rating: "excellent_customer", customer: { total_delivery: 27, successful_delivery: 27 }, ... }
+        function formatRatingLabel(rating) {
+            if (!rating) return null;
+            return rating.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
         }
 
         async function loadPathaoSuccessRate() {
             const box = document.getElementById('pathao-success-rate');
             if (!box) return;
-            box.className = 'rounded-xl p-3 text-xs border bg-gray-50 text-gray-500';
-            box.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Checking customer delivery history…';
+            const base = 'mt-2 pt-2 border-t text-xs';
+            box.className = `${base} text-gray-400`;
+            box.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Checking Pathao delivery history…';
 
             try {
                 const res = await fetch(`{{ route('admin.orders.pathao-success-rate', $order) }}`);
                 const json = await res.json();
 
                 if (!json.success) {
-                    box.className = 'rounded-xl p-3 text-xs border bg-gray-50 text-gray-400';
-                    box.innerHTML = `<i class="fas fa-circle-question mr-1"></i> Delivery history unavailable — ${json.error || 'try again later'}.`;
+                    box.className = `${base} text-gray-400`;
+                    box.innerHTML = `<i class="fas fa-circle-question mr-1"></i> Pathao history unavailable — ${json.error || 'try again later'}.`;
                     return;
                 }
 
                 const d = json.data || {};
-                // Field names are a best guess (see PathaoService::getUserSuccessRate) —
-                // fall back to raw JSON if the shape doesn't match what we expect.
-                const rate = d.success_ratio ?? d.success_rate ?? d.rate ?? null;
-                const total = d.total ?? d.total_parcel ?? d.total_order ?? null;
+                const customer = d.customer || {};
+                const total = customer.total_delivery ?? null;
+                const successful = customer.successful_delivery ?? null;
+                const ratingLabel = formatRatingLabel(d.customer_rating);
 
-                if (rate === null) {
-                    box.className = 'rounded-xl p-3 text-xs border bg-gray-50 text-gray-500';
+                if (total === null || successful === null) {
+                    box.className = `${base} text-gray-400`;
                     box.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Got a response but couldn\'t read it — raw: '
-                        + '<code class="text-[10px]">' + JSON.stringify(d).slice(0, 200) + '</code>';
+                        + '<code class="text-[10px] break-all">' + JSON.stringify(d).slice(0, 200) + '</code>';
                     return;
                 }
 
-                const pct = parseFloat(rate);
+                if (total === 0) {
+                    box.className = `${base} text-gray-400`;
+                    box.innerHTML = '<i class="fas fa-circle-info mr-1"></i> New to Pathao — no delivery history yet.';
+                    return;
+                }
+
+                const pct = Math.round((successful / total) * 1000) / 10; // one decimal place
                 const level = pct >= 80 ? 'good' : pct >= 50 ? 'warn' : 'bad';
-                const styles = {
-                    good: 'bg-green-50 border-green-200 text-green-700',
-                    warn: 'bg-yellow-50 border-yellow-200 text-yellow-700',
-                    bad: 'bg-red-50 border-red-200 text-red-700',
-                };
+                const styles = { good: 'text-green-700', warn: 'text-yellow-700', bad: 'text-red-700' };
                 const icons = { good: 'fa-circle-check', warn: 'fa-triangle-exclamation', bad: 'fa-circle-exclamation' };
-                box.className = `rounded-xl p-3 text-xs border ${styles[level]}`;
-                box.innerHTML = `<i class="fas ${icons[level]} mr-1"></i> <strong>${pct}% success rate</strong>`
-                    + (total !== null ? ` across ${total} past ${total == 1 ? 'order' : 'orders'} on Pathao.` : ' on Pathao.')
-                    + (level === 'bad' ? ' Consider calling to confirm before dispatch.' : '');
+
+                box.className = `${base} ${styles[level]}`;
+                box.innerHTML = `<i class="fas ${icons[level]} mr-1"></i> <strong>${pct}% success rate</strong> on Pathao`
+                    + ` (${successful}/${total} delivered)`
+                    + (ratingLabel ? ` · Pathao rates them "${ratingLabel}"` : '')
+                    + (level === 'bad' ? '. Consider calling to confirm before dispatch.' : '.');
             } catch (e) {
-                box.className = 'rounded-xl p-3 text-xs border bg-gray-50 text-gray-400';
-                box.innerHTML = '<i class="fas fa-circle-question mr-1"></i> Delivery history unavailable right now.';
+                box.className = `${base} text-gray-400`;
+                box.innerHTML = '<i class="fas fa-circle-question mr-1"></i> Pathao history unavailable right now.';
             }
         }
+
+        document.addEventListener('DOMContentLoaded', loadPathaoSuccessRate);
 
         function closePathaoModal() {
             const m = document.getElementById('pathao-modal');
