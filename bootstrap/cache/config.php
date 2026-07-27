@@ -1037,14 +1037,6 @@
       'api_key' => 'your_api_key',
       'sender_id' => 'Ousodhaloy',
     ),
-    'bkash' => 
-    array (
-      'app_key' => 'your_bkash_app_key',
-      'app_secret' => 'your_bkash_app_secret',
-      'username' => 'your_bkash_username',
-      'password' => 'your_bkash_password',
-      'is_sandbox' => true,
-    ),
   ),
   'dompdf' => 
   array (

@@ -153,6 +153,16 @@ class OrderController extends Controller
         }
     }
 
+    public function pathaoSuccessRate(Order $order)
+    {
+        if (!$order->customer_phone) {
+            return response()->json(['success' => false, 'error' => 'This order has no phone number on file.'], 422);
+        }
+
+        $result = $this->pathao->getUserSuccessRate($order->customer_phone);
+        return response()->json($result, $result['success'] ? 200 : 422);
+    }
+
     public function syncPathao(Order $order)
     {
         $synced = $this->pathao->syncOrderStatus($order);

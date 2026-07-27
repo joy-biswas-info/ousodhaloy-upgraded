@@ -1,0 +1,18 @@
+{
+    "name": "Ousodhaloy - Bangladesh's Trusted Online Pharmacy",
+    "short_name": "Ousodhaloy",
+    "description": "Order medicine and healthcare products online with fast delivery across Bangladesh.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#FAF3F1",
+    "theme_color": "#0e7673",
+    "orientation": "portrait-primary",
+    "lang": "bn",
+    "icons": [
+        { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+        { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+        { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+        { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ]
+}

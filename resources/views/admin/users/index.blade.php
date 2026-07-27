@@ -55,9 +55,6 @@
                                         </div>
                                         <div>
                                             <p class="font-semibold text-sm text-gray-800">{{ $user->name }}</p>
-                                            @if($user->referral_code)
-                                                <p class="text-[10px] text-gray-400 font-mono">{{ $user->referral_code }}</p>
-                                            @endif
                                         </div>
                                     </div>
                                 </td>

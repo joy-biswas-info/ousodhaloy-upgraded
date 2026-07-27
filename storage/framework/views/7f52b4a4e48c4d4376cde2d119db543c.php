@@ -9,6 +9,8 @@
     <title><?php echo $__env->yieldContent('title', config('app.name', 'Ousodhaloy')); ?> – Bangladesh's Trusted Online Healthcare and Wellness Shop</title>
     <meta name="description" content="<?php echo $__env->yieldContent('meta_description', 'Buy genuine medicine, healthcare and wellness products online. Fast delivery across Bangladesh.'); ?>">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     
@@ -491,6 +493,14 @@
             el.textContent = msg;
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 2500);
+        }
+
+        // PWA — lets customers "Add to Home Screen"; sw.js deliberately never
+        // caches page content, only static assets, so cart/prices/stock stay live.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            });
         }
     </script>
     <?php echo $__env->yieldPushContent('scripts'); ?>

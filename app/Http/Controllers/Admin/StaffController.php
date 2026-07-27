@@ -5,7 +5,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 
 class StaffController extends Controller
@@ -37,7 +36,6 @@ class StaffController extends Controller
             'role' => $request->role,
             'password' => Hash::make($request->password),
             'is_active' => true,
-            'referral_code' => strtoupper(Str::random(8)),
         ]);
 
         return back()->with('success', 'Staff member created successfully.');

@@ -3,7 +3,7 @@ namespace App\Services;
 use App\Mail\NewOrderMail;
 use App\Models\PromoCodeUsage;
 use Illuminate\Support\Facades\Mail;
-use App\Models\{DeliveryZone, Order, OrderItem, OrderStatusHistory, Product, PromoCode, Setting, LoyaltyPoint};
+use App\Models\{DeliveryZone, Order, OrderItem, OrderStatusHistory, Product, PromoCode, Setting};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -138,21 +138,7 @@ class OrderService
                 ]);
             }
 
-            // 8. Loyalty points (earn 1 point per ৳10)
-            if ($userId) {
-                $points = (int) ($total / 10);
-                if ($points > 0) {
-                    LoyaltyPoint::create([
-                        'user_id' => $userId,
-                        'points' => $points,
-                        'type' => 'earn',
-                        'description' => "Earned for order #{$order->order_number}",
-                        'order_id' => $order->id,
-                    ]);
-                }
-            }
-
-            // 9. Send confirmation SMS
+            // 8. Send confirmation SMS
             $this->sms->orderPlaced($order);
 
             $adminEmail = Setting::get('admin_notification_email') ?: Setting::get('site_email');

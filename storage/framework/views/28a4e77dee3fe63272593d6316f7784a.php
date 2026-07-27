@@ -38,13 +38,6 @@
                             <p class="text-sm text-gray-500">Member since <?php echo e(auth()->user()->created_at->format('M Y')); ?>
 
                             </p>
-                            <div class="flex items-center gap-1 mt-1">
-                                <i class="fas fa-coins text-yellow-500 text-xs"></i>
-                                <span
-                                    class="text-xs font-semibold text-gray-600"><?php echo e(number_format(auth()->user()->total_loyalty_points)); ?>
-
-                                    Loyalty Points</span>
-                            </div>
                         </div>
                     </div>
 
@@ -75,9 +68,9 @@
                 </div>
 
                 
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 gap-3">
                     <?php $user = auth()->user(); ?>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['label' => 'Total Orders', 'value' => $user->orders()->count(), 'icon' => 'box', 'color' => 'teal'], ['label' => 'Delivered', 'value' => $user->orders()->where('status', 'delivered')->count(), 'icon' => 'check', 'color' => 'green'], ['label' => 'Loyalty Points', 'value' => number_format($user->total_loyalty_points), 'icon' => 'star', 'color' => 'yellow']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['label' => 'Total Orders', 'value' => $user->orders()->count(), 'icon' => 'box', 'color' => 'teal'], ['label' => 'Delivered', 'value' => $user->orders()->where('status', 'delivered')->count(), 'icon' => 'check', 'color' => 'green']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white rounded-xl border p-4 text-center">
                             <i class="fas fa-<?php echo e($s['icon']); ?> text-<?php echo e($s['color']); ?>-500 text-xl mb-1"></i>
                             <p class="font-black text-gray-800 text-lg"><?php echo e($s['value']); ?></p>

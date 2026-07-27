@@ -22,8 +22,6 @@ class User extends Authenticatable
         'avatar',
         'role',
         'is_active',
-        'referral_code',
-        'referred_by',
         'phone_verified_at',
     ];
 
@@ -64,16 +62,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProductReview::class);
     }
-    public function loyaltyPoints(): HasMany
-    {
-        return $this->hasMany(LoyaltyPoint::class);
-    }
-
-    public function getTotalLoyaltyPointsAttribute(): int
-    {
-        return $this->loyaltyPoints()->sum('points');
-    }
-
     public function getDefaultAddressAttribute()
     {
         return $this->addresses()->where('is_default', true)->first()

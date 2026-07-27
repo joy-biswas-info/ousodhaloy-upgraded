@@ -56,6 +56,15 @@ class CheckoutController extends Controller
         if (empty($cart))
             return back()->with('error', 'Your cart is empty.');
 
+        // The checkout page shows a "Required" badge when the cart has a
+        // prescription item, but until now that was cosmetic only — nothing
+        // stopped the order from completing without a file actually attached.
+        if ($this->prescriptionRequired($cart) && !$request->hasFile('prescription')) {
+            return back()
+                ->withErrors(['prescription' => 'This order includes a prescription-required medicine — please upload a valid prescription to continue.'])
+                ->withInput();
+        }
+
         $items = array_map(fn($item) => [
             'product_id' => $item['product_id'],
             'qty' => $item['qty'],
@@ -112,6 +121,18 @@ class CheckoutController extends Controller
         // Default: visible and required unless admin explicitly turned it off
         return ($cf['shipping_upazila']['visible'] ?? true)
             && ($cf['shipping_upazila']['required'] ?? true);
+    }
+
+    private function prescriptionRequired(array $cart): bool
+    {
+        $cf = json_decode(Setting::get('checkout_fields', '{}'), true) ?: [];
+        // If the admin has hidden the upload field entirely there's no way for a
+        // customer to satisfy this, so don't demand something the form can't collect.
+        $fieldVisible = $cf['prescription']['visible'] ?? true;
+        if (!$fieldVisible)
+            return false;
+
+        return collect($cart)->contains('requires_rx', true);
     }
 
     /**

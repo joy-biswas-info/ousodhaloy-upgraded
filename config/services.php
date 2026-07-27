@@ -50,13 +50,4 @@ return [
         'sender_id' => env('MIMSMS_SENDER_ID', 'Ousodhaloy'),
     ],
 
-    // ── bKash Payment Gateway ────────────────────────────────────────────────
-    'bkash' => [
-        'app_key'    => env('BKASH_APP_KEY'),
-        'app_secret' => env('BKASH_APP_SECRET'),
-        'username'   => env('BKASH_USERNAME'),
-        'password'   => env('BKASH_PASSWORD'),
-        'is_sandbox' => env('BKASH_IS_SANDBOX', true),
-    ],
-
 ];

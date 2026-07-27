@@ -36,19 +36,7 @@
                     <i class="fas fa-calendar text-teal-500 w-4 text-center"></i>
                     Joined {{ $user->created_at->format('d M Y') }}
                 </div>
-                @if($user->referral_code)
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-tag text-teal-500 w-4 text-center"></i>
-                    Ref: <span class="font-mono font-bold">{{ $user->referral_code }}</span>
-                </div>
-                @endif
             </div>
-        </div>
-
-        <div class="bg-white rounded-xl border p-5">
-            <h3 class="font-bold text-gray-800 text-sm mb-3">Loyalty Points</h3>
-            <p class="text-3xl font-black text-teal-700">{{ number_format($user->total_loyalty_points) }}</p>
-            <p class="text-xs text-gray-400 mt-0.5">≈ ৳{{ number_format($user->total_loyalty_points / 10, 2) }} value</p>
         </div>
 
         <div class="bg-white rounded-xl border p-5">

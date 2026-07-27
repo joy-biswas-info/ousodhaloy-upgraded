@@ -55,9 +55,6 @@
                                         </div>
                                         <div>
                                             <p class="font-semibold text-sm text-gray-800"><?php echo e($user->name); ?></p>
-                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->referral_code): ?>
-                                                <p class="text-[10px] text-gray-400 font-mono"><?php echo e($user->referral_code); ?></p>
-                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
                                     </div>
                                 </td>

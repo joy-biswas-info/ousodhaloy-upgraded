@@ -3,6 +3,7 @@
 use App\Http\Controllers\Shop\AccountController;
 use App\Http\Controllers\Shop\LandingController;
 use App\Http\Controllers\Shop\LegalController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,8 @@ Route::get('/privacy-policy', [LegalController::class, 'privacy'])->name('legal.
 Route::get('/terms-of-use', [LegalController::class, 'terms'])->name('legal.terms');
 Route::get('/return-policy', [LegalController::class, 'returns'])->name('legal.returns');
 Route::get('/search', [ProductController::class, 'search'])->name('search');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
 // Webhooks
 Route::post('/webhooks/pathao', [WebhookController::class, 'pathao'])->name('webhooks.pathao');
@@ -84,8 +87,7 @@ Route::middleware('auth')->prefix('account')->name('account.')->group(function (
             'orders',
             'orders as delivered_count' => fn($q) => $q->where('status', 'delivered'),
         ]);
-        $loyaltyPoints = $user->total_loyalty_points;
-        return view('shop.account.profile', compact('user', 'loyaltyPoints'));
+        return view('shop.account.profile', compact('user'));
     })->name('profile');
     Route::get('/wishlist', fn() => view('shop.account.wishlist'))->name('wishlist');
     Route::get('/addresses', fn() => view('shop.account.addresses'))->name('addresses');
@@ -161,6 +163,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::post('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
     Route::post('/orders/{order}/payment', [AdminOrderController::class, 'updatePayment'])->name('orders.payment');
     Route::post('/orders/{order}/pathao', [AdminOrderController::class, 'pushToPathao'])->name('orders.pathao');
+    Route::get('/orders/{order}/pathao-success-rate', [AdminOrderController::class, 'pathaoSuccessRate'])->name('orders.pathao-success-rate');
     Route::post('/orders/{order}/sync-pathao', [AdminOrderController::class, 'syncPathao'])->name('orders.sync-pathao');
     Route::post('/orders/{order}/note', [AdminOrderController::class, 'adminNote'])->name('orders.note');
     Route::get('/orders/{order}/invoice', [AdminOrderController::class, 'invoice'])->name('orders.invoice');

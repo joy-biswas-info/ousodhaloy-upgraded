@@ -6,7 +6,6 @@ use App\Models\{User, Otp};
 use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, Hash};
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -59,7 +58,6 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'customer',
-            'referral_code' => strtoupper(Str::random(8)),
         ]);
 
         Auth::login($user);
@@ -190,7 +188,7 @@ class AuthController extends Controller
         // Login or register
         $user = User::firstOrCreate(
             ['phone' => $request->phone],
-            ['name' => 'User-' . substr($request->phone, -4), 'role' => 'customer', 'referral_code' => strtoupper(Str::random(8))]
+            ['name' => 'User-' . substr($request->phone, -4), 'role' => 'customer']
         );
 
         $user->update(['phone_verified_at' => now()]);

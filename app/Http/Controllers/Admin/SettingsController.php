@@ -23,7 +23,6 @@ class SettingsController extends Controller
         'sms_status_update',
         'pathao_is_live',
         'steadfast_enabled',
-        'loyalty_enabled',
         'meta_pixel_page_view',
         'meta_pixel_view_content',
         'meta_pixel_search',
@@ -80,7 +79,6 @@ class SettingsController extends Controller
         ],
         'pathao' => ['pathao_client_id', 'pathao_client_secret', 'pathao_username', 'pathao_password', 'pathao_store_id', 'pathao_is_live', 'pathao_default_city_id', 'pathao_default_zone_id', 'pathao_default_area_id', 'pathao_webhook_secret',],
         'steadfast' => ['steadfast_api_key', 'steadfast_secret_key', 'steadfast_enabled', 'steadfast_bearer_token',],
-        'loyalty' => ['loyalty_enabled', 'loyalty_points_per_taka', 'loyalty_points_per_order'],
         'checkout' => ['checkout_fields'],
         'pixel' => [
             'meta_pixel_id',

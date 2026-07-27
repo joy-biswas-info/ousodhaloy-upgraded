@@ -186,7 +186,7 @@
                             <span class="text-xs text-gray-400">(optional)</span>
                         @endif
                     </h2>
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-teal-400 transition-colors cursor-pointer"
+                    <div class="border-2 border-dashed rounded-xl p-6 text-center hover:border-teal-400 transition-colors cursor-pointer @error('prescription') border-red-400 @else border-gray-300 @enderror"
                         onclick="document.getElementById('prescription-input').click()">
                         <i class="fas fa-file-medical text-3xl text-gray-400 mb-2"></i>
                         <p class="text-sm text-gray-600 font-semibold">Upload Prescription</p>
@@ -195,6 +195,7 @@
                     <input type="file" id="prescription-input" name="prescription" accept="image/*,.pdf" class="hidden"
                         onchange="document.getElementById('rx-name').textContent = this.files[0]?.name || ''">
                     <p id="rx-name" class="text-xs text-teal-600 font-semibold mt-2 text-center"></p>
+                    @error('prescription') <p class="form-error text-center mt-1">{{ $message }}</p> @enderror
                 </div>
                 @endif
 

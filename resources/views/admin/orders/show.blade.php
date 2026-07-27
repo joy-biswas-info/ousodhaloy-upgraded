@@ -319,6 +319,15 @@
                         {{ $order->payment_status !== 'paid' ? '৳' . number_format($order->total, 2) : 'Prepaid — no collection' }}
                     </p>
                 </div>
+
+                {{-- Customer delivery success rate — fetched when the modal opens.
+                     Not from official Pathao docs (see PathaoService comment), so this
+                     degrades quietly to a neutral message rather than blocking the push
+                     if the lookup fails. --}}
+                <div id="pathao-success-rate" class="rounded-xl p-3 text-xs border bg-gray-50 text-gray-500">
+                    <i class="fas fa-spinner fa-spin mr-1"></i> Checking customer delivery history…
+                </div>
+
                 <div>
                     <label class="form-label">Recipient City *</label>
                     <select name="pathao_city_id" id="pathao-city" class="form-select"
@@ -341,8 +350,9 @@
                     </select>
                 </div>
                 <p class="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg p-2">
-                    💡 Save default city/zone in <a href="{{ route('admin.settings.index') }}"
-                        class="underline font-semibold">Settings → Pathao</a> to pre-select automatically.
+                    💡 City and zone are pre-filled by matching this order's own address — check the "auto-matched" hints
+                    below the fields before pushing. Falls back to your <a href="{{ route('admin.settings.index') }}"
+                        class="underline font-semibold">Settings → Pathao</a> defaults if nothing matches.
                 </p>
                 <div class="flex gap-3 pt-1">
                     <button type="button" onclick="closePathaoModal()" class="btn-outline flex-1">Cancel</button>
@@ -357,12 +367,63 @@
     <script>
         // ← PHP data safely serialised to JS
         const pathaoDefaults = @json($pathaoDefaults ?? []);
+        const orderShippingDistrict = @json($order->shipping_district ?? '');
+        const orderShippingUpazila = @json($order->shipping_upazila ?? '');
+
         function openPathaoModal() {
             const m = document.getElementById('pathao-modal');
             if (!m) return;
             m.classList.remove('hidden');
             m.classList.add('flex');
             loadPathaoCities();
+            loadPathaoSuccessRate();
+        }
+
+        async function loadPathaoSuccessRate() {
+            const box = document.getElementById('pathao-success-rate');
+            if (!box) return;
+            box.className = 'rounded-xl p-3 text-xs border bg-gray-50 text-gray-500';
+            box.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Checking customer delivery history…';
+
+            try {
+                const res = await fetch(`{{ route('admin.orders.pathao-success-rate', $order) }}`);
+                const json = await res.json();
+
+                if (!json.success) {
+                    box.className = 'rounded-xl p-3 text-xs border bg-gray-50 text-gray-400';
+                    box.innerHTML = `<i class="fas fa-circle-question mr-1"></i> Delivery history unavailable — ${json.error || 'try again later'}.`;
+                    return;
+                }
+
+                const d = json.data || {};
+                // Field names are a best guess (see PathaoService::getUserSuccessRate) —
+                // fall back to raw JSON if the shape doesn't match what we expect.
+                const rate = d.success_ratio ?? d.success_rate ?? d.rate ?? null;
+                const total = d.total ?? d.total_parcel ?? d.total_order ?? null;
+
+                if (rate === null) {
+                    box.className = 'rounded-xl p-3 text-xs border bg-gray-50 text-gray-500';
+                    box.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Got a response but couldn\'t read it — raw: '
+                        + '<code class="text-[10px]">' + JSON.stringify(d).slice(0, 200) + '</code>';
+                    return;
+                }
+
+                const pct = parseFloat(rate);
+                const level = pct >= 80 ? 'good' : pct >= 50 ? 'warn' : 'bad';
+                const styles = {
+                    good: 'bg-green-50 border-green-200 text-green-700',
+                    warn: 'bg-yellow-50 border-yellow-200 text-yellow-700',
+                    bad: 'bg-red-50 border-red-200 text-red-700',
+                };
+                const icons = { good: 'fa-circle-check', warn: 'fa-triangle-exclamation', bad: 'fa-circle-exclamation' };
+                box.className = `rounded-xl p-3 text-xs border ${styles[level]}`;
+                box.innerHTML = `<i class="fas ${icons[level]} mr-1"></i> <strong>${pct}% success rate</strong>`
+                    + (total !== null ? ` across ${total} past ${total == 1 ? 'order' : 'orders'} on Pathao.` : ' on Pathao.')
+                    + (level === 'bad' ? ' Consider calling to confirm before dispatch.' : '');
+            } catch (e) {
+                box.className = 'rounded-xl p-3 text-xs border bg-gray-50 text-gray-400';
+                box.innerHTML = '<i class="fas fa-circle-question mr-1"></i> Delivery history unavailable right now.';
+            }
         }
 
         function closePathaoModal() {
@@ -380,6 +441,10 @@
             return json.data || [];
         }
 
+        function normalizeCityName(s) {
+            return (s || '').toLowerCase().replace(/[^a-z]/g, '');
+        }
+
         async function loadPathaoCities() {
             const sel = document.getElementById('pathao-city');
             sel.innerHTML = '<option value="">Loading cities…</option>';
@@ -388,12 +453,23 @@
             try {
                 const cities = await pathaoLookup('cities');
                 sel.innerHTML = '<option value="">— Select city —</option>';
+
+                // Prefer matching this specific order's own shipping district over the
+                // generic store-wide default — most orders don't all ship to the same
+                // place, so guessing from the actual address is more often correct.
+                const districtNorm = normalizeCityName(orderShippingDistrict);
+                const districtMatch = districtNorm
+                    ? cities.find(c => normalizeCityName(c.city_name) === districtNorm)
+                    : null;
+
                 let defaultSelected = false;
                 cities.forEach(c => {
                     const o = document.createElement('option');
                     o.value = c.city_id;
                     o.textContent = c.city_name;
-                    if (String(c.city_id) === String(pathaoDefaults.city)) {
+                    const matchesDistrict = districtMatch && String(c.city_id) === String(districtMatch.city_id);
+                    const matchesStoreDefault = !districtMatch && String(c.city_id) === String(pathaoDefaults.city);
+                    if (matchesDistrict || matchesStoreDefault) {
                         o.selected = true;
                         defaultSelected = true;
                     }
@@ -401,9 +477,19 @@
                 });
                 sel.disabled = false;
 
-                // Auto-load zones if a default city is set
-                if (defaultSelected && pathaoDefaults.city) {
-                    await loadPathaoZones(pathaoDefaults.city);
+                if (districtMatch) {
+                    const hint = document.createElement('p');
+                    hint.className = 'text-[10px] text-teal-600 mt-1';
+                    hint.textContent = `Auto-matched from order address (${orderShippingDistrict})`;
+                    sel.parentElement.appendChild(hint);
+                }
+
+                // Auto-load zones for whichever city ended up selected above (district
+                // match takes priority; falls back to the store-wide default city) —
+                // read sel.value rather than pathaoDefaults.city directly, since those
+                // can differ once the district match wins.
+                if (defaultSelected && sel.value) {
+                    await loadPathaoZones(sel.value);
                 }
             } catch (e) {
                 sel.innerHTML = `<option value="">⚠ ${e.message}</option>`;
@@ -420,12 +506,28 @@
             try {
                 const zones = await pathaoLookup('zones', { city_id: cityId });
                 sel.innerHTML = '<option value="">— Select zone —</option>';
+
+                // Upazila is free text at checkout (not a fixed list like district), so
+                // this match is looser than the city one: normalize both sides and check
+                // either contains the other, to catch things like "Mirpur 10, Dhaka"
+                // matching a zone literally named "Mirpur". Still just a pre-selection —
+                // never trust it blindly, always shown so it can be corrected.
+                const upazilaNorm = normalizeCityName(orderShippingUpazila);
+                const upazilaMatch = upazilaNorm
+                    ? zones.find(z => {
+                        const zn = normalizeCityName(z.zone_name);
+                        return zn && (upazilaNorm.includes(zn) || zn.includes(upazilaNorm));
+                    })
+                    : null;
+
                 let defaultSelected = false;
                 zones.forEach(z => {
                     const o = document.createElement('option');
                     o.value = z.zone_id;
                     o.textContent = z.zone_name;
-                    if (String(z.zone_id) === String(pathaoDefaults.zone)) {
+                    const matchesUpazila = upazilaMatch && String(z.zone_id) === String(upazilaMatch.zone_id);
+                    const matchesStoreDefault = !upazilaMatch && String(z.zone_id) === String(pathaoDefaults.zone);
+                    if (matchesUpazila || matchesStoreDefault) {
                         o.selected = true;
                         defaultSelected = true;
                     }
@@ -433,9 +535,18 @@
                 });
                 sel.disabled = false;
 
-                // Auto-load areas if a default zone is set
-                if (defaultSelected && pathaoDefaults.zone) {
-                    await loadPathaoAreas(pathaoDefaults.zone);
+                const existingHint = sel.parentElement.querySelector('.zone-match-hint');
+                if (existingHint) existingHint.remove();
+                if (upazilaMatch) {
+                    const hint = document.createElement('p');
+                    hint.className = 'zone-match-hint text-[10px] text-teal-600 mt-1';
+                    hint.textContent = `Guessed from order address (${orderShippingUpazila}) — please double-check`;
+                    sel.parentElement.appendChild(hint);
+                }
+
+                // Auto-load areas for whichever zone ended up selected above
+                if (defaultSelected && sel.value) {
+                    await loadPathaoAreas(sel.value);
                 }
             } catch (e) {
                 sel.innerHTML = `<option value="">⚠ ${e.message}</option>`;

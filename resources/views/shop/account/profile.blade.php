@@ -37,12 +37,6 @@
                             <h2 class="font-bold text-gray-800 text-lg">{{ auth()->user()->name }}</h2>
                             <p class="text-sm text-gray-500">Member since {{ auth()->user()->created_at->format('M Y') }}
                             </p>
-                            <div class="flex items-center gap-1 mt-1">
-                                <i class="fas fa-coins text-yellow-500 text-xs"></i>
-                                <span
-                                    class="text-xs font-semibold text-gray-600">{{ number_format(auth()->user()->total_loyalty_points) }}
-                                    Loyalty Points</span>
-                            </div>
                         </div>
                     </div>
 
@@ -73,9 +67,9 @@
                 </div>
 
                 {{-- Quick stats --}}
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 gap-3">
                     @php $user = auth()->user(); @endphp
-                    @foreach ([['label' => 'Total Orders', 'value' => $user->orders()->count(), 'icon' => 'box', 'color' => 'teal'], ['label' => 'Delivered', 'value' => $user->orders()->where('status', 'delivered')->count(), 'icon' => 'check', 'color' => 'green'], ['label' => 'Loyalty Points', 'value' => number_format($user->total_loyalty_points), 'icon' => 'star', 'color' => 'yellow']] as $s)
+                    @foreach ([['label' => 'Total Orders', 'value' => $user->orders()->count(), 'icon' => 'box', 'color' => 'teal'], ['label' => 'Delivered', 'value' => $user->orders()->where('status', 'delivered')->count(), 'icon' => 'check', 'color' => 'green']] as $s)
                         <div class="bg-white rounded-xl border p-4 text-center">
                             <i class="fas fa-{{ $s['icon'] }} text-{{ $s['color'] }}-500 text-xl mb-1"></i>
                             <p class="font-black text-gray-800 text-lg">{{ $s['value'] }}</p>

@@ -166,6 +166,47 @@ class PathaoService
         ];
     }
 
+    // ── Customer success rate ────────────────────────────────────────────
+    // NOT from official published Pathao docs — reverse-engineered from a
+    // community package (merchant.pathao.com/api/v1/user/success, POST,
+    // {phone}, same bearer token as the hermes API). If this starts failing
+    // for everyone, the endpoint has likely moved — check your own Pathao
+    // merchant API docs (merchant.pathao.com, logged in) and update baseUrl
+    // below rather than assuming the feature is just broken.
+    public function getUserSuccessRate(string $phone): array
+    {
+        if (!$this->isConfigured()) {
+            return ['success' => false, 'error' => 'Pathao credentials not configured.'];
+        }
+
+        // Only successful lookups are cached — a failed attempt (e.g. while this
+        // endpoint is still being verified) should be retryable immediately, not
+        // stuck showing the same error for an hour.
+        $cacheKey = 'pathao_success_rate_' . md5($phone) . '_' . $this->clientId;
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
+        }
+
+        try {
+            $res = Http::withHeaders($this->headers())
+                ->timeout(8)
+                ->post('https://merchant.pathao.com/api/v1/user/success', ['phone' => $phone]);
+        } catch (\Throwable $e) {
+            return ['success' => false, 'error' => 'Could not reach Pathao: ' . $e->getMessage()];
+        }
+
+        if ($res->successful()) {
+            $result = ['success' => true, 'data' => $res->json('data') ?? $res->json()];
+            Cache::put($cacheKey, $result, 3600);
+            return $result;
+        }
+
+        return [
+            'success' => false,
+            'error' => $res->json('message') ?? 'Pathao did not return success-rate data (HTTP ' . $res->status() . ').',
+        ];
+    }
+
     // ── Status ────────────────────────────────────────────────────────────
 
     public function getOrderStatus(string $consignmentId): array
