@@ -99,12 +99,14 @@
                                                                 @csrf @method('PATCH')
                                                                 <input type="hidden" name="role" value="{{ $role }}">
                                                                 <input type="hidden" name="is_active"
-                                                                    value="{{ $user->is_active ? '1' : '1' }}">
+                                                                    value="{{ $user->is_active ? '1' : '0' }}">
                                                                 <button type="submit"
                                                                     class="w-full text-left px-4 py-2 text-xs hover:bg-teal-50 transition-colors flex items-center gap-2 {{ $user->role === $role ? 'text-teal-700 font-bold' : 'text-gray-700' }}">
-                                                                    @if($user->role === $role)<i
-                                                                    class="fas fa-check text-teal-600 w-3"></i>@else<span cl
-                                                                      a                 ss="w-3"></span>@endif
+                                                                    @if($user->role === $role)
+                                                                        <i class="fas fa-check text-teal-600 w-3"></i>
+                                                                    @else
+                                                                        <span class="w-3"></span>
+                                                                    @endif
                                                                     Set as {{ $roleLabel }}
                                                                 </button>
                                                             </form>

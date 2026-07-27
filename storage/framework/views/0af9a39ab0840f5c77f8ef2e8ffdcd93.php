@@ -3,7 +3,10 @@
 <?php
     $metaTitle = 'The Ordinary Niacinamide 10% + Zinc 1% — দাগমুক্ত, তেলমুক্ত ত্বক';
     $metaDescription = 'Niacinamide 10% + Zinc 1% সিরাম। ব্রণ, দাগ ও তেলতেলে ত্বকের জন্য। ১০০% অরিজিনাল। Flash sale মাত্র ৳999।';
-    $metaImage = asset('storage/media/niacinamide.jpg');
+    // Was pointing at niacinamide.jpg, which isn't the image actually shown on the
+    // page (that's the_ordinary_ousodhaloy.jpg in the hero) — fixed so ad/social
+    // link previews match what visitors actually see.
+    $metaImage = asset('storage/media/the_ordinary_ousodhaloy.webp');
 ?>
 
 <head>
@@ -13,6 +16,7 @@
     <meta name="description" content="<?php echo e($metaDescription); ?>" />
     <link rel="canonical" href="<?php echo e(url()->current()); ?>" />
     <link rel="icon" href="<?php echo e(asset('favicon.svg')); ?>" type="image/svg+xml" />
+    <link rel="preload" as="image" href="<?php echo e(asset('storage/media/the_ordinary_ousodhaloy.webp')); ?>" fetchpriority="high" />
 
     
     <meta property="og:type" content="product" />
@@ -1176,13 +1180,16 @@
      
 
         <div class="hero-img-wrap">
-            <img src="<?php echo e(asset('storage/media/the_ordinary_ousodhaloy.jpg')); ?>"
-                alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
-                fetchpriority="high" decoding="async"
-                onerror="
-        this.style.display = 'none';
-        this.nextElementSibling.style.display = 'flex';
-     " />
+            <picture>
+                <source srcset="<?php echo e(asset('storage/media/the_ordinary_ousodhaloy.webp')); ?>" type="image/webp">
+                <img src="<?php echo e(asset('storage/media/the_ordinary_ousodhaloy.jpg')); ?>"
+                    alt="The Ordinary Niacinamide 10% + Zinc 1% Serum 30ml" width="370" height="370" loading="eager"
+                    fetchpriority="high" decoding="async"
+                    onerror="
+            this.closest('picture').style.display = 'none';
+            this.closest('picture').nextElementSibling.style.display = 'flex';
+         " />
+            </picture>
             <div
                 style="
             display: none;
@@ -1276,7 +1283,7 @@
                 <div class="pay-badge">💵 Cash on Delivery</div>
             </div>
             <div class="ship-note">
-                <strong>ডেলিভারি ফি ঢাকার ভিতর 80 টাকা, ঢাকার বাইরে 120 টাকা</strong> · ২৪–৪৮ ঘণ্টায়
+                <strong>ডেলিভারি ফি ঢাকার ভিতর 80 টাকা, ঢাকার বাইরে 110 টাকা</strong> · ২৪–৪৮ ঘণ্টায়
                 পৌঁছাবে
             </div>
             <div class="caution-box">

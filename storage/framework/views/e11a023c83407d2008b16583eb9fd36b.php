@@ -298,7 +298,7 @@
                     <div><label class="form-label">Username</label><input type="text" name="mimsms_username"
                             value="<?php echo e($settings['mimsms_username'] ?? ''); ?>" class="form-input"
                             placeholder="Your MimSMS username"></div>
-                    <div><label class="form-label">API Key</label><input type="text" name="mimsms_api_key"
+                    <div><label class="form-label">API Key</label><input type="password" name="mimsms_api_key"
                             value="<?php echo e($settings['mimsms_api_key'] ?? ''); ?>" class="form-input"
                             placeholder="From app.mimsms.com"></div>
                     <div><label class="form-label">Sender ID</label><input type="text" name="mimsms_sender_id"
@@ -460,7 +460,7 @@
                         <div>
                             <label class="form-label">Webhook Secret</label>
                             <div class="flex gap-2">
-                                <input type="text" name="pathao_webhook_secret"
+                                <input type="password" name="pathao_webhook_secret"
                                     value="<?php echo e($settings['pathao_webhook_secret'] ?? ''); ?>"
                                     class="form-input font-mono flex-1"
                                     placeholder="Set a strong secret, then copy it to Pathao portal">
@@ -496,7 +496,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="form-label">API Key *</label>
-                            <input type="text" name="steadfast_api_key"
+                            <input type="password" name="steadfast_api_key"
                                 value="<?php echo e($settings['steadfast_api_key'] ?? ''); ?>" class="form-input font-mono"
                                 placeholder="Your Steadfast API key">
                             <p class="text-xs text-gray-400 mt-1">From portal.steadfast.com.bd → API Credentials</p>

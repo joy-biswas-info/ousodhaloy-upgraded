@@ -127,6 +127,7 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])->name('auth.logou
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats'])->name('dashboard.stats');
     // ── Products — specific routes BEFORE resource wildcard ───
     Route::get('/products/bulk', [BulkProductController::class, 'index'])->name('products.bulk');
     Route::post('/products/bulk', [BulkProductController::class, 'storeBulk'])->name('products.bulk-store');
@@ -150,9 +151,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::get('/orders/product-search', [ManualOrderController::class, 'productSearch'])->name('orders.product-search');
     Route::post('/orders/bulk', [AdminOrderController::class, 'bulkAction'])->name('orders.bulk');
     Route::get('/orders/pathao-lookup', [AdminOrderController::class, 'pathaoLookup'])->name('orders.pathao-lookup');
+    Route::get('/orders/trash', [AdminOrderController::class, 'trash'])->name('orders.trash');
+    Route::patch('/orders/{id}/restore', [AdminOrderController::class, 'restore'])->name('orders.restore');
+    Route::delete('/orders/{id}/force', [AdminOrderController::class, 'forceDelete'])->name('orders.force-delete');
 
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::delete('/orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
     Route::post('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
     Route::post('/orders/{order}/payment', [AdminOrderController::class, 'updatePayment'])->name('orders.payment');
     Route::post('/orders/{order}/pathao', [AdminOrderController::class, 'pushToPathao'])->name('orders.pathao');

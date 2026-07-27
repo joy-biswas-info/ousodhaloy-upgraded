@@ -102,12 +102,14 @@
                                                                 <?php echo csrf_field(); ?> <?php echo method_field('PATCH'); ?>
                                                                 <input type="hidden" name="role" value="<?php echo e($role); ?>">
                                                                 <input type="hidden" name="is_active"
-                                                                    value="<?php echo e($user->is_active ? '1' : '1'); ?>">
+                                                                    value="<?php echo e($user->is_active ? '1' : '0'); ?>">
                                                                 <button type="submit"
                                                                     class="w-full text-left px-4 py-2 text-xs hover:bg-teal-50 transition-colors flex items-center gap-2 <?php echo e($user->role === $role ? 'text-teal-700 font-bold' : 'text-gray-700'); ?>">
-                                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->role === $role): ?><i
-                                                                    class="fas fa-check text-teal-600 w-3"></i><?php else: ?><span cl
-                                                                      a                 ss="w-3"></span><?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->role === $role): ?>
+                                                                        <i class="fas fa-check text-teal-600 w-3"></i>
+                                                                    <?php else: ?>
+                                                                        <span class="w-3"></span>
+                                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                     Set as <?php echo e($roleLabel); ?>
 
                                                                 </button>

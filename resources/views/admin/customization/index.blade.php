@@ -7,13 +7,19 @@
 
         {{-- Tab nav --}}
         <div class="bg-white rounded-xl border p-1.5 flex gap-1 overflow-x-auto">
-            @foreach(['branding' => '🎨 Branding', 'banners' => '🖼 Banners', 'site' => '🌐 Site Info'] as $key => $label)
+            @foreach(['branding' => '🎨 Branding', 'banners' => '🖼 Banners'] as $key => $label)
                 <button @click="tab='{{ $key }}'" :class="tab === '{{ $key }}' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
                     class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap">
                     {{ $label }}
                 </button>
             @endforeach
         </div>
+
+        <p class="text-xs text-gray-400">
+            Looking for site name, phone, email, or address? That's now only in
+            <a href="{{ route('admin.settings.index') }}" class="text-teal-600 underline font-semibold">Settings → General</a>
+            — it used to be duplicated here too, which made it unclear which copy was current.
+        </p>
 
         {{-- ── BRANDING ── --}}
         <div x-show="tab==='branding'" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -247,48 +253,6 @@
             </div>
         </div>
 
-        {{-- ── SITE INFO ── --}}
-        <div x-show="tab==='site'">
-            <div class="bg-white rounded-xl border p-5">
-                <h2 class="font-bold text-gray-800 mb-4 pb-2 border-b">Site Information</h2>
-                <form method="POST" action="{{ route('admin.customization.save') }}"
-                    class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    @csrf
-                    <input type="hidden" name="group" value="general">
-                    <div>
-                        <label class="form-label">Site Name</label>
-                        <input type="text" name="site_name" value="{{ $settings['site_name'] ?? '' }}" class="form-input">
-                    </div>
-                    <div>
-                        <label class="form-label">Tagline</label>
-                        <input type="text" name="site_tagline" value="{{ $settings['site_tagline'] ?? '' }}"
-                            class="form-input">
-                    </div>
-                    <div>
-                        <label class="form-label">Phone</label>
-                        <input type="text" name="site_phone" value="{{ $settings['site_phone'] ?? '' }}" class="form-input">
-                    </div>
-                    <div>
-                        <label class="form-label">Email</label>
-                        <input type="email" name="site_email" value="{{ $settings['site_email'] ?? '' }}"
-                            class="form-input">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="form-label">Address</label>
-                        <input type="text" name="site_address" value="{{ $settings['site_address'] ?? '' }}"
-                            class="form-input">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="form-label">Messenger / WhatsApp URL</label>
-                        <input type="url" name="messenger_url" value="{{ $settings['messenger_url'] ?? '' }}"
-                            class="form-input" placeholder="https://m.me/yourpage or https://wa.me/880...">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <button type="submit" class="btn-primary">Save Site Info</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
     @include('partials.media-picker')

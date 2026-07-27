@@ -6,7 +6,7 @@
 
         
         <div class="bg-white rounded-xl border p-1.5 flex gap-1 overflow-x-auto">
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = ['branding' => '🎨 Branding', 'banners' => '🖼 Banners', 'site' => '🌐 Site Info']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = ['branding' => '🎨 Branding', 'banners' => '🖼 Banners']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <button @click="tab='<?php echo e($key); ?>'" :class="tab === '<?php echo e($key); ?>' ? 'bg-teal-600 text-white' : 'text-gray-600 hover:bg-gray-100'"
                     class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap">
                     <?php echo e($label); ?>
@@ -14,6 +14,12 @@
                 </button>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
+
+        <p class="text-xs text-gray-400">
+            Looking for site name, phone, email, or address? That's now only in
+            <a href="<?php echo e(route('admin.settings.index')); ?>" class="text-teal-600 underline font-semibold">Settings → General</a>
+            — it used to be duplicated here too, which made it unclear which copy was current.
+        </p>
 
         
         <div x-show="tab==='branding'" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -247,48 +253,6 @@
             </div>
         </div>
 
-        
-        <div x-show="tab==='site'">
-            <div class="bg-white rounded-xl border p-5">
-                <h2 class="font-bold text-gray-800 mb-4 pb-2 border-b">Site Information</h2>
-                <form method="POST" action="<?php echo e(route('admin.customization.save')); ?>"
-                    class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <?php echo csrf_field(); ?>
-                    <input type="hidden" name="group" value="general">
-                    <div>
-                        <label class="form-label">Site Name</label>
-                        <input type="text" name="site_name" value="<?php echo e($settings['site_name'] ?? ''); ?>" class="form-input">
-                    </div>
-                    <div>
-                        <label class="form-label">Tagline</label>
-                        <input type="text" name="site_tagline" value="<?php echo e($settings['site_tagline'] ?? ''); ?>"
-                            class="form-input">
-                    </div>
-                    <div>
-                        <label class="form-label">Phone</label>
-                        <input type="text" name="site_phone" value="<?php echo e($settings['site_phone'] ?? ''); ?>" class="form-input">
-                    </div>
-                    <div>
-                        <label class="form-label">Email</label>
-                        <input type="email" name="site_email" value="<?php echo e($settings['site_email'] ?? ''); ?>"
-                            class="form-input">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="form-label">Address</label>
-                        <input type="text" name="site_address" value="<?php echo e($settings['site_address'] ?? ''); ?>"
-                            class="form-input">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="form-label">Messenger / WhatsApp URL</label>
-                        <input type="url" name="messenger_url" value="<?php echo e($settings['messenger_url'] ?? ''); ?>"
-                            class="form-input" placeholder="https://m.me/yourpage or https://wa.me/880...">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <button type="submit" class="btn-primary">Save Site Info</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
     <?php echo $__env->make('partials.media-picker', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>

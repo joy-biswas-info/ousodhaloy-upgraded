@@ -45,6 +45,12 @@
                         </form>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                <form action="<?php echo e(route('admin.orders.destroy', $order)); ?>" method="POST" class="inline"
+                    onsubmit="return confirm('Move order <?php echo e($order->order_number); ?> to trash?')">
+                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                    <button type="submit" class="btn-danger btn-sm"><i class="fas fa-trash-alt mr-1"></i>Trash</button>
+                </form>
             </div>
         </div>
 
@@ -192,14 +198,25 @@
                 <div class="bg-white rounded-xl border p-4">
                     <h3 class="font-bold text-gray-800 text-sm mb-3">Customer</h3>
                     <p class="font-semibold text-sm text-gray-800"><?php echo e($order->customer_name); ?></p>
-                    <p class="text-xs text-gray-500 flex items-center gap-1 mt-1"><i
-                            class="fas fa-phone text-teal-500 w-3"></i><?php echo e($order->customer_phone); ?></p>
+                    <a href="tel:<?php echo e($order->customer_phone); ?>"
+                        class="text-xs text-gray-500 hover:text-teal-600 hover:underline flex items-center gap-1 mt-1 w-fit"><i
+                            class="fas fa-phone text-teal-500 w-3"></i><?php echo e($order->customer_phone); ?></a>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->user): ?>
                         <p class="text-xs text-gray-500 flex items-center gap-1 mt-1"><i
                                 class="fas fa-envelope text-teal-500 w-3"></i><?php echo e($order->user->email); ?></p>
                         <p class="text-xs text-gray-400 mt-1"><?php echo e($order->user->orders()->count()); ?> total orders</p>
                     <?php else: ?>
                         <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded mt-1 inline-block">Guest</span>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($order->landingPage): ?>
+                        <div class="mt-2 pt-2 border-t">
+                            <p class="text-[10px] text-gray-400 uppercase font-semibold mb-1">Came from</p>
+                            <a href="<?php echo e(route('admin.landing-pages.edit', $order->landingPage)); ?>"
+                                class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-semibold hover:underline inline-flex items-center gap-1">
+                                <i class="fas fa-bolt text-[10px]"></i> <?php echo e($order->landingPage->headline); ?>
+
+                            </a>
+                        </div>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 

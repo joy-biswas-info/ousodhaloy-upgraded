@@ -89,7 +89,10 @@
         </div>
 
         {{-- Bulk actions --}}
-        <div class="flex justify-end mb-2">
+        <div class="flex justify-end gap-2 mb-2">
+            <a href="{{ route('admin.orders.trash') }}" class="btn-outline text-red-500">
+                <i class="fas fa-trash-alt mr-1"></i>Trash
+            </a>
             <a href="{{ route('admin.orders.create') }}" class="btn-primary">
                 <i class="fas fa-plus mr-1"></i> New Manual Order
             </a>
@@ -102,6 +105,7 @@
                     <option value="confirm">Confirm All</option>
                     <option value="shipped">Shipped All</option>
                     <option value="cancel">Cancel All</option>
+                    <option value="trash">Move to Trash</option>
                     <option value="export">Export Excel</option>
                 </select>
                 <button type="submit" class="btn-secondary btn-sm"
@@ -120,7 +124,9 @@
                                 <th>Items</th>
                                 <th>Total</th>
                                 <th>Payment</th>
+                                <th>Courier</th>
                                 <th>Status</th>
+                                <th>Source</th>
                                 <th>Date</th>
                                 <th>Actions</th>
                             </tr>
@@ -136,7 +142,7 @@
                                     </td>
                                     <td>
                                         <p class="font-semibold text-xs text-gray-800">{{ $order->customer_name }}</p>
-                                        <p class="text-[10px] text-gray-500">{{ $order->customer_phone }}</p>
+                                        <a href="tel:{{ $order->customer_phone }}" class="text-[10px] text-gray-500 hover:text-teal-600 hover:underline">{{ $order->customer_phone }}</a>
                                     </td>
                                     <td class="text-xs text-gray-500">{{ $order->items->count() }} items</td>
                                     <td class="font-bold text-teal-700 text-sm">৳{{ number_format($order->total, 0) }}</td>
@@ -159,17 +165,48 @@
                                             <span class="text-xs text-gray-300">—</span>
                                         @endif
                                     </td>
-                                    <td><span class="status-badge status-{{ $order->status }}">{{ $order->status_label }}</span>
+                                    <td>
+                                        {{-- Quick status update — same endpoint as the detail page's form,
+                                             just with default note/notify so it's a one-click action here --}}
+                                        <form method="POST" action="{{ route('admin.orders.status', $order) }}">
+                                            @csrf
+                                            <input type="hidden" name="notify_customer" value="1">
+                                            <select name="status" onchange="this.form.submit()"
+                                                class="form-select text-xs py-1 px-2 w-auto">
+                                                @foreach(\App\Models\Order::STATUS_LABELS as $key => $label)
+                                                    <option value="{{ $key }}" @selected($order->status === $key)>{{ $label }}</option>
+                                                @endforeach
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        @if($order->landingPage)
+                                            <a href="{{ route('admin.landing-pages.edit', $order->landingPage) }}"
+                                                class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-semibold hover:underline" title="{{ $order->landingPage->headline }}">
+                                                <i class="fas fa-bolt text-[10px]"></i> {{ Str::limit($order->landingPage->headline, 16) }}
+                                            </a>
+                                        @else
+                                            <span class="text-xs text-gray-300">Direct</span>
+                                        @endif
                                     </td>
                                     <td class="text-xs text-gray-500 whitespace-nowrap">
                                         {{ $order->created_at->format('d M, h:i A') }}</td>
                                     <td>
-                                        <a href="{{ route('admin.orders.show', $order) }}" class="btn-secondary btn-sm">View</a>
+                                        <div class="flex gap-1.5 flex-wrap">
+                                            <a href="{{ route('admin.orders.show', $order) }}" class="btn-secondary btn-sm">View</a>
+                                            <form method="POST" action="{{ route('admin.orders.destroy', $order) }}"
+                                                onsubmit="return confirm('Move order {{ $order->order_number }} to trash?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn-danger btn-sm" title="Move to Trash">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center py-12 text-gray-400 text-sm">No orders found</td>
+                                    <td colspan="11" class="text-center py-12 text-gray-400 text-sm">No orders found</td>
                                 </tr>
                             @endforelse
                         </tbody>

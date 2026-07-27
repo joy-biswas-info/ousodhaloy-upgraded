@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 class Order extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'order_number',
         'user_id',
@@ -163,9 +166,12 @@ class Order extends Model
 
     public static function generateOrderNumber(): string
     {
+        // withTrashed() matters here: order_number has a DB-level unique constraint
+        // that a soft-deleted (trashed) row still occupies, so checking only
+        // non-trashed rows could generate a number that collides at INSERT time.
         do {
             $num = 'OUS-' . date('ymd') . '-' . strtoupper(Str::random(4));
-        } while (self::where('order_number', $num)->exists());
+        } while (self::withTrashed()->where('order_number', $num)->exists());
         return $num;
     }
 }

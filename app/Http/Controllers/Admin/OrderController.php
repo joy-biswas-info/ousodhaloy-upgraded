@@ -20,7 +20,7 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $query = Order::with('items')->latest();
+        $query = Order::with(['items', 'landingPage'])->latest();
 
         if ($q = $request->q)
             $query->where(
@@ -54,7 +54,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('items.product', 'statusHistory', 'user');
+        $order->load('items.product', 'statusHistory', 'user', 'landingPage');
 
         $pathaoDefaults = [
             'city' => Setting::get('pathao_default_city_id'),
@@ -207,7 +207,7 @@ class OrderController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|in:confirm,cancel,export,shipped',
+            'action' => 'required|in:confirm,cancel,export,shipped,trash',
             'order_ids' => 'required|array',
         ]);
         $orders = Order::whereIn('id', $request->order_ids)->get();
@@ -219,6 +219,11 @@ class OrderController extends Controller
             );
         }
 
+        if ($request->action === 'trash') {
+            $count = Order::whereIn('id', $request->order_ids)->delete();
+            return back()->with('success', "{$count} order(s) moved to trash.");
+        }
+
         $statusMap = ['confirm' => 'confirmed', 'cancel' => 'cancelled', 'shipped' => 'shipped'];
         $newStatus = $statusMap[$request->action];
 
@@ -226,5 +231,36 @@ class OrderController extends Controller
             $this->orderService->updateStatus($order, $newStatus, 'Bulk action', false);
         }
         return back()->with('success', count($orders) . " orders updated to {$newStatus}.");
+    }
+
+    // ── Trash ─────────────────────────────────────────────────────────────
+
+    public function destroy(Order $order)
+    {
+        $order->delete(); // soft delete — recoverable from Trash
+        return redirect()->route('admin.orders.index')->with('success', "Order \"{$order->order_number}\" moved to trash.");
+    }
+
+    public function trash()
+    {
+        $orders = Order::onlyTrashed()->with('items')->latest('deleted_at')->paginate(20);
+        return view('admin.orders.trash', compact('orders'));
+    }
+
+    public function restore(int $id)
+    {
+        $order = Order::onlyTrashed()->findOrFail($id);
+        $order->restore();
+        return back()->with('success', "Order \"{$order->order_number}\" restored.");
+    }
+
+    public function forceDelete(int $id)
+    {
+        $order = Order::onlyTrashed()->findOrFail($id);
+        if ($order->prescription_image) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($order->prescription_image);
+        }
+        $order->forceDelete();
+        return back()->with('success', 'Order permanently deleted.');
     }
 }

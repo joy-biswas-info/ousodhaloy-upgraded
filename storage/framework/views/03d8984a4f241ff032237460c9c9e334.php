@@ -344,9 +344,20 @@
                 ];
             ?>
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $navItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
+                    // Route names are inconsistent ('admin.products.index' vs bare
+                    // 'admin.reviews'), so the highlight prefix can't just be the
+                    // item's own route name + '.*' — that only ever matched routes
+                    // literally nested under '.index.', which none of the app's
+                    // sub-routes (products.edit, orders.show, etc) are. Stripping a
+                    // trailing '.index' gives the resource's real namespace instead.
+                    $navPrefix = Str::endsWith($item['route'], '.index')
+                        ? Str::beforeLast($item['route'], '.index')
+                        : $item['route'];
+                ?>
                 <a href="<?php echo e(route($item['route'])); ?>"
                     class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group
-                        <?php echo e(request()->routeIs($item['route']) || request()->routeIs($item['route'] . '.*') ? 'bg-teal-700 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'); ?>">
+                        <?php echo e(request()->routeIs($item['route']) || request()->routeIs($navPrefix . '.*') ? 'bg-teal-700 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'); ?>">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-<?php echo e($item['icon']); ?> w-4 text-center"></i>
                         <?php echo e($item['label']); ?>

@@ -48,4 +48,23 @@ class DashboardController extends Controller
             'recentOrders', 'lowStockProducts', 'pendingPrescriptions', 'topProducts'
         ));
     }
+
+    /**
+     * Lightweight JSON refresh for the dashboard's stat cards — deliberately cheap
+     * (no chart/recent-orders/top-products queries) so it's safe to poll every
+     * minute without a full page reload knocking the admin back to the top.
+     */
+    public function stats()
+    {
+        $today = today();
+
+        return response()->json([
+            'today_orders' => Order::whereDate('created_at', $today)->count(),
+            'total_orders' => Order::count(),
+            'today_revenue' => Order::whereDate('created_at', $today)->whereNotIn('status', ['cancelled'])->sum('total'),
+            'total_revenue' => Order::whereNotIn('status', ['cancelled'])->sum('total'),
+            'pending_orders' => Order::where('status', 'pending')->count(),
+            'total_customers' => User::where('role', 'customer')->count(),
+        ]);
+    }
 }

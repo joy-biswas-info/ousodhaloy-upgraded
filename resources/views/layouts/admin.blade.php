@@ -343,9 +343,20 @@
                 ];
             @endphp
             @foreach($navItems as $item)
+                @php
+                    // Route names are inconsistent ('admin.products.index' vs bare
+                    // 'admin.reviews'), so the highlight prefix can't just be the
+                    // item's own route name + '.*' — that only ever matched routes
+                    // literally nested under '.index.', which none of the app's
+                    // sub-routes (products.edit, orders.show, etc) are. Stripping a
+                    // trailing '.index' gives the resource's real namespace instead.
+                    $navPrefix = Str::endsWith($item['route'], '.index')
+                        ? Str::beforeLast($item['route'], '.index')
+                        : $item['route'];
+                @endphp
                 <a href="{{ route($item['route']) }}"
                     class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group
-                        {{ request()->routeIs($item['route']) || request()->routeIs($item['route'] . '.*') ? 'bg-teal-700 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
+                        {{ request()->routeIs($item['route']) || request()->routeIs($navPrefix . '.*') ? 'bg-teal-700 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white' }}">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-{{ $item['icon'] }} w-4 text-center"></i>
                         {{ $item['label'] }}

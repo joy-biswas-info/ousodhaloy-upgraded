@@ -32,8 +32,8 @@
                 @click="$refs.fileInput.click()">
                 <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3 block"></i>
                 <p class="font-semibold text-gray-700">Drop images here or click to browse</p>
-                <p class="text-xs text-gray-400 mt-1">Names are automatically converted to SEO-friendly format</p>
-                <p class="text-xs text-teal-600 font-semibold mt-1">e.g. "Napa 500mg.jpg" → <code>napa-500mg.jpg</code></p>
+                <p class="text-xs text-gray-400 mt-1">Names are auto-converted to SEO-friendly WebP for faster page loads</p>
+                <p class="text-xs text-teal-600 font-semibold mt-1">e.g. "Napa 500mg.jpg" → <code>napa-500mg.webp</code> (GIFs are kept as-is to preserve animation)</p>
             </div>
             <input type="file" x-ref="fileInput" multiple accept="image/*" class="hidden"
                 @change="handleFiles($event.target.files)">

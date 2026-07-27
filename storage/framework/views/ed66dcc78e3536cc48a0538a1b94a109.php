@@ -5,13 +5,18 @@
 
         
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [['label' => "Today's Orders", 'value' => $stats['today_orders'], 'sub' => number_format($stats['total_orders']) . ' total', 'icon' => 'box', 'color' => 'teal'], ['label' => "Today's Revenue", 'value' => '৳' . number_format($stats['today_revenue']), 'sub' => '৳' . number_format($stats['total_revenue']) . ' total', 'icon' => 'taka-sign', 'color' => 'green'], ['label' => 'Pending Orders', 'value' => $stats['pending_orders'], 'sub' => 'Need attention', 'icon' => 'clock', 'color' => 'yellow'], ['label' => 'Customers', 'value' => number_format($stats['total_customers']), 'sub' => number_format($stats['total_products']) . ' products', 'icon' => 'users', 'color' => 'blue'],]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $card): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = [
+                ['label' => "Today's Orders", 'key' => 'today_orders', 'value' => $stats['today_orders'], 'sub_key' => 'total_orders', 'sub_prefix' => '', 'sub_suffix' => ' total', 'sub' => number_format($stats['total_orders']) . ' total', 'icon' => 'box', 'color' => 'teal'],
+                ['label' => "Today's Revenue", 'key' => 'today_revenue', 'value' => '৳' . number_format($stats['today_revenue']), 'sub_key' => 'total_revenue', 'sub_prefix' => '৳', 'sub_suffix' => ' total', 'sub' => '৳' . number_format($stats['total_revenue']) . ' total', 'icon' => 'taka-sign', 'color' => 'green', 'value_prefix' => '৳'],
+                ['label' => 'Pending Orders', 'key' => 'pending_orders', 'value' => $stats['pending_orders'], 'sub_key' => null, 'sub' => 'Need attention', 'icon' => 'clock', 'color' => 'yellow'],
+                ['label' => 'Customers', 'key' => 'total_customers', 'value' => number_format($stats['total_customers']), 'sub_key' => null, 'sub' => number_format($stats['total_products']) . ' products', 'icon' => 'users', 'color' => 'blue'],
+            ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $card): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="bg-white rounded-xl border p-5">
                     <div class="flex items-start justify-between">
                         <div>
                             <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide"><?php echo e($card['label']); ?></p>
-                            <p class="text-2xl font-black text-gray-800 mt-1"><?php echo e($card['value']); ?></p>
-                            <p class="text-xs text-gray-400 mt-0.5"><?php echo e($card['sub']); ?></p>
+                            <p class="text-2xl font-black text-gray-800 mt-1" data-stat="<?php echo e($card['key']); ?>" data-prefix="<?php echo e($card['value_prefix'] ?? ''); ?>"><?php echo e($card['value']); ?></p>
+                            <p class="text-xs text-gray-400 mt-0.5" <?php if($card['sub_key']): ?> data-stat="<?php echo e($card['sub_key']); ?>" data-prefix="<?php echo e($card['sub_prefix'] ?? ''); ?>" data-suffix="<?php echo e($card['sub_suffix'] ?? ''); ?>" <?php endif; ?>><?php echo e($card['sub']); ?></p>
                         </div>
                         <div class="w-10 h-10 bg-<?php echo e($card['color']); ?>-100 rounded-xl flex items-center justify-center">
                             <i class="fas fa-<?php echo e($card['icon']); ?> text-<?php echo e($card['color']); ?>-600"></i>
@@ -187,8 +192,26 @@
             }
         });
 
-        // Auto-refresh stats every 60s
-        setTimeout(() => location.reload(), 60000);
+        // Auto-refresh stat cards every 60s — a full page reload here used to knock
+        // you back to the top and interrupt whatever you were reading, for numbers
+        // that mostly don't even change minute to minute.
+        async function refreshDashboardStats() {
+            try {
+                const res = await fetch('<?php echo e(route('admin.dashboard.stats')); ?>', { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) return;
+                const data = await res.json();
+                document.querySelectorAll('[data-stat]').forEach(el => {
+                    const key = el.dataset.stat;
+                    if (!(key in data)) return;
+                    const prefix = el.dataset.prefix || '';
+                    const suffix = el.dataset.suffix || '';
+                    el.textContent = prefix + Number(data[key]).toLocaleString() + suffix;
+                });
+            } catch (e) {
+                // fail silently — next tick will retry
+            }
+        }
+        setInterval(refreshDashboardStats, 60000);
     </script>
 <?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/joybiswas/Downloads/ousodhaloy-laravel/resources/views/admin/dashboard.blade.php ENDPATH**/ ?>

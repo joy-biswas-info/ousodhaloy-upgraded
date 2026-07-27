@@ -4,15 +4,21 @@
 @section('content')
     <div class="space-y-5">
 
-        {{-- Stat cards --}}
+        {{-- Stat cards — value/sub spans carry data-stat hooks so the 60s refresh
+             below can update just these numbers instead of reloading the page --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            @foreach([['label' => "Today's Orders", 'value' => $stats['today_orders'], 'sub' => number_format($stats['total_orders']) . ' total', 'icon' => 'box', 'color' => 'teal'], ['label' => "Today's Revenue", 'value' => '৳' . number_format($stats['today_revenue']), 'sub' => '৳' . number_format($stats['total_revenue']) . ' total', 'icon' => 'taka-sign', 'color' => 'green'], ['label' => 'Pending Orders', 'value' => $stats['pending_orders'], 'sub' => 'Need attention', 'icon' => 'clock', 'color' => 'yellow'], ['label' => 'Customers', 'value' => number_format($stats['total_customers']), 'sub' => number_format($stats['total_products']) . ' products', 'icon' => 'users', 'color' => 'blue'],] as $card)
+            @foreach([
+                ['label' => "Today's Orders", 'key' => 'today_orders', 'value' => $stats['today_orders'], 'sub_key' => 'total_orders', 'sub_prefix' => '', 'sub_suffix' => ' total', 'sub' => number_format($stats['total_orders']) . ' total', 'icon' => 'box', 'color' => 'teal'],
+                ['label' => "Today's Revenue", 'key' => 'today_revenue', 'value' => '৳' . number_format($stats['today_revenue']), 'sub_key' => 'total_revenue', 'sub_prefix' => '৳', 'sub_suffix' => ' total', 'sub' => '৳' . number_format($stats['total_revenue']) . ' total', 'icon' => 'taka-sign', 'color' => 'green', 'value_prefix' => '৳'],
+                ['label' => 'Pending Orders', 'key' => 'pending_orders', 'value' => $stats['pending_orders'], 'sub_key' => null, 'sub' => 'Need attention', 'icon' => 'clock', 'color' => 'yellow'],
+                ['label' => 'Customers', 'key' => 'total_customers', 'value' => number_format($stats['total_customers']), 'sub_key' => null, 'sub' => number_format($stats['total_products']) . ' products', 'icon' => 'users', 'color' => 'blue'],
+            ] as $card)
                 <div class="bg-white rounded-xl border p-5">
                     <div class="flex items-start justify-between">
                         <div>
                             <p class="text-xs text-gray-500 font-semibold uppercase tracking-wide">{{ $card['label'] }}</p>
-                            <p class="text-2xl font-black text-gray-800 mt-1">{{ $card['value'] }}</p>
-                            <p class="text-xs text-gray-400 mt-0.5">{{ $card['sub'] }}</p>
+                            <p class="text-2xl font-black text-gray-800 mt-1" data-stat="{{ $card['key'] }}" data-prefix="{{ $card['value_prefix'] ?? '' }}">{{ $card['value'] }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5" @if($card['sub_key']) data-stat="{{ $card['sub_key'] }}" data-prefix="{{ $card['sub_prefix'] ?? '' }}" data-suffix="{{ $card['sub_suffix'] ?? '' }}" @endif>{{ $card['sub'] }}</p>
                         </div>
                         <div class="w-10 h-10 bg-{{ $card['color'] }}-100 rounded-xl flex items-center justify-center">
                             <i class="fas fa-{{ $card['icon'] }} text-{{ $card['color'] }}-600"></i>
@@ -186,7 +192,25 @@
             }
         });
 
-        // Auto-refresh stats every 60s
-        setTimeout(() => location.reload(), 60000);
+        // Auto-refresh stat cards every 60s — a full page reload here used to knock
+        // you back to the top and interrupt whatever you were reading, for numbers
+        // that mostly don't even change minute to minute.
+        async function refreshDashboardStats() {
+            try {
+                const res = await fetch('{{ route('admin.dashboard.stats') }}', { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) return;
+                const data = await res.json();
+                document.querySelectorAll('[data-stat]').forEach(el => {
+                    const key = el.dataset.stat;
+                    if (!(key in data)) return;
+                    const prefix = el.dataset.prefix || '';
+                    const suffix = el.dataset.suffix || '';
+                    el.textContent = prefix + Number(data[key]).toLocaleString() + suffix;
+                });
+            } catch (e) {
+                // fail silently — next tick will retry
+            }
+        }
+        setInterval(refreshDashboardStats, 60000);
     </script>
 @endpush
