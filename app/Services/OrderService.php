@@ -6,11 +6,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\{DeliveryZone, Order, OrderItem, OrderStatusHistory, Product, PromoCode, Setting};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class OrderService
 {
     public function __construct(
         private SmsService $sms,
+        private MetaConversionsApiService $capi,
     ) {
     }
 
@@ -149,8 +151,70 @@ class OrderService
                     logger()->error('Admin order email failed: ' . $e->getMessage());
                 }
             }
+
+            // 9. Server-side Purchase (CAPI) — COD orders convert immediately
+            // at creation, matching the client-side Purchase pixel that fires
+            // on the order confirmation page. Online payments fire this from
+            // SslCommerzService once payment is actually confirmed instead.
+            if ($order->payment_method === 'cod') {
+                $this->fireCapiPurchase($order);
+            }
+
             return $order->fresh(['items']);
         });
+    }
+
+    /**
+     * Fires the server-side Purchase CAPI event for a confirmed order — see
+     * create() for COD, SslCommerzService::handleSuccess()/handleIpn() for
+     * online payments. Uses a deterministic event_id keyed to the order
+     * number so it matches the client-side Purchase pixel event fired on the
+     * order confirmation page, letting Meta deduplicate the pair instead of
+     * double-counting the conversion.
+     */
+    public function fireCapiPurchase(Order $order, ?string $fbp = null, ?string $fbc = null): void
+    {
+        if (Setting::get('meta_pixel_purchase', 'true') !== 'true') {
+            return;
+        }
+
+        $req = request();
+        $userData = $this->capi->hashUserData([
+            'email' => $order->shipping_email ?? $order->guest_email,
+            'phone' => $order->shipping_phone,
+            'first_name' => Str::before($order->shipping_name, ' '),
+            'last_name' => Str::contains($order->shipping_name, ' ') ? Str::after($order->shipping_name, ' ') : null,
+            'city' => $order->shipping_district,
+            'external_id' => $order->user_id,
+        ]);
+        if ($req) {
+            $userData['client_ip_address'] = $req->ip();
+            $userData['client_user_agent'] = $req->userAgent();
+        }
+        // fbp/fbc: passed explicitly for the SSLCommerz IPN path, where the
+        // request is server-to-server (SSLCommerz's servers, not the
+        // customer's browser) so request cookies aren't the customer's own —
+        // see SslCommerzService, which threads these through via value_c/value_d.
+        $fbp ??= $req?->cookie('_fbp');
+        $fbc ??= $req?->cookie('_fbc');
+        if ($fbp) $userData['fbp'] = $fbp;
+        if ($fbc) $userData['fbc'] = $fbc;
+
+        $this->capi->send(
+            'Purchase',
+            'purchase-' . $order->order_number,
+            [
+                'content_ids' => $order->items()->pluck('product_id')->toArray(),
+                'content_name' => $order->items()->pluck('product_name')->implode(', '),
+                'content_type' => 'product',
+                'value' => (float) $order->total,
+                'currency' => 'BDT',
+                'num_items' => (int) $order->items()->sum('quantity'),
+                'order_id' => $order->order_number,
+            ],
+            $userData,
+            $req?->fullUrl()
+        );
     }
 
     /**

@@ -65,6 +65,12 @@ class SslCommerzService
             'product_profile' => 'general',
             'value_a' => $order->id,
             'value_b' => $order->order_number,
+            // Meta CAPI browser IDs — carried through the gateway round-trip so
+            // handleSuccess()/handleIpn() can still attribute the eventual
+            // server-side Purchase event to the browser session that started
+            // checkout (see OrderService::fireCapiPurchase()).
+            'value_c' => request()?->cookie('_fbp') ?? '',
+            'value_d' => request()?->cookie('_fbc') ?? '',
         ];
 
         $res = Http::asForm()->post("{$this->baseUrl}/gwprocess/v4/api.php", $data);
@@ -138,6 +144,7 @@ class SslCommerzService
         ]);
 
         app(OrderService::class)->updateStatus($order, 'confirmed', 'Payment confirmed via SSL Commerz');
+        app(OrderService::class)->fireCapiPurchase($order, $payload['value_c'] ?? null, $payload['value_d'] ?? null);
 
         return $order;
     }
@@ -157,6 +164,7 @@ class SslCommerzService
             if ($order->status === 'pending') {
                 app(OrderService::class)->updateStatus($order, 'confirmed', 'IPN payment confirmed');
             }
+            app(OrderService::class)->fireCapiPurchase($order, $payload['value_c'] ?? null, $payload['value_d'] ?? null);
             return true;
         }
         return false;

@@ -29,6 +29,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'payment/cancel',
             'payment/ipn',
             'webhooks/*',   // ← add this
+            // Stateless tracking beacon — some standalone landing-page templates
+            // (magnesium/niacinamide/salicylic static pages) don't render a
+            // csrf-token meta tag, and this endpoint has no side effects on
+            // user data, so it's safe to exempt like the webhook/payment routes.
+            'capi/track',
         ]);
 
         $middleware->alias([

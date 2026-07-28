@@ -197,12 +197,13 @@
                     if (window.fbTrack) {
                         window.fbTrack('Purchase', {
                             content_ids: {!! json_encode($order->items->pluck('product_id')->toArray()) !!},
+                            content_name: {!! json_encode($order->items->pluck('product_name')->implode(', ')) !!},
                             content_type: 'product',
                             value: {{ $order->total }},
                             currency: 'BDT',
                             num_items: {{ $order->items->sum('quantity') }},
                             order_id: '{{ $order->order_number }}'
-                        });
+                        }, 'purchase-{{ $order->order_number }}');
                     }
                 });
             @endif

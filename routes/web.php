@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CapiTrackController;
 use App\Http\Controllers\Shop\AccountController;
 use App\Http\Controllers\Shop\LandingController;
 use App\Http\Controllers\Shop\LegalController;
@@ -49,6 +50,11 @@ Route::get('/return-policy', [LegalController::class, 'returns'])->name('legal.r
 Route::get('/search', [ProductController::class, 'search'])->name('search');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+
+// Meta CAPI beacon — see resources/views/partials/meta-pixel.blade.php fbTrack()
+Route::post('/capi/track', [CapiTrackController::class, 'track'])
+    ->middleware('throttle:30,1')
+    ->name('capi.track');
 
 // Webhooks
 Route::post('/webhooks/pathao', [WebhookController::class, 'pathao'])->name('webhooks.pathao');
