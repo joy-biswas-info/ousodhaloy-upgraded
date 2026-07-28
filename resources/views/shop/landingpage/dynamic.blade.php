@@ -12,7 +12,10 @@
     $messengerUrl = \App\Models\Setting::get('messenger_url');
     $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
     $pixelAddToCart = \App\Models\Setting::get('meta_pixel_add_to_cart', 'true') === 'true';
-    $pixelInitiateCheckout = \App\Models\Setting::get('meta_pixel_initiate_checkout', 'true') === 'true';
+    // InitiateCheckout now fires on the real checkout page itself (see
+    // shop/checkout/index.blade.php) since the buy-now buttons below hand
+    // off there instead of running a same-page order form.
+    $buyNowBase = route('landing.buy-now', ['landingPage' => $landingPage->slug]);
 @endphp
 
 <head>
@@ -109,8 +112,6 @@
         .trust-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; padding: 28px 0; }
         .tpill { background: rgba(13,118,116,.1); border: 1px solid rgba(13,118,116,.25); color: var(--cta-bright); font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
 
-        .price-section { padding: 12px 20px 0; }
-        .price-card { max-width: 680px; margin: 0 auto; background: var(--card); border: 1px solid color-mix(in srgb, var(--cta) 22%, transparent); border-radius: var(--r2); padding: 26px 22px; box-shadow: 0 0 40px rgba(197,90,120,.14); }
         .sale-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 14px; }
         .price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
         .price-now { font-size: 44px; font-weight: 700; color: var(--cta-bright); letter-spacing: -1px; line-height: 1; font-family: -apple-system,BlinkMacSystemFont,sans-serif; }
@@ -132,35 +133,10 @@
         .qty-num { width: 42px; text-align: center; font-size: 17px; font-weight: 700; font-family: -apple-system,BlinkMacSystemFont,sans-serif; }
         .qty-subtotal { font-size: 13px; color: var(--muted); }
 
-        .order-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-        .of-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .of-input, .of-select, .of-textarea { width: 100%; border: 1px solid rgba(139,90,80,.22); border-radius: 10px; padding: 11px 13px; font-size: 14px; outline: none; background: var(--card); color: var(--ink); }
-        .of-input:focus, .of-select:focus, .of-textarea:focus { border-color: var(--cta); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cta) 12%, transparent); }
-        .of-textarea { resize: none; }
-        .of-error { font-size: 11.5px; color: var(--danger); margin-top: -4px; }
-        .of-pay { display: flex; gap: 8px; flex-wrap: wrap; }
-        .of-pay label { flex: 1; min-width: 120px; display: flex; align-items: center; gap: 8px; border: 2px solid rgba(139,90,80,.16); border-radius: 10px; padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .of-pay input:checked + span { color: var(--cta-bright); }
-        .of-pay label:has(input:checked) { border-color: var(--cta); background: color-mix(in srgb, var(--cta) 6%, transparent); }
-        .of-file-label { border: 2px dashed rgba(139,90,80,.3); border-radius: 10px; padding: 14px; text-align: center; font-size: 12.5px; color: var(--muted); cursor: pointer; }
-
-        .cta-main { width: 100%; height: 52px; background: var(--cta); color: #fff; border-radius: 10px; font-size: 15.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 7px; transition: background .15s, transform .1s; box-shadow: 0 4px 24px color-mix(in srgb, var(--cta) 38%, transparent); }
-        .cta-main:active { transform: scale(.98); }
-        .cta-main:hover { background: var(--cta-bright); }
-        .cta-main:disabled { opacity: .6; cursor: default; }
-
-        .order-totals { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(139,90,80,.2); }
-        .order-totals strong { color: var(--ink); font-size: 15px; }
-
-        .order-success { display: none; text-align: center; padding: 20px 10px; }
-        .order-success .ok-icon { font-size: 44px; margin-bottom: 10px; }
-        .order-success h3 { font-size: 18px; margin-bottom: 6px; }
-        .order-success p { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
-
-        .ship-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 12px; }
-        .caution-box { max-width: 680px; margin: 14px auto 0; background: rgba(178,134,60,.1); border: 1px solid rgba(178,134,60,.28); border-radius: var(--r); padding: 14px 18px; font-size: 12.5px; color: #6B4F2A; line-height: 1.6; }
+        .ship-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 4px; }
+        .caution-box { max-width: 680px; margin: 14px auto 0; background: rgba(178,134,60,.1); border: 1px solid rgba(178,134,60,.28); border-radius: var(--r); padding: 14px 18px; font-size: 12.5px; color: #6B4F2A; line-height: 1.6; text-align: left; }
         .caution-box strong { color: var(--accent-bright); }
-        .messenger-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 12.5px; color: var(--cta-bright); font-weight: 600; }
+        .messenger-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12.5px; color: var(--cta-bright); font-weight: 600; }
 
         .sec { padding: 52px 20px; }
         .sec-label { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent-bright); margin-bottom: 8px; }
@@ -317,7 +293,30 @@
             </div>
             @endif
 
-            <a href="#order" class="final-cta-btn">⚡ এখনই অর্ডার করুন</a>
+            <div class="qty-wrap">
+                <button type="button" class="qty-btn" id="qty-down" aria-label="কমান">−</button>
+                <div class="qty-num" id="qty-num">1</div>
+                <button type="button" class="qty-btn" id="qty-up" aria-label="বাড়ান">+</button>
+            </div>
+
+            {{-- Buy Now: sets the cart to just this item and hands off to the
+                 normal checkout page — the original funnel, restored. --}}
+            <a href="{{ $buyNowBase }}/1" class="final-cta-btn buynow-btn" id="hero-buy-btn">
+                ⚡ এখনই অর্ডার করুন — ৳<span class="qty-subtotal-inline">{{ number_format($price, 0) }}</span>
+            </a>
+
+            <p class="ship-note">{{ $landingPage->shipping_note ?: 'ডেলিভারি ২৪–৪৮ ঘণ্টার মধ্যে পৌঁছাবে।' }}</p>
+
+            @if($messengerUrl)
+            <a href="{{ $messengerUrl }}" target="_blank" class="messenger-link">
+                <i class="fab fa-facebook-messenger"></i> প্রশ্ন থাকলে ম্যাসেঞ্জারে জিজ্ঞাসা করুন
+            </a>
+            @endif
+
+            <div class="caution-box">
+                <strong>⚠️ রিটার্ন পলিসি</strong><br>
+                {{ $landingPage->return_policy_note ?: 'পণ্য রিটার্ন করতে চাইলে অবশ্যই ডেলিভারি ম্যানের সামনে প্যাকেট খুলে চেক করতে হবে।' }}
+            </div>
         </div>
     </section>
 
@@ -461,127 +460,17 @@
     </section>
     @endif
 
-    <section class="final-cta" style="padding-bottom: 8px">
+    {{-- Final CTA — a single buy-now button that sets the cart and hands off
+         to the real checkout page, same as the original static landing pages. --}}
+    <section class="final-cta">
         <h2>আজই অর্ডার করুন <em>{{ $product->name }}</em></h2>
         <p>{{ $landingPage->subheadline ?: 'সীমিত স্টক, সীমিত সময়ের অফার।' }}</p>
-    </section>
-
-    {{-- Full order form — reached here after the reader has seen the problem,
-         formula, benefits, ingredients, reviews and FAQ, plus via the hero
-         teaser CTA / sticky bar for anyone who wants to skip straight here. --}}
-    <section class="price-section" id="order">
-        <div class="price-card">
-            @if($landingPage->badge_text)
-            <div class="sale-badge">{{ $landingPage->badge_text }}</div>
-            @endif
-
-            <div class="price-row">
-                <div class="price-now">৳{{ number_format($price, 0) }}</div>
-                @if($comparePrice)
-                <div class="price-was">৳{{ number_format($comparePrice, 0) }}</div>
-                @endif
-                @if($discountPercent > 0)
-                <div class="price-save">{{ $discountPercent }}% OFF</div>
-                @endif
-            </div>
-
-            <div id="order-form-wrap">
-                <div class="qty-row">
-                    <div class="qty-wrap">
-                        <button type="button" class="qty-btn" id="qty-down" aria-label="কমান">−</button>
-                        <div class="qty-num" id="qty-num">1</div>
-                        <button type="button" class="qty-btn" id="qty-up" aria-label="বাড়ান">+</button>
-                    </div>
-                    <span class="qty-subtotal" id="qty-subtotal-txt">৳{{ number_format($price, 0) }}</span>
-                </div>
-
-                <form class="order-form" id="order-form" novalidate>
-                    <div class="of-row">
-                        <div>
-                            <input type="text" name="shipping_name" class="of-input" placeholder="আপনার নাম *" required>
-                            <p class="of-error" data-error-for="shipping_name"></p>
-                        </div>
-                        <div>
-                            <input type="tel" name="shipping_phone" class="of-input" placeholder="01XXXXXXXXX *" required>
-                            <p class="of-error" data-error-for="shipping_phone"></p>
-                        </div>
-                    </div>
-                    <div class="of-row">
-                        <div>
-                            <select name="shipping_division" id="division-select" class="of-select" required>
-                                <option value="">বিভাগ নির্বাচন করুন *</option>
-                                @foreach(config('bd.divisions', []) as $div)
-                                <option value="{{ $div }}">{{ $div }}</option>
-                                @endforeach
-                            </select>
-                            <p class="of-error" data-error-for="shipping_division"></p>
-                        </div>
-                        <div>
-                            <select name="shipping_district" id="district-select" class="of-select" required>
-                                <option value="">জেলা নির্বাচন করুন *</option>
-                            </select>
-                            <p class="of-error" data-error-for="shipping_district"></p>
-                        </div>
-                    </div>
-                    <div>
-                        <textarea name="shipping_address" class="of-textarea" rows="2" placeholder="সম্পূর্ণ ঠিকানা (বাসা, রোড, এলাকা) *" required></textarea>
-                        <p class="of-error" data-error-for="shipping_address"></p>
-                    </div>
-
-                    @if($product->requires_prescription)
-                    <div>
-                        <label class="of-file-label" for="lp-prescription">
-                            <i class="fas fa-file-medical"></i> প্রেসক্রিপশন আপলোড করুন (আবশ্যক) — <span id="rx-filename">JPG, PNG বা PDF, সর্বোচ্চ 5MB</span>
-                        </label>
-                        <input type="file" id="lp-prescription" name="prescription" accept="image/*,.pdf" style="display:none"
-                            onchange="document.getElementById('rx-filename').textContent = this.files[0]?.name || 'JPG, PNG বা PDF, সর্বোচ্চ 5MB'">
-                        <p class="of-error" data-error-for="prescription"></p>
-                    </div>
-                    @endif
-
-                    <div class="of-pay">
-                        @if($codEnabled)
-                        <label><input type="radio" name="payment_method" value="cod" checked><span>💵 ক্যাশ অন ডেলিভারি</span></label>
-                        @endif
-                        @if($sslEnabled)
-                        <label><input type="radio" name="payment_method" value="ssl_commerz" {{ !$codEnabled ? 'checked' : '' }}><span>💳 Card/bKash/Nagad</span></label>
-                        @endif
-                    </div>
-                    <p class="of-error" data-error-for="general"></p>
-
-                    <button type="submit" class="cta-main" id="submit-btn">
-                        <span id="submit-btn-text">এখনই অর্ডার করুন ⚡</span>
-                    </button>
-
-                    <div class="order-totals">
-                        <span>Delivery: <span id="delivery-amt">—</span></span>
-                        <strong>Total: ৳<span id="total-amt">{{ number_format($price, 0) }}</span></strong>
-                    </div>
-                </form>
-            </div>
-
-            <div class="order-success" id="order-success">
-                <div class="ok-icon">✅</div>
-                <h3>অর্ডার সফল হয়েছে!</h3>
-                <p>অর্ডার নম্বর: <strong id="success-order-number"></strong><br>আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।</p>
-                <a id="success-track-link" href="#" class="cta-main" style="display:inline-flex;max-width:280px">অর্ডার ট্র্যাক করুন</a>
-            </div>
-
-            <p class="ship-note">{{ $landingPage->shipping_note ?: 'ডেলিভারি ২৪–৪৮ ঘণ্টার মধ্যে পৌঁছাবে।' }}</p>
-
-            @if($messengerUrl)
-            <div style="text-align:center">
-                <a href="{{ $messengerUrl }}" target="_blank" class="messenger-link">
-                    <i class="fab fa-facebook-messenger"></i> প্রশ্ন থাকলে ম্যাসেঞ্জারে জিজ্ঞাসা করুন
-                </a>
-            </div>
-            @endif
-
-            <div class="caution-box">
-                <strong>⚠️ রিটার্ন পলিসি</strong><br>
-                {{ $landingPage->return_policy_note ?: 'পণ্য রিটার্ন করতে চাইলে অবশ্যই ডেলিভারি ম্যানের সামনে প্যাকেট খুলে চেক করতে হবে।' }}
-            </div>
-        </div>
+        <a href="{{ $buyNowBase }}/1" class="final-cta-btn buynow-btn">
+            ⚡ মাত্র ৳{{ number_format($price, 0) }} — Order Now
+        </a>
+        @if($codEnabled)
+        <p class="ship-note">✓ Cash on Delivery উপলব্ধ</p>
+        @endif
     </section>
 
     <footer>
@@ -598,7 +487,7 @@
             <div class="s-name">{{ Str::limit($product->name, 30) }}</div>
             <div class="s-price">৳{{ number_format($price, 0) }}</div>
         </div>
-        <a href="#order" class="s-cta">Order করুন ⚡</a>
+        <a href="{{ $buyNowBase }}/1" class="s-cta buynow-btn">Order করুন ⚡</a>
     </div>
 
     <script>
@@ -630,33 +519,24 @@
         @endif
     });
 
-    // ── Qty + live delivery/total ──
+    // ── Qty + buy-now links — every "buy now" button on the page (hero,
+    // sticky bar, final CTA) reflects the chosen quantity, matching the
+    // original static landing pages' pattern. ──
     var qty = 1;
     var unitPrice = {{ $price }};
-    var BD_DISTRICTS = @json(config('bd.districts', []));
-    var landingSlug = @json($landingPage->slug);
-    var csrfToken = document.querySelector('meta[name=csrf-token]').content;
+    var buyNowBase = @json($buyNowBase);
+    var buyButtons = document.querySelectorAll('.buynow-btn');
 
     function updateQty() {
         document.getElementById('qty-num').textContent = qty;
-        document.getElementById('qty-subtotal-txt').textContent = '৳' + (unitPrice * qty).toLocaleString();
-        recalcDelivery();
+        var heroBtn = document.getElementById('hero-buy-btn');
+        if (heroBtn) heroBtn.querySelector('.qty-subtotal-inline').textContent = (unitPrice * qty).toLocaleString();
+        buyButtons.forEach(function (btn) { btn.href = buyNowBase + '/' + qty; });
     }
     document.getElementById('qty-down').addEventListener('click', function () { if (qty > 1) { qty--; updateQty(); } });
     document.getElementById('qty-up').addEventListener('click', function () { if (qty < 10) { qty++; updateQty(); } });
 
-    document.getElementById('division-select').addEventListener('change', function () {
-        var sel = document.getElementById('district-select');
-        sel.innerHTML = '<option value="">জেলা নির্বাচন করুন *</option>';
-        (BD_DISTRICTS[this.value] || []).forEach(function (d) {
-            var opt = document.createElement('option'); opt.value = d; opt.textContent = d; sel.appendChild(opt);
-        });
-        recalcDelivery();
-    });
-    document.getElementById('district-select').addEventListener('change', recalcDelivery);
-
-    // ── AddToCart pixel — fired once, on first "buy now" CTA click ──
-    // (this one-page flow has no literal cart, so a CTA click is the intent signal)
+    // ── AddToCart pixel — fired once, on whichever buy-now button is clicked ──
     @if($pixelAddToCart)
     var addToCartFired = false;
     function trackAddToCart() {
@@ -667,103 +547,10 @@
             content_type: 'product', value: unitPrice * qty, currency: 'BDT'
         });
     }
-    document.querySelectorAll('a[href="#order"]').forEach(function (el) {
-        el.addEventListener('click', trackAddToCart);
-    });
+    buyButtons.forEach(function (btn) { btn.addEventListener('click', trackAddToCart); });
     @endif
 
-    // ── InitiateCheckout pixel — fired once, on first interaction with the order form ──
-    // (there's no separate checkout page here, so "starts filling the form" is the equivalent moment)
-    @if($pixelInitiateCheckout)
-    document.getElementById('order-form').addEventListener('focusin', function () {
-        if (!window.fbTrack) return;
-        window.fbTrack('InitiateCheckout', {
-            content_ids: ['{{ $product->id }}'], content_type: 'product',
-            num_items: qty, value: unitPrice * qty, currency: 'BDT'
-        });
-    }, { once: true });
-    @endif
-
-    async function recalcDelivery() {
-        var division = document.getElementById('division-select').value;
-        var district = document.getElementById('district-select').value;
-        if (!division) return;
-        try {
-            var res = await fetch(`/order/lp/${landingSlug}/delivery-charge`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                body: JSON.stringify({ division: division, district: district, qty: qty })
-            });
-            var data = await res.json();
-            document.getElementById('delivery-amt').textContent = data.delivery_charge == 0 ? 'FREE 🎉' : '৳' + Math.round(data.delivery_charge);
-            document.getElementById('total-amt').textContent = Math.round(data.total).toLocaleString();
-        } catch (e) { /* fail silently, order creation still computes the real charge */ }
-    }
-
-    // ── Submit ──
-    document.getElementById('order-form').addEventListener('submit', async function (e) {
-        e.preventDefault();
-        document.querySelectorAll('.of-error').forEach(function (el) { el.textContent = ''; });
-
-        var btn = document.getElementById('submit-btn');
-        var btnText = document.getElementById('submit-btn-text');
-        btn.disabled = true;
-        var originalText = btnText.textContent;
-        btnText.textContent = 'প্রসেস হচ্ছে...';
-
-        var fd = new FormData(this);
-        fd.append('qty', qty);
-
-        try {
-            var res = await fetch(`/order/lp/${landingSlug}`, {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
-                body: fd
-            });
-            var data = await res.json();
-
-            if (!res.ok) {
-                if (data.errors) {
-                    Object.keys(data.errors).forEach(function (field) {
-                        var el = document.querySelector(`[data-error-for="${field}"]`);
-                        if (el) el.textContent = data.errors[field][0];
-                    });
-                } else {
-                    var el = document.querySelector('[data-error-for="general"]');
-                    if (el) el.textContent = data.message || 'কিছু ভুল হয়েছে, আবার চেষ্টা করুন।';
-                }
-                btn.disabled = false;
-                btnText.textContent = originalText;
-                return;
-            }
-
-            if (data.gateway_url) {
-                window.location.href = data.gateway_url;
-                return;
-            }
-
-            if (window.fbTrack) {
-                window.fbTrack('Purchase', {
-                    content_ids: ['{{ $product->id }}'], content_type: 'product',
-                    num_items: qty, value: unitPrice * qty, currency: 'BDT'
-                });
-            }
-
-            document.getElementById('order-form-wrap').style.display = 'none';
-            document.getElementById('success-order-number').textContent = data.order_number;
-            document.getElementById('success-track-link').href = data.track_url;
-            document.getElementById('order-success').style.display = 'block';
-        } catch (err) {
-            var el = document.querySelector('[data-error-for="general"]');
-            if (el) el.textContent = 'নেটওয়ার্ক সমস্যা হয়েছে, আবার চেষ্টা করুন।';
-            btn.disabled = false;
-            btnText.textContent = originalText;
-        }
-    });
-
-    // ── Sticky bar ── shows once the hero scrolls out of view, so it stays
-    // available through all the content sections leading up to the order
-    // form (which now sits near the bottom, not right under the hero).
+    // ── Sticky bar ── shows once the hero scrolls out of view.
     var stickyObserver = new IntersectionObserver(function (entries) {
         document.getElementById('sticky').classList.toggle('show', !entries[0].isIntersecting);
     }, { threshold: 0 });

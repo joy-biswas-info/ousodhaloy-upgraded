@@ -74,6 +74,44 @@ class LandingPageController extends Controller
         ]);
     }
 
+    /**
+     * Original funnel: set the session cart to just this product and hand
+     * off to the normal checkout page, instead of the same-page quick-order
+     * form. Mirrors LandingController::buyNow() for the static pages.
+     */
+    public function buyNow(LandingPage $landingPage, int $qty = 1)
+    {
+        if ($landingPage->status !== 'published' && !(Auth::check() && Auth::user()->isManager())) {
+            abort(404);
+        }
+
+        $product = $landingPage->product;
+        if (!$product || !$product->is_active) {
+            return back()->with('error', 'This product is no longer available.');
+        }
+
+        $qty = max(1, min(10, $qty));
+        if ($product->stock < $qty) {
+            return back()->with('error', 'Insufficient stock.');
+        }
+
+        session([
+            'cart' => [
+                $product->id => [
+                    'product_id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $landingPage->effective_price,
+                    'qty' => $qty,
+                    'thumbnail' => $product->thumbnail_url,
+                    'requires_rx' => $product->requires_prescription,
+                ],
+            ],
+            'landing_page_id' => $landingPage->id,
+        ]);
+
+        return redirect()->route('checkout.index');
+    }
+
     public function quickOrder(Request $request, LandingPage $landingPage)
     {
         if ($landingPage->status !== 'published' && !(Auth::check() && Auth::user()->isManager())) {

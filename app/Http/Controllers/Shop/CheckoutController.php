@@ -94,6 +94,7 @@ class CheckoutController extends Controller
                     'guest_name' => !Auth::check() ? $request->shipping_name : null,
                     'guest_email' => !Auth::check() ? $request->shipping_email : null,
                     'prescription_image' => $prescriptionPath,
+                    'landing_page_id' => session('landing_page_id'),
                 ]),
                 Auth::id()
             );
@@ -101,7 +102,7 @@ class CheckoutController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        session()->forget('cart');
+        session()->forget(['cart', 'landing_page_id']);
 
         if ($order->payment_method === 'ssl_commerz') {
             $result = $this->ssl->initiatePayment($order);

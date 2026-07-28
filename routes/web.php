@@ -252,11 +252,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
 });
 
 // ── Dynamic landing pages (admin-built) ─────────────────────────────────────
+// quick-order / delivery-charge power the same-page checkout flow — kept
+// around in case that flow comes back, but the CTA below now uses buy-now
+// (cart + redirect to the normal checkout page) per the reverted funnel.
 Route::post('/order/lp/{landingPage:slug}', [LandingPageController::class, 'quickOrder'])
     ->middleware('throttle:10,1')
     ->name('landing.quick-order');
 Route::post('/order/lp/{landingPage:slug}/delivery-charge', [LandingPageController::class, 'deliveryCharge'])
     ->name('landing.delivery-charge');
+Route::get('/order/lp/{landingPage:slug}/buy/{qty?}', [LandingPageController::class, 'buyNow'])
+    ->where('qty', '[0-9]+')
+    ->name('landing.buy-now');
 
 // MUST STAY LAST IN THIS FILE — this catches any single-segment path not already
 // matched above (e.g. /the-ordinary-salicylic-acid-30ml) and looks it up as a
