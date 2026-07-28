@@ -16,7 +16,7 @@ jobs:
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: 103.159.37.114
+          server: 103.159.37.74
           username: ousodhaloy_joy@ousodhaloy.com
           password: ousodhaloy_joy
           protocol: ftp
