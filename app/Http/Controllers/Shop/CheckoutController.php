@@ -17,52 +17,15 @@ class CheckoutController extends Controller
     public function index(Request $request)
     {
         $cart = session('cart', []);
-
-        // Fallback for a lost session on the "Buy Now" hop (see
-        // LandingPageController::buyNow() / LandingController::buyNow()) —
-        // both write the cart to session then redirect here, a GET-then-GET
-        // round trip that depends on the session cookie surviving between
-        // them. Facebook/Instagram's in-app browser — the near-universal
-        // entry point for these ad landing pages — is notorious for
-        // breaking exactly that pattern. Rebuilding from the URL means
-        // checkout still works even if the session write never reached the
-        // browser. Only trusted enough to look up a real, active, in-stock
-        // product fresh from the DB — never trust price/name from the
-        // request, same as the normal session-based path never did.
         $unavailableReason = null;
+
+        // Fallback for a lost session on the "Buy Now" hop — see resolveBuyNow().
         if (empty($cart) && $request->filled('buy_product')) {
-            $product = Product::active()->find($request->integer('buy_product'));
-            if (!$product) {
-                $unavailableReason = 'That product is no longer available.';
-                logger()->warning('Checkout buy-now fallback: product not found or inactive', [
-                    'buy_product' => $request->integer('buy_product'),
-                    'buy_lp' => $request->input('buy_lp'),
-                ]);
-            } else {
-                $qty = max(1, min(10, $request->integer('buy_qty', 1)));
-                if ($product->stock < $qty) {
-                    $unavailableReason = $product->stock > 0
-                        ? "Only {$product->stock} of \"{$product->name}\" left in stock — please adjust the quantity."
-                        : "\"{$product->name}\" is currently out of stock.";
-                    logger()->warning('Checkout buy-now fallback: insufficient stock', [
-                        'product_id' => $product->id,
-                        'requested_qty' => $qty,
-                        'stock' => $product->stock,
-                    ]);
-                } else {
-                    $landingPage = $request->filled('buy_lp') ? LandingPage::find($request->integer('buy_lp')) : null;
-                    $cart = [
-                        $product->id => [
-                            'product_id' => $product->id,
-                            'name' => $product->name,
-                            'price' => $landingPage?->effective_price ?? $product->effective_price,
-                            'qty' => $qty,
-                            'thumbnail' => $product->thumbnail_url,
-                            'requires_rx' => $product->requires_prescription,
-                        ],
-                    ];
-                    session(['cart' => $cart, 'landing_page_id' => $landingPage?->id]);
-                }
+            $resolved = $this->resolveBuyNow($request);
+            $cart = $resolved['cart'];
+            $unavailableReason = $resolved['reason'];
+            if (!empty($cart)) {
+                session(['cart' => $cart, 'landing_page_id' => $resolved['landing_page_id']]);
             }
         }
 
@@ -79,14 +42,75 @@ class CheckoutController extends Controller
         $codEnabled = Setting::get('cod_enabled', 'true') === 'true';
         $sslEnabled = Setting::get('ssl_enabled', 'true') === 'true';
 
+        // Carried into hidden form fields (see shop/checkout/index.blade.php) so
+        // that store() can recover the SAME way if the session cookie from this
+        // page-render never makes it into the following form-submit request —
+        // the in-app-browser cookie-loss risk described in resolveBuyNow() applies
+        // just as much to this GET-then-POST hop as it does to the original
+        // buy-now-then-GET one, and until now only the GET side had a safety net.
+        $buyNow = $request->only(['buy_product', 'buy_qty', 'buy_lp']);
+
         // This page's content is entirely session-specific (one customer's
         // cart). If anything upstream ever cached it, the worst case isn't
         // just a broken checkout — it's serving one customer's cart/address
         // to a different visitor. Never cacheable, no exceptions.
         return response()
-            ->view('shop.checkout.index', compact('address', 'BD_DIVISIONS', 'codEnabled', 'sslEnabled'))
+            ->view('shop.checkout.index', compact('address', 'BD_DIVISIONS', 'codEnabled', 'sslEnabled', 'buyNow'))
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache');
+    }
+
+    /**
+     * Rebuilds a single-item cart from buy-now request params (buy_product/
+     * buy_qty/buy_lp) when session('cart') came back empty. Used by both
+     * index() (the original buy-now redirect landing here) and store() (the
+     * form submit that follows it) — both write/read the cart via session,
+     * and both hops depend on the session cookie surviving a redirect or a
+     * form POST. Facebook/Instagram's in-app browser — the near-universal
+     * entry point for these ad landing pages — is notorious for breaking
+     * exactly that pattern. Rebuilding from the request means checkout still
+     * works even if the session write never reached the browser. Only
+     * trusted enough to look up a real, active, in-stock product fresh from
+     * the DB — never trust price/name from the request, same as the normal
+     * session-based path never did.
+     */
+    private function resolveBuyNow(Request $request): array
+    {
+        $product = Product::active()->find($request->integer('buy_product'));
+        if (!$product) {
+            logger()->warning('Checkout buy-now fallback: product not found or inactive', [
+                'buy_product' => $request->integer('buy_product'),
+                'buy_lp' => $request->input('buy_lp'),
+            ]);
+            return ['cart' => [], 'landing_page_id' => null, 'reason' => 'That product is no longer available.'];
+        }
+
+        $qty = max(1, min(10, $request->integer('buy_qty', 1)));
+        if ($product->stock < $qty) {
+            logger()->warning('Checkout buy-now fallback: insufficient stock', [
+                'product_id' => $product->id,
+                'requested_qty' => $qty,
+                'stock' => $product->stock,
+            ]);
+            $reason = $product->stock > 0
+                ? "Only {$product->stock} of \"{$product->name}\" left in stock — please adjust the quantity."
+                : "\"{$product->name}\" is currently out of stock.";
+            return ['cart' => [], 'landing_page_id' => null, 'reason' => $reason];
+        }
+
+        $landingPage = $request->filled('buy_lp') ? LandingPage::find($request->integer('buy_lp')) : null;
+        $cart = [
+            $product->id => [
+                'product_id' => $product->id,
+                'name' => $product->name,
+                'price' => $landingPage?->effective_price ?? $product->effective_price,
+                'qty' => $qty,
+                'thumbnail' => $product->thumbnail_url,
+                'requires_rx' => $product->requires_prescription,
+            ],
+        ];
+
+        return ['cart' => $cart, 'landing_page_id' => $landingPage?->id, 'reason' => null];
     }
 
     public function store(Request $request)
@@ -109,8 +133,24 @@ class CheckoutController extends Controller
         ]);
 
         $cart = session('cart', []);
+        $unavailableReason = null;
+
+        // Same recovery as index() — if the session write from the checkout
+        // page-render never reached this submit request, rebuild the cart
+        // from the hidden buy_product/buy_qty/buy_lp fields the form carried
+        // forward (see index()'s $buyNow / shop/checkout/index.blade.php)
+        // instead of failing outright.
+        if (empty($cart) && $request->filled('buy_product')) {
+            $resolved = $this->resolveBuyNow($request);
+            $cart = $resolved['cart'];
+            $unavailableReason = $resolved['reason'];
+            if (!empty($cart)) {
+                session(['cart' => $cart, 'landing_page_id' => $resolved['landing_page_id']]);
+            }
+        }
+
         if (empty($cart))
-            return back()->with('error', 'Your cart is empty.');
+            return back()->with('error', $unavailableReason ?? 'Your cart is empty.')->withInput();
 
         // The checkout page shows a "Required" badge when the cart has a
         // prescription item, but until now that was cosmetic only — nothing

@@ -31,6 +31,16 @@
 
     <form method="POST" action="{{ route('checkout.store') }}" enctype="multipart/form-data" id="checkout-form">
         @csrf
+        {{-- Carried forward so store() can rebuild the cart the same way this
+             page did if the session cookie from this render never reaches the
+             submit request — see CheckoutController::resolveBuyNow(). --}}
+        @if(!empty($buyNow['buy_product'] ?? null))
+            <input type="hidden" name="buy_product" value="{{ $buyNow['buy_product'] }}">
+            <input type="hidden" name="buy_qty" value="{{ $buyNow['buy_qty'] ?? 1 }}">
+            @if(!empty($buyNow['buy_lp'] ?? null))
+                <input type="hidden" name="buy_lp" value="{{ $buyNow['buy_lp'] }}">
+            @endif
+        @endif
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
             {{-- Left: Shipping + Payment --}}
