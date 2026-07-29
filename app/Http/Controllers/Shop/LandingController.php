@@ -53,7 +53,18 @@ class LandingController extends Controller
             'requires_rx' => $product->requires_prescription,
         ];
         $this->saveCart($cart);
-        return redirect()->route('checkout.index');
+
+        // Same in-app-browser fallback as LandingPageController::buyNow() —
+        // carry the cart info in the URL too, since Facebook/Instagram's
+        // in-app browser (the main entry point for this ad landing page)
+        // doesn't reliably round-trip a session cookie set just before a
+        // redirect. See CheckoutController::index()'s fallback handling.
+        return redirect()->route('checkout.index', [
+            'buy_product' => $product->id,
+            'buy_qty' => $qty,
+        ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
     }
 
 }

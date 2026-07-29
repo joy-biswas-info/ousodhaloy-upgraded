@@ -78,19 +78,20 @@ Route::prefix('cart')->name('cart.')->group(function () {
 // ── Checkout ───────────────────────────────────────────────────────────────
 Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
-    Route::post('/', [CheckoutController::class, 'store'])->name('store')->middleware('throttle:10,1');
+    Route::post('/', [CheckoutController::class, 'store'])->name('store');
     Route::get('/failed', fn() => view('shop.checkout.failed'))->name('failed');
 });
 
 // ── Delivery charge calculator (AJAX) ─────────────────────────────────────
-Route::post('/checkout/delivery-charge', [CheckoutController::class, 'deliveryCharge'])->name('checkout.delivery-charge')->middleware('throttle:10,1');
+Route::post('/checkout/delivery-charge', [CheckoutController::class, 'deliveryCharge'])->name('checkout.delivery-charge');
 
 // ── Orders (public) ────────────────────────────────────────────────────────
 Route::get('/order/{id}', [OrderController::class, 'show'])->name('orders.show');
-// track() is a phone + order-number guessing surface — throttled on both
-// verbs since GET here still renders the lookup form on the same route.
-Route::get('/track', [OrderController::class, 'track'])->name('track')->middleware('throttle:10,1');
-Route::post('/track', [OrderController::class, 'track'])->name('track.search')->middleware('throttle:10,1');
+// Un-throttled per your call — track() is still a phone + order-number
+// guessing surface with no rate limit protecting it now, so if enumeration
+// abuse shows up here later, that's the trade-off that was made.
+Route::get('/track', [OrderController::class, 'track'])->name('track');
+Route::post('/track', [OrderController::class, 'track'])->name('track.search');
 
 Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
     Route::get('/orders', [OrderController::class, 'myOrders'])->name('orders');

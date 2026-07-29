@@ -13,6 +13,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // No trusted-proxy config existed here at all. Behind any
+        // HTTPS-terminating reverse proxy/load balancer (nginx, Cloudflare,
+        // shared-hosting setups — the normal case in production), Laravel
+        // has no way to know the original request was HTTPS without this,
+        // which breaks anything that depends on the detected scheme —
+        // most importantly signed URLs (Order::signedShowUrl(), used for
+        // the post-checkout confirmation redirect and guest order access).
+        // A customer could successfully place an order and still land on
+        // "enter your order number" instead of their confirmation, because
+        // the signature was generated/validated against the wrong scheme.
+        // '*' trusts whoever connects directly to the app server — correct
+        // as long as the app isn't independently reachable bypassing the
+        // proxy, which is already assumed by every other part of this setup.
+        $middleware->trustProxies(at: '*');
+
         // API routes should never redirect — always return JSON
         $middleware->statefulApi();
 

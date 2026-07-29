@@ -114,11 +114,19 @@ class LandingPageController extends Controller
         // and Laravel caches that response (CDN, reverse proxy, browser
         // back/forward cache), a later visitor gets served the cached
         // redirect straight to checkout WITHOUT this handler ever running
-        // again, so their session never gets the cart written — checkout
-        // then correctly sees an empty cart and reports it. This explicit
-        // no-store header is what actually prevents that; it's not optional
-        // decoration on a request that mutates state.
-        return redirect()->route('checkout.index')
+        // again, so their session never gets the cart written. The no-store
+        // headers guard against that. Separately — and this is the more
+        // likely culprit for ad-driven landing page traffic — Facebook/
+        // Instagram's in-app browser is notorious for not reliably carrying
+        // a just-set session cookie across this exact GET-then-GET hop.
+        // Carrying the same cart info in the redirect URL lets
+        // CheckoutController::index() rebuild it even if the session write
+        // never round-tripped.
+        return redirect()->route('checkout.index', [
+            'buy_product' => $product->id,
+            'buy_qty' => $qty,
+            'buy_lp' => $landingPage->id,
+        ])
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache');
     }

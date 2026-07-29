@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Shop;
 use App\Http\Controllers\Controller;
-use App\Models\{DeliveryZone, Setting};
+use App\Models\{DeliveryZone, LandingPage, Product, Setting};
 use App\Services\{OrderService, SslCommerzService};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,9 +14,42 @@ class CheckoutController extends Controller
     ) {
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $cart = session('cart', []);
+
+        // Fallback for a lost session on the "Buy Now" hop (see
+        // LandingPageController::buyNow() / LandingController::buyNow()) —
+        // both write the cart to session then redirect here, a GET-then-GET
+        // round trip that depends on the session cookie surviving between
+        // them. Facebook/Instagram's in-app browser — the near-universal
+        // entry point for these ad landing pages — is notorious for
+        // breaking exactly that pattern. Rebuilding from the URL means
+        // checkout still works even if the session write never reached the
+        // browser. Only trusted enough to look up a real, active, in-stock
+        // product fresh from the DB — never trust price/name from the
+        // request, same as the normal session-based path never did.
+        if (empty($cart) && $request->filled('buy_product')) {
+            $product = Product::active()->find($request->integer('buy_product'));
+            if ($product) {
+                $qty = max(1, min(10, $request->integer('buy_qty', 1)));
+                if ($product->stock >= $qty) {
+                    $landingPage = $request->filled('buy_lp') ? LandingPage::find($request->integer('buy_lp')) : null;
+                    $cart = [
+                        $product->id => [
+                            'product_id' => $product->id,
+                            'name' => $product->name,
+                            'price' => $landingPage?->effective_price ?? $product->effective_price,
+                            'qty' => $qty,
+                            'thumbnail' => $product->thumbnail_url,
+                            'requires_rx' => $product->requires_prescription,
+                        ],
+                    ];
+                    session(['cart' => $cart, 'landing_page_id' => $landingPage?->id]);
+                }
+            }
+        }
+
         if (empty($cart))
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
 
