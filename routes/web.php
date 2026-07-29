@@ -278,7 +278,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
 // around in case that flow comes back, but the CTA below now uses buy-now
 // (cart + redirect to the normal checkout page) per the reverted funnel.
 Route::post('/order/lp/{landingPage:slug}', [LandingPageController::class, 'quickOrder'])
-    ->middleware('throttle:10,1')
     ->name('landing.quick-order');
 Route::post('/order/lp/{landingPage:slug}/delivery-charge', [LandingPageController::class, 'deliveryCharge'])
     ->name('landing.delivery-charge');

@@ -29,11 +29,27 @@ class CheckoutController extends Controller
         // browser. Only trusted enough to look up a real, active, in-stock
         // product fresh from the DB — never trust price/name from the
         // request, same as the normal session-based path never did.
+        $unavailableReason = null;
         if (empty($cart) && $request->filled('buy_product')) {
             $product = Product::active()->find($request->integer('buy_product'));
-            if ($product) {
+            if (!$product) {
+                $unavailableReason = 'That product is no longer available.';
+                logger()->warning('Checkout buy-now fallback: product not found or inactive', [
+                    'buy_product' => $request->integer('buy_product'),
+                    'buy_lp' => $request->input('buy_lp'),
+                ]);
+            } else {
                 $qty = max(1, min(10, $request->integer('buy_qty', 1)));
-                if ($product->stock >= $qty) {
+                if ($product->stock < $qty) {
+                    $unavailableReason = $product->stock > 0
+                        ? "Only {$product->stock} of \"{$product->name}\" left in stock — please adjust the quantity."
+                        : "\"{$product->name}\" is currently out of stock.";
+                    logger()->warning('Checkout buy-now fallback: insufficient stock', [
+                        'product_id' => $product->id,
+                        'requested_qty' => $qty,
+                        'stock' => $product->stock,
+                    ]);
+                } else {
                     $landingPage = $request->filled('buy_lp') ? LandingPage::find($request->integer('buy_lp')) : null;
                     $cart = [
                         $product->id => [
@@ -51,7 +67,7 @@ class CheckoutController extends Controller
         }
 
         if (empty($cart))
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+            return redirect()->route('cart.index')->with('error', $unavailableReason ?? 'Your cart is empty.');
 
         $guestAllowed = Setting::get('guest_checkout', 'true') === 'true';
         if (!$guestAllowed && !Auth::check()) {

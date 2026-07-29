@@ -29,7 +29,16 @@ class OrderService
             $subtotal = 0;
 
             foreach ($data['items'] as $item) {
-                $product = Product::active()->lockForUpdate()->findOrFail($item['product_id']);
+                $product = Product::active()->lockForUpdate()->find($item['product_id']);
+
+                // Surface a customer-facing reason instead of letting a raw
+                // ModelNotFoundException ("No query results for model...")
+                // reach the checkout error banner — this happens whenever a
+                // cart item's product was deactivated/deleted between the
+                // customer loading the page and submitting the form.
+                if (!$product) {
+                    throw new \Exception('One of the items in your cart is no longer available. Please review your cart and try again.');
+                }
 
                 if ($product->stock < $item['qty']) {
                     throw new \Exception("Insufficient stock for: {$product->name}");

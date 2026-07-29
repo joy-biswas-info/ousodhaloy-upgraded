@@ -124,14 +124,25 @@ class CartController extends Controller
         $productIds = array_keys($cart);
         $products = Product::active()->whereIn('id', $productIds)->get()->keyBy('id');
         $items = [];
+        $removedNames = [];
         foreach ($cart as $id => $item) {
             $product = $products[$id] ?? null;
-            if (!$product)
+            if (!$product) {
+                // Product was deactivated/deleted since it was added — drop it
+                // from the cart rather than let checkout fail on it later, but
+                // say so. Silently resaving a smaller cart here used to leave
+                // customers looking at an unexplained "Your cart is empty" on
+                // the very next page load (cart or checkout) with no idea why.
+                $removedNames[] = $item['name'] ?? 'An item';
                 continue;
+            }
             $item['product'] = $product;
             $item['price'] = $product->effective_price;
             $item['subtotal'] = round($item['price'] * $item['qty'], 2);
             $items[$id] = $item;
+        }
+        if ($removedNames) {
+            session()->flash('info', implode(', ', $removedNames) . ' — no longer available and removed from your cart.');
         }
         // Sync cart in session
         $this->saveCart(array_map(fn($i) => [
