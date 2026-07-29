@@ -214,18 +214,7 @@ class SteadfastService
 
         $order->update(['steadfast_status' => $sfStatus]);
 
-        // Map Steadfast delivery statuses → our order statuses
-        $statusMap = [
-            'delivered' => 'delivered',
-            'partial_delivered' => 'delivered',
-            'cancelled' => 'cancelled',
-            'hold' => 'on_hold',
-            'delivered_approval_pending' => 'delivered',
-            'partial_delivered_approval_pending' => 'delivered',
-            'cancelled_approval_pending' => 'cancelled',
-        ];
-
-        $mapped = $statusMap[$sfStatus] ?? null;
+        $mapped = Order::mapCourierStatus('steadfast', $sfStatus);
         if ($mapped) {
             app(OrderService::class)->updateStatus($order, $mapped, 'Synced from Steadfast', false);
         }

@@ -42,7 +42,7 @@
                                         <span class="font-black text-teal-700">৳{{ number_format($item['price'], 2) }}</span>
                                         @if($item['product']->mrp && $item['product']->mrp > $item['price'])
                                             <span
-                                                class="text-xs text-gray-400 line-through ml-1">৳{{ number_format($item['product']->mrp, 2) }}</span>
+                                                class="text-xs text-gray-500 line-through ml-1">৳{{ number_format($item['product']->mrp, 2) }}</span>
                                         @endif
                                     </div>
                                     <div class="flex items-center gap-2">

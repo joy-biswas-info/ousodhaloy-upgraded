@@ -235,22 +235,9 @@ class PathaoService
 
         $order->update(['pathao_status' => $pathaoStatus]);
 
-        $statusMap = [
-            'Delivered' => 'delivered',
-            'Cancelled' => 'cancelled',
-            'Picked_Up' => 'shipped',
-            'Out_For_Delivery' => 'out_for_delivery',
-            'In_Transit' => 'shipped',
-            'Return_Picked_Up' => 'returned',
-        ];
-
-        if (isset($statusMap[$pathaoStatus])) {
-            app(OrderService::class)->updateStatus(
-                $order,
-                $statusMap[$pathaoStatus],
-                'Synced from Pathao',
-                false
-            );
+        $mapped = Order::mapCourierStatus('pathao', $pathaoStatus);
+        if ($mapped) {
+            app(OrderService::class)->updateStatus($order, $mapped, 'Synced from Pathao', false);
         }
 
         return true;

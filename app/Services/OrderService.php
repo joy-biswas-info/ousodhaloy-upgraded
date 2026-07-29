@@ -226,10 +226,18 @@ class OrderService
             return false;
         if ($order->status === $newStatus)
             return false;
+        if (!$order->canTransitionTo($newStatus)) {
+            logger()->warning("Rejected illegal order status transition: order #{$order->order_number} {$order->status} -> {$newStatus}");
+            return false;
+        }
 
         $order->update([
             'status' => $newStatus,
             'delivered_at' => $newStatus === 'delivered' ? now() : $order->delivered_at,
+            // Remember which stage the order was at when it goes on_hold, so
+            // it can resume there instead of always landing on "processing";
+            // clear it once it actually leaves on_hold.
+            'held_from_status' => $newStatus === 'on_hold' ? $order->status : ($order->status === 'on_hold' ? null : $order->held_from_status),
         ]);
 
         OrderStatusHistory::create([
@@ -240,8 +248,8 @@ class OrderService
             'notify_customer' => $notifyCustomer,
         ]);
 
-        // Restore stock on cancel
-        if ($newStatus === 'cancelled') {
+        // Restore stock on cancel or return
+        if (in_array($newStatus, ['cancelled', 'returned'])) {
             foreach ($order->items as $item) {
                 $item->product?->restoreStock($item->quantity);
             }
@@ -253,6 +261,59 @@ class OrderService
         }
 
         return true;
+    }
+
+    /**
+     * Undo a mistaken cancel/return — deliberately NOT part of STATUS_FLOW.
+     * Cancelled/returned are terminal there on purpose (a webhook retry or a
+     * bulk action must never be able to silently un-cancel an order and
+     * re-desync stock); this is a separate, narrow, admin-only escape hatch
+     * gated at the route level (see routes/web.php), not reachable from any
+     * automated path. Always resumes to "processing" — both cancelled and
+     * returned orders are, by STATUS_FLOW's own shape, pre- or
+     * post-shipment states that need to go through fulfillment again before
+     * they can ship. Refunded is intentionally excluded: undoing that would
+     * desync payment_status from actual money already returned to the
+     * customer, which isn't something to paper over with a status flip.
+     */
+    public function reopenOrder(Order $order, string $note = ''): array
+    {
+        if (!in_array($order->status, ['cancelled', 'returned'])) {
+            return ['success' => false, 'error' => "Only cancelled or returned orders can be reopened — this order is \"{$order->status_label}\"."];
+        }
+
+        return DB::transaction(function () use ($order, $note) {
+            // Check every line first — fail the whole reopen if any one
+            // item can't be covered, rather than partially re-deducting
+            // stock and leaving the order in a half-reopened state.
+            foreach ($order->items as $item) {
+                $product = $item->product()->lockForUpdate()->first();
+                if (!$product) {
+                    return ['success' => false, 'error' => "Can't reopen — \"{$item->product_name}\" no longer exists."];
+                }
+                if ($product->stock < $item->quantity) {
+                    return ['success' => false, 'error' => "Can't reopen — only {$product->stock} of \"{$product->name}\" left in stock (needs {$item->quantity}). Its stock was released back to inventory when this order was {$order->status} and may have since sold elsewhere."];
+                }
+            }
+
+            $previousStatus = $order->status;
+
+            foreach ($order->items as $item) {
+                $item->product?->decrementStock($item->quantity);
+            }
+
+            $order->update(['status' => 'processing', 'held_from_status' => null]);
+
+            OrderStatusHistory::create([
+                'order_id' => $order->id,
+                'status' => 'processing',
+                'note' => $note ?: "Reopened after mistaken \"{$previousStatus}\" — stock re-deducted.",
+                'changed_by' => Auth::user()?->name ?? 'system',
+                'notify_customer' => false,
+            ]);
+
+            return ['success' => true];
+        });
     }
 
     /**

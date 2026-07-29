@@ -13,7 +13,19 @@ class BrandController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:100']);
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'logo' => 'nullable|image|mimes:jpeg,png,webp,gif|max:5120',
+        ]);
+
+        // Slug is derived from name (no slug field in the form), so a
+        // collision isn't caught by validating $request fields — check the
+        // derived value directly instead of letting the DB's unique
+        // constraint surface as a raw 500 on INSERT.
+        $slug = Str::slug($request->name);
+        if (Brand::where('slug', $slug)->exists()) {
+            return back()->withErrors(['name' => 'A brand with this name (or a very similar one) already exists.'])->withInput();
+        }
 
         $path = null;
         if ($request->filled('logo_media_path'))
@@ -23,7 +35,7 @@ class BrandController extends Controller
 
         Brand::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'slug' => $slug,
             'country' => $request->country,
             'logo' => $path,
             'is_active' => true,
@@ -33,9 +45,21 @@ class BrandController extends Controller
 
     public function update(Request $request, Brand $brand)
     {
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'logo' => 'nullable|image|mimes:jpeg,png,webp,gif|max:5120',
+        ]);
+
+        $slug = Str::slug($request->name);
+        if (Brand::where('slug', $slug)->where('id', '!=', $brand->id)->exists()) {
+            return back()->withErrors(['name' => 'A brand with this name (or a very similar one) already exists.'])->withInput();
+        }
+
         $path = $brand->logo;
         if ($request->filled('logo_media_path'))
             $path = $request->logo_media_path;
+        elseif ($request->hasFile('logo'))
+            $path = $request->file('logo')->store('brands', 'public');
 
         $brand->update([
             'name' => $request->name,

@@ -57,7 +57,11 @@ Route::post('/capi/track', [CapiTrackController::class, 'track'])
     ->name('capi.track');
 
 // Webhooks
-Route::post('/webhooks/pathao', [WebhookController::class, 'pathao'])->name('webhooks.pathao');
+// Pathao doesn't sign webhook requests, so the shared secret rides in the
+// path instead of a header — see WebhookController::pathao(). Must be
+// re-registered in Pathao's merchant dashboard after deploy using the
+// current `pathao_webhook_secret` value.
+Route::post('/webhooks/pathao/{secret}', [WebhookController::class, 'pathao'])->name('webhooks.pathao');
 Route::post('/webhooks/steadfast', [WebhookController::class, 'steadfast'])->name('webhooks.steadfast');
 
 // ── Cart ───────────────────────────────────────────────────────────────────
@@ -68,23 +72,25 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::patch('/update/{id}', [CartController::class, 'update'])->name('update');
     Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove');
     Route::post('/clear', [CartController::class, 'clear'])->name('clear');
-    Route::post('/validate-promo', [CartController::class, 'validatePromo'])->name('validate-promo');
+    Route::post('/validate-promo', [CartController::class, 'validatePromo'])->name('validate-promo')->middleware('throttle:20,1');
 });
 
 // ── Checkout ───────────────────────────────────────────────────────────────
 Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
-    Route::post('/', [CheckoutController::class, 'store'])->name('store');
+    Route::post('/', [CheckoutController::class, 'store'])->name('store')->middleware('throttle:10,1');
     Route::get('/failed', fn() => view('shop.checkout.failed'))->name('failed');
 });
 
 // ── Delivery charge calculator (AJAX) ─────────────────────────────────────
-Route::post('/checkout/delivery-charge', [CheckoutController::class, 'deliveryCharge'])->name('checkout.delivery-charge');
+Route::post('/checkout/delivery-charge', [CheckoutController::class, 'deliveryCharge'])->name('checkout.delivery-charge')->middleware('throttle:10,1');
 
 // ── Orders (public) ────────────────────────────────────────────────────────
 Route::get('/order/{id}', [OrderController::class, 'show'])->name('orders.show');
-Route::get('/track', [OrderController::class, 'track'])->name('track');
-Route::post('/track', [OrderController::class, 'track'])->name('track.search');
+// track() is a phone + order-number guessing surface — throttled on both
+// verbs since GET here still renders the lookup form on the same route.
+Route::get('/track', [OrderController::class, 'track'])->name('track')->middleware('throttle:10,1');
+Route::post('/track', [OrderController::class, 'track'])->name('track.search')->middleware('throttle:10,1');
 
 Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
     Route::get('/orders', [OrderController::class, 'myOrders'])->name('orders');
@@ -175,6 +181,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::get('/orders/{order}/invoice', [AdminOrderController::class, 'invoice'])->name('orders.invoice');
     Route::post('/orders/{order}/steadfast', [AdminOrderController::class, 'pushToSteadfast'])->name('orders.steadfast');
     Route::post('/orders/{order}/sync-steadfast', [AdminOrderController::class, 'syncSteadfast'])->name('orders.sync-steadfast');
+    Route::post('/orders/{order}/steadfast-return', [AdminOrderController::class, 'requestSteadfastReturn'])->name('orders.steadfast-return');
     Route::get('/orders/{order}/shipping-label', [AdminOrderController::class, 'shippingLabel'])->name('orders.shipping-label');
 
     // ── Categories & Brands ──────────────────────────────────
@@ -196,6 +203,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
         Route::post('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'store'])->name('staff.store');
         Route::patch('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'update'])->name('staff.update');
         Route::delete('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'destroy'])->name('staff.destroy');
+        // Undoes a mistaken cancel/return (re-deducts stock) — admin-only,
+        // same reasoning as above: not a call a manager-level mistake should
+        // be able to make on their own. See OrderService::reopenOrder().
+        Route::post('/orders/{order}/reopen', [AdminOrderController::class, 'reopen'])->name('orders.reopen');
     });
 
     // ── Prescriptions ─────────────────────────────────────────

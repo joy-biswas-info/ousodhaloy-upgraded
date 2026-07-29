@@ -10,17 +10,20 @@ class DashboardController extends Controller
     public function index()
     {
         $today = today();
+        $orderCounts = $this->orderCounts($today);
+        $revenueCounts = $this->revenueCounts($today);
+        $stockCounts = $this->stockCounts();
 
         $stats = [
-            'total_orders'     => Order::count(),
-            'today_orders'     => Order::whereDate('created_at', $today)->count(),
-            'total_revenue'    => Order::whereNotIn('status', ['cancelled'])->sum('total'),
-            'today_revenue'    => Order::whereDate('created_at', $today)->whereNotIn('status',['cancelled'])->sum('total'),
+            'total_orders'     => $orderCounts->total,
+            'today_orders'     => $orderCounts->today,
+            'total_revenue'    => $revenueCounts->total,
+            'today_revenue'    => $revenueCounts->today,
             'total_products'   => Product::active()->count(),
             'total_customers'  => User::where('role', 'customer')->count(),
             'pending_orders'   => Order::where('status', 'pending')->count(),
-            'low_stock'        => Product::where('stock', '<=', DB::raw('low_stock_alert'))->where('stock', '>', 0)->count(),
-            'out_of_stock'     => Product::active()->where('stock', 0)->count(),
+            'low_stock'        => $stockCounts->low_stock,
+            'out_of_stock'     => $stockCounts->out_of_stock,
         ];
 
         $ordersByStatus = Order::select('status', DB::raw('count(*) as count'))
@@ -57,14 +60,40 @@ class DashboardController extends Controller
     public function stats()
     {
         $today = today();
+        $orderCounts = $this->orderCounts($today);
+        $revenueCounts = $this->revenueCounts($today);
 
         return response()->json([
-            'today_orders' => Order::whereDate('created_at', $today)->count(),
-            'total_orders' => Order::count(),
-            'today_revenue' => Order::whereDate('created_at', $today)->whereNotIn('status', ['cancelled'])->sum('total'),
-            'total_revenue' => Order::whereNotIn('status', ['cancelled'])->sum('total'),
+            'today_orders' => $orderCounts->today,
+            'total_orders' => $orderCounts->total,
+            'today_revenue' => $revenueCounts->today,
+            'total_revenue' => $revenueCounts->total,
             'pending_orders' => Order::where('status', 'pending')->count(),
             'total_customers' => User::where('role', 'customer')->count(),
         ]);
+    }
+
+    /** total + today order counts in one query (no status filter — matches original total_orders/today_orders). */
+    private function orderCounts($today)
+    {
+        return Order::selectRaw('COUNT(*) as total, SUM(CASE WHEN DATE(created_at) = ? THEN 1 ELSE 0 END) as today', [$today->toDateString()])
+            ->first();
+    }
+
+    /** total + today revenue in one query, excluding cancelled orders (matches original total_revenue/today_revenue). */
+    private function revenueCounts($today)
+    {
+        return Order::whereNotIn('status', ['cancelled'])
+            ->selectRaw('SUM(total) as total, SUM(CASE WHEN DATE(created_at) = ? THEN total ELSE 0 END) as today', [$today->toDateString()])
+            ->first();
+    }
+
+    /** low-stock (active or not, stock > 0) + out-of-stock (active only) counts in one query. */
+    private function stockCounts()
+    {
+        return Product::selectRaw(
+            'SUM(CASE WHEN stock <= low_stock_alert AND stock > 0 THEN 1 ELSE 0 END) as low_stock,
+             SUM(CASE WHEN stock = 0 AND is_active = 1 THEN 1 ELSE 0 END) as out_of_stock'
+        )->first();
     }
 }

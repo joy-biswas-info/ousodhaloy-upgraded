@@ -163,7 +163,7 @@
                                 {{ Order::STATUS_LABELS[$h->status] ?? ucfirst($h->status) }}</p>
                             @if($h->note)
                             <p class="text-xs text-gray-500">{{ $h->note }}</p> @endif
-                            <p class="text-xs text-gray-400 mt-0.5">{{ $h->created_at->format('d M Y, h:i A') }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ $h->created_at->format('d M Y, h:i A') }}</p>
                         </div>
                     </div>
                 @endforeach

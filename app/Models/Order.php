@@ -19,6 +19,7 @@ class Order extends Model
         'guest_email',
         'guest_phone',
         'status',
+        'held_from_status',
         'payment_status',
         'payment_method',
         'ssl_transaction_id',
@@ -44,6 +45,7 @@ class Order extends Model
         'steadfast_consignment_id',
         'steadfast_tracking_code',
         'steadfast_status',
+        'courier',
         'customer_note',
         'admin_note',
         'prescription_image',
@@ -61,18 +63,26 @@ class Order extends Model
         'delivered_at' => 'datetime',
     ];
 
+    // 'on_hold' is reachable from every active pipeline state — a courier can
+    // signal "hold" (see Order::mapCourierStatus()) at any point before the
+    // order is delivered/cancelled/refunded/returned, not just pre-shipment.
     const STATUS_FLOW = [
-        'pending' => ['confirmed', 'cancelled'],
-        'confirmed' => ['processing', 'cancelled'],
-        'processing' => ['ready_to_ship', 'cancelled'],
-        'ready_to_ship' => ['shipped', 'cancelled'],
-        'shipped' => ['out_for_delivery', 'returned'],
-        'out_for_delivery' => ['delivered', 'returned'],
+        'pending' => ['confirmed', 'cancelled', 'on_hold'],
+        'confirmed' => ['processing', 'cancelled', 'on_hold'],
+        'processing' => ['ready_to_ship', 'cancelled', 'on_hold'],
+        'ready_to_ship' => ['shipped', 'cancelled', 'on_hold'],
+        'shipped' => ['out_for_delivery', 'returned', 'on_hold'],
+        'out_for_delivery' => ['delivered', 'returned', 'on_hold'],
         'delivered' => ['refunded', 'returned'],
         'cancelled' => [],
         'refunded' => [],
         'returned' => ['refunded'],
-        'on_hold' => ['processing', 'cancelled'],
+        // Wider than the entrance list on purpose — on_hold can be entered
+        // from any active pipeline state (see above), so resuming needs to
+        // reach back to whichever stage the order actually left off at, not
+        // just "processing". held_from_status (set in OrderService::
+        // updateStatus()) tells the admin which one that was.
+        'on_hold' => ['processing', 'ready_to_ship', 'shipped', 'out_for_delivery', 'cancelled'],
     ];
 
     const STATUS_LABELS = [
@@ -143,6 +153,43 @@ class Order extends Model
     public function canTransitionTo(string $newStatus): bool
     {
         return in_array($newStatus, self::STATUS_FLOW[$this->status] ?? []);
+    }
+
+    /**
+     * Single source of truth for courier raw-status → internal-status.
+     * Union of what used to be 4 separate, drifting copies (PathaoService
+     * polling, SteadfastService polling, and both webhook handlers) — Pathao's
+     * polling and webhook endpoints use genuinely different raw vocabularies
+     * (Picked_Up vs Pickup_Completed), so both are kept rather than assumed
+     * to be duplicates.
+     */
+    public static function mapCourierStatus(string $courier, string $raw): ?string
+    {
+        $maps = [
+            'pathao' => [
+                'Delivered' => 'delivered',
+                'Cancelled' => 'cancelled',
+                'Picked_Up' => 'shipped',
+                'Out_For_Delivery' => 'out_for_delivery',
+                'In_Transit' => 'shipped',
+                'Return_Picked_Up' => 'returned',
+                'Pickup_Completed' => 'shipped',
+                'Delivery_Completed' => 'delivered',
+                'Delivery_Cancelled' => 'cancelled',
+                'Return_Completed' => 'returned',
+            ],
+            'steadfast' => [
+                'delivered' => 'delivered',
+                'partial_delivered' => 'delivered',
+                'cancelled' => 'cancelled',
+                'hold' => 'on_hold',
+                'delivered_approval_pending' => 'delivered',
+                'partial_delivered_approval_pending' => 'delivered',
+                'cancelled_approval_pending' => 'cancelled',
+            ],
+        ];
+
+        return $maps[$courier][$raw] ?? null;
     }
 
     /**

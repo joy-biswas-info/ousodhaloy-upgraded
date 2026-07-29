@@ -166,10 +166,14 @@
                                     <form method="POST" action="{{ route('admin.orders.status', $order) }}">
                                         @csrf
                                         <input type="hidden" name="notify_customer" value="1">
-                                        <select name="status" onchange="this.form.submit()"
+                                        <input type="hidden" name="confirm_courier_cancel" value="0">
+                                        <select name="status" onchange="handleCourierCancelSelect(this)"
+                                            data-current="{{ $order->status }}"
+                                            data-courier="{{ $order->pathao_consignment_id ? 'Pathao (consignment ' . $order->pathao_consignment_id . ')' : ($order->steadfast_consignment_id ? 'Steadfast (consignment ' . $order->steadfast_consignment_id . ')' : '') }}"
                                             class="form-select text-xs py-1 px-2 w-auto">
-                                            @foreach(\App\Models\Order::STATUS_LABELS as $key => $label)
-                                                <option value="{{ $key }}" @selected($order->status === $key)>{{ $label }}</option>
+                                            <option value="{{ $order->status }}" selected>{{ $order->status_label }}</option>
+                                            @foreach(\App\Models\Order::STATUS_FLOW[$order->status] ?? [] as $key)
+                                                <option value="{{ $key }}">{{ \App\Models\Order::STATUS_LABELS[$key] }}{{ $order->status === 'on_hold' && $order->held_from_status === $key ? ' ↩' : '' }}</option>
                                             @endforeach
                                         </select>
                                     </form>
@@ -207,6 +211,22 @@
             document.getElementById('select-all').addEventListener('change', function () {
                 document.querySelectorAll('.order-cb').forEach(cb => cb.checked = this.checked);
             });
+
+            // Neither courier API supports cancelling a consignment — cancelling
+            // here only changes our own status, so confirm the admin understands
+            // they still need to cancel manually in the courier's dashboard.
+            function handleCourierCancelSelect(select) {
+                const form = select.form;
+                const courier = select.dataset.courier;
+                if (select.value === 'cancelled' && courier) {
+                    if (!confirm(`This order was already pushed to ${courier}. Cancelling here only updates the order status — you must also cancel it manually in the courier's merchant dashboard. Continue?`)) {
+                        select.value = select.dataset.current;
+                        return;
+                    }
+                    form.querySelector('[name=confirm_courier_cancel]').value = '1';
+                }
+                form.submit();
+            }
         </script>
     @endpush
 @endsection

@@ -9,14 +9,21 @@ use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
-    public function pathao(Request $request, OrderService $orderService)
+    public function pathao(Request $request, OrderService $orderService, string $secret)
     {
-        $secret = Setting::get('pathao_webhook_secret');
+        $expected = Setting::get('pathao_webhook_secret');
+
+        // Pathao doesn't sign requests, so the shared secret rides in the
+        // URL path instead (see routes/web.php). 404 rather than 401 on
+        // mismatch — don't confirm to a prober that this endpoint exists.
+        if (!$expected || !hash_equals($expected, $secret)) {
+            abort(404);
+        }
 
         // Handshake / verification ping — Pathao expects 202 + secret header back
         if (!$request->has('order_status')) {
             return response()->json(['message' => 'OK'], 202)
-                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
+                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $expected);
         }
 
         // Live event — log and process. No HMAC check; Pathao does not sign these.
@@ -28,7 +35,7 @@ class WebhookController extends Controller
         if (!$consignmentId || !$pathaoStatus) {
             Log::warning('Pathao webhook missing fields', $request->all());
             return response()->json(['message' => 'Missing fields'], 202)
-                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
+                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $expected);
         }
 
         $order = Order::where('pathao_consignment_id', $consignmentId)->first();
@@ -36,40 +43,36 @@ class WebhookController extends Controller
         if (!$order) {
             Log::warning("Pathao webhook: no order found for consignment {$consignmentId}");
             return response()->json(['message' => 'Order not found'], 202)
-                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
+                ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $expected);
         }
 
         if ($pathaoStatus !== $order->pathao_status) {
             $order->update(['pathao_status' => $pathaoStatus]);
 
-            $statusMap = [
-                'Pickup_Completed' => 'shipped',
-                'Delivery_Completed' => 'delivered',
-                'Delivery_Cancelled' => 'cancelled',
-                'Return_Completed' => 'returned',
-            ];
-
-            if (!empty($statusMap[$pathaoStatus])) {
-                $orderService->updateStatus($order, $statusMap[$pathaoStatus], 'Auto-synced from Pathao', false);
+            $mapped = Order::mapCourierStatus('pathao', $pathaoStatus);
+            if ($mapped) {
+                $orderService->updateStatus($order, $mapped, 'Auto-synced from Pathao', false);
             }
 
             Log::info("Pathao webhook: order #{$order->order_number} updated to {$pathaoStatus}");
         }
 
         return response()->json(['message' => 'OK'], 202)
-            ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $secret ?? '');
+            ->header('X-Pathao-Merchant-Webhook-Integration-Secret', $expected);
     }
 
     public function steadfast(Request $request, OrderService $orderService)
     {
         Log::info('Steadfast webhook', $request->all());
 
-        // Verify Steadfast Bearer token
+        // Verify Steadfast Bearer token — fail CLOSED. An unconfigured
+        // token must reject, not skip the check (that was the bug: an
+        // empty $expectedToken used to make the whole check a no-op).
         $expectedToken = Setting::get('steadfast_bearer_token');
         $incoming = $request->bearerToken(); // reads Authorization: Bearer <token>
 
-        if ($expectedToken && $incoming !== $expectedToken) {
-            Log::warning('Steadfast webhook auth token mismatch');
+        if (!$expectedToken || !hash_equals($expectedToken, (string) $incoming)) {
+            Log::warning('Steadfast webhook auth token mismatch or unconfigured');
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
@@ -96,19 +99,7 @@ class WebhookController extends Controller
 
         $order->update(['steadfast_status' => $sfStatus]);
 
-        $statusMap = [
-            'delivered' => 'delivered',
-            'partial_delivered' => 'delivered',
-            'cancelled' => 'cancelled',
-            'hold' => 'on_hold',
-            'delivered_approval_pending' => 'delivered',
-            'partial_delivered_approval_pending' => 'delivered',
-            'cancelled_approval_pending' => 'cancelled',
-            'unknown' => null,
-            'in_review' => null,
-        ];
-
-        $mapped = $statusMap[$sfStatus] ?? null;
+        $mapped = Order::mapCourierStatus('steadfast', $sfStatus);
         if ($mapped) {
             $orderService->updateStatus($order, $mapped, 'Auto-synced from Steadfast', false);
         }

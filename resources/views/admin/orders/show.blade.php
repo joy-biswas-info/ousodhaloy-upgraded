@@ -47,6 +47,20 @@
                     @endif
                 @endif
 
+                {{-- Undo a mistaken cancel/return. Admin-only — see routes/web.php
+                     and OrderService::reopenOrder() for why this is a separate,
+                     narrow action rather than just another status option. --}}
+                @if(in_array($order->status, ['cancelled', 'returned']) && auth()->user()->isAdmin())
+                    <form action="{{ route('admin.orders.reopen', $order) }}" method="POST" class="inline"
+                        onsubmit="var note = prompt('This re-deducts stock for every item and moves the order back to Processing. Reason (optional):'); if (note === null) return false; document.getElementById('reopen-note').value = note; return true;">
+                        @csrf
+                        <input type="hidden" name="note" id="reopen-note">
+                        <button type="submit" class="btn-secondary btn-sm">
+                            <i class="fas fa-unlock mr-1"></i>Reopen Order
+                        </button>
+                    </form>
+                @endif
+
                 <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="inline"
                     onsubmit="return confirm('Move order {{ $order->order_number }} to trash?')">
                     @csrf @method('DELETE')
@@ -116,14 +130,18 @@
                 {{-- Update status --}}
                 <div class="bg-white rounded-xl border p-5">
                     <h3 class="font-bold text-gray-800 mb-4">Update Status</h3>
-                    <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="space-y-3">
+                    <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="space-y-3"
+                        id="status-form"
+                        data-courier="{{ $order->pathao_consignment_id ? 'Pathao (consignment ' . $order->pathao_consignment_id . ')' : ($order->steadfast_consignment_id ? 'Steadfast (consignment ' . $order->steadfast_consignment_id . ')' : '') }}">
                         @csrf
+                        <input type="hidden" name="confirm_courier_cancel" id="confirm-courier-cancel" value="0">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="form-label">New Status</label>
-                                <select name="status" class="form-select">
-                                    @foreach(\App\Models\Order::STATUS_LABELS as $key => $label)
-                                        <option value="{{ $key }}" @selected($order->status === $key)>{{ $label }}</option>
+                                <select name="status" class="form-select" id="status-select">
+                                    <option value="{{ $order->status }}" selected>{{ $order->status_label }} (current)</option>
+                                    @foreach(\App\Models\Order::STATUS_FLOW[$order->status] ?? [] as $key)
+                                        <option value="{{ $key }}">{{ \App\Models\Order::STATUS_LABELS[$key] }}{{ $order->status === 'on_hold' && $order->held_from_status === $key ? ' — resume here' : '' }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -137,7 +155,7 @@
                                 class="accent-teal-600">
                             <label for="notify" class="text-sm text-gray-600 cursor-pointer">Send SMS to customer</label>
                         </div>
-                        <button type="submit" class="btn-primary btn-sm">Update Status</button>
+                        <button type="submit" class="btn-primary btn-sm" onclick="return confirmCourierCancel()">Update Status</button>
                     </form>
                     <div class="border-t mt-4 pt-4">
                         <form method="POST" action="{{ route('admin.orders.payment', $order) }}"
@@ -291,6 +309,16 @@
                             <p>Tracking: <span class="font-mono font-bold">{{ $order->steadfast_tracking_code }}</span></p>
                             <p>Status: <span class="font-bold">{{ $order->steadfast_status ?? 'Pending' }}</span></p>
                         </div>
+                        {{-- Real courier-side action, separate from the local "Cancel" status
+                             — for a package that's already left the warehouse. --}}
+                        <form action="{{ route('admin.orders.steadfast-return', $order) }}" method="POST" class="mt-2"
+                            onsubmit="document.getElementById('sf-return-reason').value = prompt('Reason for return (optional):') || ''; return true;">
+                            @csrf
+                            <input type="hidden" name="reason" id="sf-return-reason">
+                            <button type="submit" class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-lg w-full">
+                                <i class="fas fa-undo mr-1"></i>Request Return
+                            </button>
+                        </form>
                     </div>
                 @endif
 
@@ -370,6 +398,22 @@
         const pathaoDefaults = @json($pathaoDefaults ?? []);
         const orderShippingDistrict = @json($order->shipping_district ?? '');
         const orderShippingUpazila = @json($order->shipping_upazila ?? '');
+
+        // Neither courier API supports cancelling a consignment — cancelling
+        // here only changes our own status, so confirm the admin understands
+        // they still need to cancel manually in the courier's dashboard.
+        function confirmCourierCancel() {
+            const form = document.getElementById('status-form');
+            const select = document.getElementById('status-select');
+            const courier = form.dataset.courier;
+            if (select.value === 'cancelled' && courier) {
+                if (!confirm(`This order was already pushed to ${courier}. Cancelling here only updates the order status — you must also cancel it manually in the courier's merchant dashboard. Continue?`)) {
+                    return false;
+                }
+                document.getElementById('confirm-courier-cancel').value = '1';
+            }
+            return true;
+        }
 
         function openPathaoModal() {
             const m = document.getElementById('pathao-modal');

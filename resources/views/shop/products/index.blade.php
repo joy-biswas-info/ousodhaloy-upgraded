@@ -1,8 +1,41 @@
 @extends('layouts.shop')
-@section('title', ($currentCat ? $currentCat->name . ' – ' : '') . 'Products')
-@section('meta_description', $currentCat
-    ? "Buy {$currentCat->name} online in Bangladesh — genuine products, fast delivery, cash on delivery available."
-    : 'Browse all medicine, healthcare and wellness products. Genuine products, fast delivery across Bangladesh.')
+@php
+    // Canonical intentionally keeps only category/brand — those define a
+    // genuinely different product set worth its own indexed URL. Sort,
+    // price range, and pagination don't, so they're dropped here to avoid
+    // near-duplicate URLs competing with each other in search results.
+    $filterLabel = collect([$currentCat->name ?? null, $currentBrand->name ?? null])->filter()->implode(' – ');
+@endphp
+@section('title', ($filterLabel ? $filterLabel . ' – ' : '') . 'Products')
+@section('meta_description',
+    $currentCat->meta_description ?? ($filterLabel
+        ? "Buy {$filterLabel} online in Bangladesh — genuine products, fast delivery, cash on delivery available."
+        : 'Browse all medicine, healthcare and wellness products. Genuine products, fast delivery across Bangladesh.'))
+@section('canonical', route('shop.index', array_filter(['category' => request('category'), 'brand' => request('brand')])))
+@if($filterLabel)
+    @section('og_title', $filterLabel)
+    @section('og_image', $currentCat->banner_image ?? $currentBrand->logo ?? asset('favicon.svg'))
+@endif
+
+@push('head')
+<script type="application/ld+json">
+    {!! json_encode(array_filter([
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => $filterLabel ?: 'All Products',
+        'url' => route('shop.index', array_filter(['category' => request('category'), 'brand' => request('brand')])),
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'itemListElement' => $products->getCollection()->values()->map(fn($p, $i) => [
+                '@type' => 'ListItem',
+                'position' => $i + 1,
+                'url' => route('shop.product', $p->slug),
+                'name' => $p->name,
+            ])->all(),
+        ],
+    ]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-5">

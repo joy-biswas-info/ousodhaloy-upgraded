@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Category, LandingPage, Product};
+use App\Models\{Brand, Category, LandingPage, Product};
 use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
@@ -23,6 +23,15 @@ class SitemapController extends Controller
                     'loc' => route('shop.index', ['category' => $category->slug]),
                     'lastmod' => $category->updated_at->toAtomString(),
                     'priority' => '0.7',
+                    'changefreq' => 'weekly',
+                ];
+            });
+
+            Brand::where('is_active', true)->select('slug', 'updated_at')->get()->each(function ($brand) use (&$urls) {
+                $urls[] = [
+                    'loc' => route('shop.index', ['brand' => $brand->slug]),
+                    'lastmod' => $brand->updated_at->toAtomString(),
+                    'priority' => '0.6',
                     'changefreq' => 'weekly',
                 ];
             });

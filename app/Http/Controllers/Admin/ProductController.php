@@ -112,6 +112,14 @@ class ProductController extends Controller
     public function forceDelete(int $id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
+
+        // order_items.product_id has no onDelete() cascade/set-null, so a hard
+        // delete here would hit a DB-level FK constraint (MySQL 1451) and
+        // surface as a raw 500 — check first and fail with a clear message.
+        if ($product->orderItems()->exists()) {
+            return back()->with('error', "Can't permanently delete \"{$product->name}\" — it has order history. Leave it in the trash (soft-deleted), or the related order records would break.");
+        }
+
         if ($product->thumbnail)
             \Illuminate\Support\Facades\Storage::disk('public')->delete($product->thumbnail);
         $product->forceDelete();

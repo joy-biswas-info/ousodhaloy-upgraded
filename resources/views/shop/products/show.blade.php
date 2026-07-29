@@ -142,10 +142,10 @@
                     @if ($product->generic_name)
                         <p class="text-sm text-gray-500 mb-2">{{ $product->generic_name }}
                             @if ($product->strength)
-                                <span class="text-gray-400"> · {{ $product->strength }}</span>
+                                <span class="text-gray-500"> · {{ $product->strength }}</span>
                             @endif
                             @if ($product->form)
-                                <span class="text-gray-400"> · {{ $product->form }}</span>
+                                <span class="text-gray-500"> · {{ $product->form }}</span>
                             @endif
                         </p>
                     @endif
@@ -159,7 +159,7 @@
                                 @endfor
                             </div>
                             <span class="text-xs text-gray-500 font-semibold">{{ $product->average_rating }}</span>
-                            <span class="text-xs text-gray-400">320+ reviews</span>
+                            <span class="text-xs text-gray-500">320+ reviews</span>
                         </div>
                     @endif
 
@@ -171,7 +171,7 @@
                             </span>
                             @if ($product->mrp && $product->mrp > $product->effective_price)
                                 <span
-                                    class="text-lg text-gray-400 line-through font-medium">৳{{ number_format($product->mrp, 2) }}</span>
+                                    class="text-lg text-gray-500 line-through font-medium">৳{{ number_format($product->mrp, 2) }}</span>
                                 <span class="text-sm font-black text-white bg-red-500 px-2.5 py-0.5 rounded-lg">
                                     Save ৳{{ number_format($product->mrp - $product->effective_price, 2) }}
                                 </span>

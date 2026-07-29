@@ -146,15 +146,19 @@
                         @csrf
 
                         <div>
-                            <label class="text-xs font-semibold text-gray-600 block mb-2">
+                            <label class="text-xs font-semibold text-gray-600 block mb-2" id="review-rating-label">
                                 Your Rating *
                             </label>
 
                             <div class="flex gap-1"
+                                role="radiogroup" aria-labelledby="review-rating-label"
                                 x-data="{ rating: {{ old('rating', 0) }}, hover: 0 }">
 
                                 @for ($s = 1; $s <= 5; $s++)
                                     <button type="button"
+                                        role="radio"
+                                        :aria-checked="rating === {{ $s }} ? 'true' : 'false'"
+                                        aria-label="{{ $s }} star{{ $s > 1 ? 's' : '' }}"
                                         @click="rating = {{ $s }}"
                                         @mouseenter="hover = {{ $s }}"
                                         @mouseleave="hover = 0"
@@ -181,15 +185,16 @@
                         </div>
 
                         <div>
-                            <label class="text-xs font-semibold text-gray-600 block mb-1">
+                            <label class="text-xs font-semibold text-gray-600 block mb-1" for="review-title-input">
                                 Review Title
                             </label>
 
                             <input type="text"
                                 name="title"
+                                id="review-title-input"
                                 value="{{ old('title') }}"
                                 placeholder="Summarise your experience"
-                                class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-50">
+                                class="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-50 {{ $errors->has('title') ? 'border-red-400' : 'border-gray-200' }}">
 
                             @error('title')
                                 <p class="text-red-500 text-xs mt-1">
@@ -199,15 +204,16 @@
                         </div>
 
                         <div>
-                            <label class="text-xs font-semibold text-gray-600 block mb-1">
+                            <label class="text-xs font-semibold text-gray-600 block mb-1" for="review-body-input">
                                 Your Review *
                             </label>
 
                             <textarea name="body"
+                                id="review-body-input"
                                 rows="3"
                                 required
                                 placeholder="Share your experience with this product..."
-                                class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-50 resize-none">{{ old('body') }}</textarea>
+                                class="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-50 resize-none {{ $errors->has('body') ? 'border-red-400' : 'border-gray-200' }}">{{ old('body') }}</textarea>
 
                             @error('body')
                                 <p class="text-red-500 text-xs mt-1">

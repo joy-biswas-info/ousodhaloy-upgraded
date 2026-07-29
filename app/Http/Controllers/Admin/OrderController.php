@@ -77,10 +77,39 @@ class OrderController extends Controller
             'notify_customer' => 'nullable|boolean',
         ]);
 
+        // Neither Pathao nor Steadfast's API exposes a cancel-consignment
+        // endpoint, so cancelling a courier-linked order here only updates
+        // our own status — the physical package isn't stopped. Require an
+        // explicit confirmation naming the courier before allowing it.
+        $consignmentId = $order->pathao_consignment_id ?: $order->steadfast_consignment_id;
+        $courierName = $order->pathao_consignment_id ? 'Pathao' : ($order->steadfast_consignment_id ? 'Steadfast' : null);
+        if ($request->status === 'cancelled' && $consignmentId && !$request->boolean('confirm_courier_cancel')) {
+            return back()->with('error', "This order was already pushed to {$courierName} (consignment {$consignmentId}). Cancelling here only updates the order status here — you must also cancel it manually in {$courierName}'s merchant dashboard.");
+        }
+
         $notify = $request->boolean('notify_customer', true);
-        $this->orderService->updateStatus($order, $request->status, $request->note ?? '', $notify);
+        $updated = $this->orderService->updateStatus($order, $request->status, $request->note ?? '', $notify);
+
+        if (!$updated) {
+            return back()->with('error', "Can't move this order from \"{$order->status_label}\" to \"" . (Order::STATUS_LABELS[$request->status] ?? $request->status) . '".');
+        }
 
         return back()->with('success', 'Order status updated to: ' . (Order::STATUS_LABELS[$request->status] ?? $request->status));
+    }
+
+    // Admin-only (see routes/web.php) — undoes a mistaken cancel/return.
+    // Deliberately a separate action from updateStatus(), not just another
+    // STATUS_FLOW target, so it can never be triggered by a webhook, bulk
+    // action, or manager-level request — see OrderService::reopenOrder().
+    public function reopen(Request $request, Order $order)
+    {
+        $request->validate(['note' => 'nullable|string|max:500']);
+
+        $result = $this->orderService->reopenOrder($order, $request->note ?? '');
+
+        return $result['success']
+            ? back()->with('success', 'Order reopened — moved back to Processing.')
+            : back()->with('error', $result['error']);
     }
 
     public function updatePayment(Request $request, Order $order)
@@ -103,6 +132,10 @@ class OrderController extends Controller
 
     public function pushToPathao(Order $order)
     {
+        if ($order->status !== 'processing') {
+            return back()->with('error', "Order must be in \"Processing\" status before pushing to a courier — currently \"{$order->status_label}\".");
+        }
+
         $result = $this->pathao->createOrder($order);
 
         if ($result['success']) {
@@ -172,6 +205,10 @@ class OrderController extends Controller
     // ── Steadfast ─────────────────────────────────────────────────────────
     public function pushToSteadfast(Order $order)
     {
+        if ($order->status !== 'processing') {
+            return back()->with('error', "Order must be in \"Processing\" status before pushing to a courier — currently \"{$order->status_label}\".");
+        }
+
         $result = $this->steadfast->createOrder($order);
 
         if ($result['success']) {
@@ -237,10 +274,38 @@ class OrderController extends Controller
         $statusMap = ['confirm' => 'confirmed', 'cancel' => 'cancelled', 'shipped' => 'shipped'];
         $newStatus = $statusMap[$request->action];
 
+        $updated = 0;
+        $skipped = 0;
         foreach ($orders as $order) {
-            $this->orderService->updateStatus($order, $newStatus, 'Bulk action', false);
+            if ($this->orderService->updateStatus($order, $newStatus, 'Bulk action', false)) {
+                $updated++;
+            } else {
+                $skipped++;
+            }
         }
-        return back()->with('success', count($orders) . " orders updated to {$newStatus}.");
+
+        $message = "{$updated} order(s) updated to {$newStatus}.";
+        if ($skipped) {
+            $message .= " {$skipped} order(s) skipped — status change not valid from their current status.";
+        }
+        return back()->with('success', $message);
+    }
+
+    // ── Steadfast return request (order already left the warehouse) ────────
+
+    public function requestSteadfastReturn(Request $request, Order $order)
+    {
+        if (!$order->steadfast_consignment_id) {
+            return back()->with('error', 'This order has no Steadfast consignment.');
+        }
+
+        $request->validate(['reason' => 'nullable|string|max:255']);
+
+        $result = $this->steadfast->createReturnRequest($order->steadfast_consignment_id, $request->reason ?? '');
+
+        return $result['success']
+            ? back()->with('success', 'Return request submitted to Steadfast.')
+            : back()->with('error', 'Steadfast error: ' . ($result['error'] ?? 'Unknown error'));
     }
 
     // ── Trash ─────────────────────────────────────────────────────────────

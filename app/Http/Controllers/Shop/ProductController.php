@@ -56,8 +56,9 @@ class ProductController extends Controller
         $categories = Category::active()->withCount(['products' => fn($q) => $q->active()])->get();
         $brands = Brand::where('is_active', true)->orderBy('name')->get();
         $currentCat = $request->category ? Category::where('slug', $request->category)->first() : null;
+        $currentBrand = $request->brand ? Brand::where('slug', $request->brand)->first() : null;
 
-        return view('shop.products.index', compact('products', 'categories', 'brands', 'currentCat', 'sort'));
+        return view('shop.products.index', compact('products', 'categories', 'brands', 'currentCat', 'currentBrand', 'sort'));
     }
 
     public function show(string $slug)

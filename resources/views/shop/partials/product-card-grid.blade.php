@@ -46,7 +46,7 @@
             <p class="text-[10px] text-orange-600 font-semibold mb-1">⚠ Only {{ $product->stock }} left</p>
         @endif
         @if ($product->pack_size)
-            <p class="text-[10px] text-gray-400 mb-1">{{ $product->pack_size }}</p>
+            <p class="text-[10px] text-gray-500 mb-1">{{ $product->pack_size }}</p>
         @endif
         <div class="flex justify-between">
             <div class="card-price">
