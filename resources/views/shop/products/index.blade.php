@@ -159,3 +159,21 @@
     </div>
 </div>
 @endsection
+
+@if(request()->filled('q'))
+    @php $pixelSearch = \App\Models\Setting::get('meta_pixel_search', 'true') === 'true'; @endphp
+    @if($pixelSearch)
+    @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.fbTrack) {
+            window.fbTrack('Search', {
+                search_string: @json(request('q')),
+                content_category: 'product',
+            });
+        }
+    });
+    </script>
+    @endpush
+    @endif
+@endif

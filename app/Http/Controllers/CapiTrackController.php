@@ -16,12 +16,27 @@ use Illuminate\Support\Facades\Auth;
  */
 class CapiTrackController extends Controller
 {
+    // Whatever fbTrack() is allowed to send here — deliberately excludes
+    // Purchase. This endpoint is unauthenticated and takes event_name/
+    // custom_data straight from the request body; without an allowlist,
+    // anyone could POST event_name=Purchase with a fabricated value/currency
+    // straight into this business's ad account using its real pixel ID and
+    // access token, skewing reported ROAS/CPA and the ad-delivery
+    // optimization signals Meta's algorithm feeds on. Purchase is always
+    // fired server-side with real, verified order data — see
+    // OrderService::fireCapiPurchase() / SslCommerzService.
+    private const ALLOWED_EVENTS = ['ViewContent', 'AddToCart', 'InitiateCheckout', 'Search'];
+
     public function track(Request $request, MetaConversionsApiService $capi)
     {
         $eventName = $request->input('event_name');
         $eventId = $request->input('event_id');
 
-        if ($eventName && $eventId && $capi->isConfigured()) {
+        if (
+            is_string($eventName) && in_array($eventName, self::ALLOWED_EVENTS, true)
+            && is_string($eventId) && $eventId !== ''
+            && $capi->isConfigured()
+        ) {
             $userData = [];
             if (Auth::check()) {
                 $userData = $capi->hashUserData(['external_id' => Auth::id()]);
