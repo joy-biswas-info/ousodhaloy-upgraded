@@ -77,6 +77,21 @@ class OrderController extends Controller
             'notify_customer' => 'nullable|boolean',
         ]);
 
+        // This form only ever offers adminSelectableStatuses() (see
+        // resources/views/admin/orders/show.blade.php) — ready_to_ship is set
+        // by the push-to-courier action, shipped/out_for_delivery/delivered/
+        // returned only by the courier webhook/polling (both go through
+        // OrderService::updateStatus() directly, bypassing this admin-only
+        // gate). A request naming one of those here didn't come from that
+        // form, so reject it explicitly instead of silently allowing it just
+        // because canTransitionTo() alone would.
+        if (!in_array($request->status, $order->adminSelectableStatuses(), true)) {
+            $reason = $request->status === 'cancelled' && !$order->canCancel()
+                ? 'This order can no longer be cancelled here — the package has already been picked up by the courier.'
+                : "\"" . (Order::STATUS_LABELS[$request->status] ?? $request->status) . '" is set automatically by the courier and can\'t be chosen manually.';
+            return back()->with('error', $reason);
+        }
+
         // Neither Pathao nor Steadfast's API exposes a cancel-consignment
         // endpoint, so cancelling a courier-linked order here only updates
         // our own status — the physical package isn't stopped. Require an
@@ -254,7 +269,7 @@ class OrderController extends Controller
     public function bulkAction(Request $request)
     {
         $request->validate([
-            'action' => 'required|in:confirm,cancel,export,shipped,trash',
+            'action' => 'required|in:confirm,cancel,export,trash',
             'order_ids' => 'required|array',
         ]);
         $orders = Order::whereIn('id', $request->order_ids)->get();
@@ -271,7 +286,10 @@ class OrderController extends Controller
             return back()->with('success', "{$count} order(s) moved to trash.");
         }
 
-        $statusMap = ['confirm' => 'confirmed', 'cancel' => 'cancelled', 'shipped' => 'shipped'];
+        // 'shipped' deliberately isn't a bulk option — it's courier-driven
+        // only (see Order::ADMIN_EDITABLE_STATUSES), same rule as the
+        // per-order status dropdown.
+        $statusMap = ['confirm' => 'confirmed', 'cancel' => 'cancelled'];
         $newStatus = $statusMap[$request->action];
 
         $updated = 0;

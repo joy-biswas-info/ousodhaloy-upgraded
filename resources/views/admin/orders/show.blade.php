@@ -140,7 +140,7 @@
                                 <label class="form-label">New Status</label>
                                 <select name="status" class="form-select" id="status-select">
                                     <option value="{{ $order->status }}" selected>{{ $order->status_label }} (current)</option>
-                                    @foreach(\App\Models\Order::STATUS_FLOW[$order->status] ?? [] as $key)
+                                    @foreach($order->adminSelectableStatuses() as $key)
                                         <option value="{{ $key }}">{{ \App\Models\Order::STATUS_LABELS[$key] }}{{ $order->status === 'on_hold' && $order->held_from_status === $key ? ' — resume here' : '' }}</option>
                                     @endforeach
                                 </select>

@@ -113,6 +113,23 @@ class Order extends Model
         'returned' => 'red',
     ];
 
+    // A courier consignment can only be cancelled here before the physical
+    // package has actually been picked up — once it has, cancelling in-app
+    // doesn't stop the courier, it just desyncs our status from reality (see
+    // updateStatus()'s existing confirm_courier_cancel warning for the
+    // related "already pushed to courier" case). These are the stages that
+    // precede pickup.
+    const PRE_PICKUP_STATUSES = ['pending', 'confirmed', 'processing', 'ready_to_ship'];
+
+    // The subset of STATUS_FLOW targets an admin may pick from the manual
+    // "Update Status" dropdown. Deliberately excludes ready_to_ship (set only
+    // by the "Push to Pathao/Steadfast" action), shipped/out_for_delivery/
+    // delivered/returned (courier-driven only, via mapCourierStatus() /
+    // webhook / polling) — those are shown read-only (status badge + the
+    // courier's own raw status panel) rather than offered as manual choices.
+    // refunded stays admin-only since no courier ever reports it.
+    const ADMIN_EDITABLE_STATUSES = ['confirmed', 'processing', 'on_hold', 'cancelled', 'refunded'];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -152,7 +169,63 @@ class Order extends Model
 
     public function canTransitionTo(string $newStatus): bool
     {
-        return in_array($newStatus, self::STATUS_FLOW[$this->status] ?? []);
+        if (!in_array($newStatus, self::STATUS_FLOW[$this->status] ?? [], true)) {
+            return false;
+        }
+
+        // STATUS_FLOW['on_hold'] lists every stage a hold could have started
+        // from, as a static superset — it can't know which one *this* order
+        // was actually held from. Narrow it here: resuming must go back to
+        // exactly held_from_status (not any other listed stage), and
+        // cancelling from hold is still subject to the pickup rule below.
+        if ($this->status === 'on_hold') {
+            return $newStatus === 'cancelled'
+                ? $this->canCancel()
+                : $newStatus === $this->held_from_status;
+        }
+
+        return true;
+    }
+
+    /**
+     * Whether this order can still be cancelled — only true before the
+     * courier has actually picked up the package. For an order currently on
+     * hold, that's determined by the stage it was held *from*, not the fact
+     * that it's on_hold right now (on_hold itself carries no pickup
+     * information — see STATUS_FLOW's comment on why it's reachable from
+     * every active stage).
+     */
+    public function canCancel(): bool
+    {
+        $effectiveStatus = $this->status === 'on_hold'
+            ? ($this->held_from_status ?? 'pending')
+            : $this->status;
+
+        return in_array($effectiveStatus, self::PRE_PICKUP_STATUSES, true);
+    }
+
+    /**
+     * Statuses to offer in the admin's manual "Update Status" dropdown right
+     * now — the intersection of what the state machine allows (STATUS_FLOW,
+     * via canTransitionTo()) and what's meant to be admin-settable at all
+     * (ADMIN_EDITABLE_STATUSES). Courier-driven stages (ready_to_ship via the
+     * push-to-courier action, shipped/out_for_delivery/delivered/returned via
+     * webhook/polling) are deliberately never offered here — they're shown
+     * read-only via status_label + the courier's raw status panel instead.
+     */
+    public function adminSelectableStatuses(): array
+    {
+        if ($this->status === 'on_hold') {
+            return array_values(array_filter([
+                $this->held_from_status,
+                $this->canCancel() ? 'cancelled' : null,
+            ]));
+        }
+
+        return array_values(array_intersect(
+            self::STATUS_FLOW[$this->status] ?? [],
+            self::ADMIN_EDITABLE_STATUSES
+        ));
     }
 
     /**
@@ -162,22 +235,64 @@ class Order extends Model
      * polling and webhook endpoints use genuinely different raw vocabularies
      * (Picked_Up vs Pickup_Completed), so both are kept rather than assumed
      * to be duplicates.
+     *
+     * Pathao's raw value is normalized (lowercased, non-alphanumeric runs
+     * collapsed to a single underscore) before lookup, so "Pickup Requested",
+     * "pickup_requested", and "PICKUP-REQUESTED" all hit the same key — we
+     * only have Pathao's dashboard documentation for the full status list
+     * (not a captured real payload for every one of them), so matching on
+     * normalized text is more robust than betting on exact casing. Steadfast's
+     * map is untouched — its raw values are already confirmed from real
+     * payloads and compared as-is.
      */
     public static function mapCourierStatus(string $courier, string $raw): ?string
     {
+        if ($courier === 'pathao') {
+            $normalized = strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '_', $raw), '_'));
+
+            $map = [
+                // Pre-pickup
+                'pickup_requested' => 'ready_to_ship',
+                'assigned_for_pickup' => 'ready_to_ship',
+                'pickup_failed' => 'on_hold',
+                'pickup_cancelled' => 'on_hold',
+                // Picked up / in transit — no finer internal stage than
+                // "shipped" exists between pickup and out-for-delivery, so
+                // every in-transit variant collapses to it. The precise raw
+                // value still shows to the admin via pathao_status.
+                'picked_up' => 'shipped',
+                'pickup_completed' => 'shipped',
+                'in_transit' => 'shipped',
+                'at_the_sorting_hub' => 'shipped',
+                // Out for delivery
+                'assigned_for_delivery' => 'out_for_delivery',
+                'out_for_delivery' => 'out_for_delivery',
+                // Delivered
+                'delivered' => 'delivered',
+                'delivery_completed' => 'delivered',
+                'partial_delivery' => 'delivered',
+                // Needs admin attention, but still pre-pickup outcomes above
+                // handle their own on_hold cases — this one is post-attempt
+                'delivery_failed' => 'on_hold',
+                'on_hold' => 'on_hold',
+                // Cancelled
+                'cancelled' => 'cancelled',
+                'delivery_cancelled' => 'cancelled',
+                // Return (any stage) — no finer internal stage than
+                // "returned" exists for the return sub-flow either
+                'return' => 'returned',
+                'return_picked_up' => 'returned',
+                'return_completed' => 'returned',
+                'paid_return' => 'returned',
+                'return_id_created' => 'returned',
+                'return_in_transit' => 'returned',
+                'returned_to_merchant' => 'returned',
+            ];
+
+            return $map[$normalized] ?? null;
+        }
+
         $maps = [
-            'pathao' => [
-                'Delivered' => 'delivered',
-                'Cancelled' => 'cancelled',
-                'Picked_Up' => 'shipped',
-                'Out_For_Delivery' => 'out_for_delivery',
-                'In_Transit' => 'shipped',
-                'Return_Picked_Up' => 'returned',
-                'Pickup_Completed' => 'shipped',
-                'Delivery_Completed' => 'delivered',
-                'Delivery_Cancelled' => 'cancelled',
-                'Return_Completed' => 'returned',
-            ],
             'steadfast' => [
                 'delivered' => 'delivered',
                 'partial_delivered' => 'delivered',

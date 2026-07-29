@@ -442,17 +442,36 @@
                         <p class="text-xs font-semibold text-gray-600">Webhook Configuration</p>
                     </div>
                     <div class="p-4 space-y-3">
+                        @php
+                            // webhooks.pathao's {secret} is a required route
+                            // parameter (the secret rides in the URL path,
+                            // not a header — see WebhookController::pathao())
+                            // — route() throws UrlGenerationException if it's
+                            // called without one, which used to crash this
+                            // entire settings page on every load.
+                            $pathaoWebhookSecret = $settings['pathao_webhook_secret'] ?? '';
+                            $pathaoWebhookUrl = $pathaoWebhookSecret
+                                ? route('webhooks.pathao', ['secret' => $pathaoWebhookSecret])
+                                : null;
+                        @endphp
                         <div>
                             <label class="form-label">Callback URL</label>
+                            @if($pathaoWebhookUrl)
                             <div class="flex gap-2">
-                                <input type="text" readonly value="{{ route('webhooks.pathao') }}"
+                                <input type="text" readonly value="{{ $pathaoWebhookUrl }}"
                                     class="form-input font-mono text-xs bg-gray-50 text-gray-600 flex-1">
                                 <button type="button"
-                                    onclick="navigator.clipboard.writeText('{{ route('webhooks.pathao') }}').then(() => this.textContent = 'Copied!')"
+                                    onclick="navigator.clipboard.writeText('{{ $pathaoWebhookUrl }}').then(() => this.textContent = 'Copied!')"
                                     class="btn-outline text-xs px-3 flex-shrink-0">Copy</button>
                             </div>
                             <p class="text-xs text-gray-400 mt-1">Paste this URL in Pathao Merchant Portal → Settings →
                                 Webhook</p>
+                            @else
+                            <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                                Set a Webhook Secret below first, then save — the callback URL includes it and can't be
+                                shown until one exists.
+                            </p>
+                            @endif
                         </div>
                         <div>
                             <label class="form-label">Webhook Secret</label>

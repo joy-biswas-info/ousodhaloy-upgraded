@@ -107,7 +107,6 @@
                 <select name="action" class="form-select w-40">
                     <option value="">Bulk action</option>
                     <option value="confirm">Confirm All</option>
-                    <option value="shipped">Shipped All</option>
                     <option value="cancel">Cancel All</option>
                     <option value="trash">Move to Trash</option>
                     <option value="export">Export Excel</option>
@@ -172,7 +171,7 @@
                                             data-courier="{{ $order->pathao_consignment_id ? 'Pathao (consignment ' . $order->pathao_consignment_id . ')' : ($order->steadfast_consignment_id ? 'Steadfast (consignment ' . $order->steadfast_consignment_id . ')' : '') }}"
                                             class="form-select text-xs py-1 px-2 w-auto">
                                             <option value="{{ $order->status }}" selected>{{ $order->status_label }}</option>
-                                            @foreach(\App\Models\Order::STATUS_FLOW[$order->status] ?? [] as $key)
+                                            @foreach($order->adminSelectableStatuses() as $key)
                                                 <option value="{{ $key }}">{{ \App\Models\Order::STATUS_LABELS[$key] }}{{ $order->status === 'on_hold' && $order->held_from_status === $key ? ' ↩' : '' }}</option>
                                             @endforeach
                                         </select>
