@@ -131,6 +131,12 @@ class ManualOrderController extends Controller
             app(\App\Services\SmsService::class)->orderPlaced($order);
         }
 
+        // Manual orders don't go through OrderService::create() (this
+        // controller builds the order itself, above), so the new-order push
+        // needs its own hook here too — other staff on shift should still
+        // be alerted regardless of who entered the order.
+        app(\App\Services\NotificationService::class)->newOrderPush($order);
+
         return redirect()->route('admin.orders.show', $order)
             ->with('success', "Order #{$order->order_number} created successfully!");
     }

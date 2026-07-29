@@ -16,9 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
         // API routes should never redirect — always return JSON
         $middleware->statefulApi();
 
-        $middleware->alias([
-            'api.manager' => \App\Http\Middleware\ApiManagerMiddleware::class,
-        ]);
         // Our login route is named 'auth.login', not Laravel's default 'login'
         $middleware->redirectGuestsTo(fn() => route('auth.login'));
 
@@ -36,7 +33,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'capi/track',
         ]);
 
+        // A single alias() call — Middleware::alias() replaces the whole
+        // alias map on each call rather than merging, so two separate calls
+        // here silently dropped 'api.manager' (the earlier call), which is
+        // why every /api/* route has been throwing "Target class
+        // [api.manager] does not exist" since the API was first added.
         $middleware->alias([
+            'api.manager' => \App\Http\Middleware\ApiManagerMiddleware::class,
             'manager' => \App\Http\Middleware\IsManager::class,
             'admin' => \App\Http\Middleware\IsAdmin::class,
         ]);

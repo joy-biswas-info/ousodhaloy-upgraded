@@ -1,19 +1,26 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Services\SteadfastService;
+use App\Services\OrderService;
 use App\Services\PathaoService;
+use App\Services\SteadfastService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        private OrderService $orderService,
+        private PathaoService $pathao,
+        private SteadfastService $steadfast,
+    ) {
+    }
+
     public function index(Request $request)
     {
-        $query = Order::with(['items.product', 'user'])
-            ->latest();
+        $query = Order::with(['items.product', 'user'])->latest();
 
         if ($request->filled('status'))
             $query->where('status', $request->status);
@@ -46,43 +53,55 @@ class OrderController extends Controller
         ]);
     }
 
-    public function show(int $id)
+    // Manager-only namespace (see routes/api.php) — any authenticated
+    // manager/admin can view any order, no ownership check needed. This
+    // used to return a Blade view with an ownership check copy-pasted from
+    // the customer-facing controller, which made every guest order
+    // (no user_id) unreachable via this endpoint.
+    public function show(Order $order)
     {
-        $order = Order::with(['items.product', 'statusHistory'])->findOrFail($id);
-
-        if ($order->user_id) {
-            // Logged-in user order
-            if (!Auth::check() || (Auth::id() !== $order->user_id && !Auth::user()->isManager())) {
-                abort(403);
-            }
-        } else {
-            // Guest order — only allow if it came from their session
-            if (session('last_order_id') !== $order->id) {
-                abort(403);
-            }
-        }
-
-        return view('shop.orders.show', compact('order'));
+        $order->load(['items.product', 'statusHistory']);
+        return response()->json(['order' => $this->formatOrderFull($order)]);
     }
 
     public function updateStatus(Request $request, Order $order)
     {
-        $request->validate(['status' => 'required|string']);
+        $request->validate([
+            'status' => 'required|string|in:' . implode(',', array_keys(Order::STATUS_LABELS)),
+            'note' => 'nullable|string|max:500',
+            'notify_customer' => 'nullable|boolean',
+            'confirm_courier_cancel' => 'nullable|boolean',
+        ]);
 
-        $allowed = Order::STATUS_FLOW[$order->status] ?? [];
-        if (!in_array($request->status, $allowed)) {
+        // Same courier-cancel gate as the web admin — neither courier API
+        // supports remote cancellation, so cancelling a courier-linked
+        // order here only changes our own status.
+        $consignmentId = $order->pathao_consignment_id ?: $order->steadfast_consignment_id;
+        $courierName = $order->pathao_consignment_id ? 'Pathao' : ($order->steadfast_consignment_id ? 'Steadfast' : null);
+        if ($request->status === 'cancelled' && $consignmentId && !$request->boolean('confirm_courier_cancel')) {
             return response()->json([
-                'message' => "Cannot move from {$order->status} to {$request->status}"
-            ], 422);
+                'message' => "This order was already pushed to {$courierName} (consignment {$consignmentId}). Cancelling here only updates the order status — you must also cancel it manually in {$courierName}'s merchant dashboard.",
+                'requires_confirmation' => true,
+                'courier' => $courierName,
+                'consignment_id' => $consignmentId,
+            ], 409);
         }
 
-        $order->update(['status' => $request->status]);
-        $order->statusHistory()->create([
-            'status' => $request->status,
-            'note' => $request->note ?? null,
-            'changed_by' => auth()->id(),
-            'notify_customer' => true,
-        ]);
+        // Delegate to the same service every other order-status path uses
+        // (web admin, bulk actions, webhooks) — stock restore, held_from_status
+        // tracking, and the transition guard all apply identically here.
+        $updated = $this->orderService->updateStatus(
+            $order,
+            $request->status,
+            $request->note ?? '',
+            $request->boolean('notify_customer', true)
+        );
+
+        if (!$updated) {
+            return response()->json([
+                'message' => "Can't move this order from \"{$order->status_label}\" to \"" . (Order::STATUS_LABELS[$request->status] ?? $request->status) . '".',
+            ], 422);
+        }
 
         return response()->json(['message' => 'Status updated', 'status' => $request->status]);
     }
@@ -94,42 +113,102 @@ class OrderController extends Controller
         return response()->json(['message' => 'Note saved']);
     }
 
-    public function pushToSteadfast(Order $order)
-    {
-        try {
-            $service = app(SteadfastService::class);
-            $result = $service->createOrder($order);
-            return response()->json(['message' => 'Pushed to Steadfast', 'result' => $result]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
-        }
-    }
-
     public function pushToPathao(Order $order)
     {
+        if ($order->status !== 'processing') {
+            return response()->json([
+                'message' => "Order must be in \"Processing\" status before pushing to a courier — currently \"{$order->status_label}\".",
+            ], 422);
+        }
+
         try {
-            $service = app(PathaoService::class);
-            $result = $service->createOrder($order);
-            return response()->json(['message' => 'Pushed to Pathao', 'result' => $result]);
+            $result = $this->pathao->createOrder($order);
+            if (!$result['success']) {
+                return response()->json(['message' => $result['error'] ?? 'Failed to push to Pathao.'], 422);
+            }
+
+            $this->orderService->updateStatus($order, 'ready_to_ship', 'Pushed to Pathao', false);
+
+            return response()->json([
+                'message' => 'Pushed to Pathao',
+                'order' => $this->formatOrderFull($order->fresh(['items.product', 'statusHistory'])),
+            ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
 
+    public function pushToSteadfast(Order $order)
+    {
+        if ($order->status !== 'processing') {
+            return response()->json([
+                'message' => "Order must be in \"Processing\" status before pushing to a courier — currently \"{$order->status_label}\".",
+            ], 422);
+        }
+
+        try {
+            $result = $this->steadfast->createOrder($order);
+            if (!$result['success']) {
+                return response()->json(['message' => $result['error'] ?? 'Failed to push to Steadfast.'], 422);
+            }
+
+            $this->orderService->updateStatus($order, 'ready_to_ship', 'Pushed to Steadfast', false);
+
+            return response()->json([
+                'message' => 'Pushed to Steadfast',
+                'order' => $this->formatOrderFull($order->fresh(['items.product', 'statusHistory'])),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    // Reuses the real syncOrderStatus() on each service (already wired to
+    // Order::mapCourierStatus() -> OrderService::updateStatus()) instead of
+    // reimplementing the courier-status mapping inline — that version also
+    // called a method that doesn't exist on PathaoService.
     public function syncCourier(Order $order)
     {
         try {
             if ($order->courier === 'steadfast' && $order->steadfast_consignment_id) {
-                $result = app(SteadfastService::class)->getOrderStatus($order->steadfast_consignment_id);
-                $order->update(['steadfast_status' => $result['delivery_status'] ?? null]);
+                $this->steadfast->syncOrderStatus($order);
             } elseif ($order->courier === 'pathao' && $order->pathao_consignment_id) {
-                $result = app(PathaoService::class)->getConsignment($order->pathao_consignment_id);
-                $order->update(['pathao_status' => $result['delivery_status'] ?? null]);
+                $this->pathao->syncOrderStatus($order);
+            } else {
+                return response()->json(['message' => 'This order has no courier consignment to sync.'], 422);
             }
-            return response()->json(['message' => 'Synced', 'order' => $this->formatOrderFull($order->fresh())]);
+
+            return response()->json([
+                'message' => 'Synced',
+                'order' => $this->formatOrderFull($order->fresh(['items.product', 'statusHistory'])),
+            ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
+    }
+
+    // Admin-only — same reasoning as the web route (see routes/web.php's
+    // admin-only staff-management group): undoing a cancel/return
+    // re-deducts stock, not something a manager-level mistake should be
+    // able to trigger alone.
+    public function reopen(Request $request, Order $order)
+    {
+        if (!$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Forbidden — admin only.'], 403);
+        }
+
+        $request->validate(['note' => 'nullable|string|max:500']);
+
+        $result = $this->orderService->reopenOrder($order, $request->note ?? '');
+
+        if (!$result['success']) {
+            return response()->json(['message' => $result['error']], 422);
+        }
+
+        return response()->json([
+            'message' => 'Order reopened — moved back to Processing.',
+            'order' => $this->formatOrderFull($order->fresh(['items.product', 'statusHistory'])),
+        ]);
     }
 
     private function formatOrder(Order $o): array
@@ -173,6 +252,7 @@ class OrderController extends Controller
             'pathao_consignment_id' => $o->pathao_consignment_id,
             'pathao_tracking_code' => $o->pathao_tracking_code,
             'pathao_status' => $o->pathao_status,
+            'held_from_status' => $o->held_from_status,
             'items' => $o->items->map(fn($i) => [
                 'id' => $i->id,
                 'product_name' => $i->product_name,

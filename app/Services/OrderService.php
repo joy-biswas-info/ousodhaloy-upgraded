@@ -13,6 +13,7 @@ class OrderService
     public function __construct(
         private SmsService $sms,
         private MetaConversionsApiService $capi,
+        private NotificationService $notification,
     ) {
     }
 
@@ -21,7 +22,7 @@ class OrderService
      */
     public function create(array $data, ?int $userId = null): Order
     {
-        return DB::transaction(function () use ($data, $userId) {
+        $order = DB::transaction(function () use ($data, $userId) {
 
             // 1. Validate items & calculate subtotal
             $orderItems = [];
@@ -162,6 +163,12 @@ class OrderService
 
             return $order->fresh(['items']);
         });
+
+        // Fired after the transaction commits — a push should never go out
+        // for an order that ends up rolling back.
+        $this->notification->newOrderPush($order);
+
+        return $order;
     }
 
     /**

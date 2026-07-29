@@ -62,6 +62,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProductReview::class);
     }
+    public function deviceTokens(): HasMany
+    {
+        return $this->hasMany(DeviceToken::class);
+    }
     public function getDefaultAddressAttribute()
     {
         return $this->addresses()->where('is_default', true)->first()

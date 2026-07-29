@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -11,9 +12,13 @@ class ProductController extends Controller
     {
         $query = Product::with('brand', 'category')->latest();
 
-        if ($request->filled('q'))
-            $query->where('name', 'like', "%{$request->q}%")
-                ->orWhere('sku', 'like', "%{$request->q}%");
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sq) use ($q) {
+                $sq->where('name', 'like', "%{$q}%")
+                    ->orWhere('sku', 'like', "%{$q}%");
+            });
+        }
 
         if ($request->filled('low_stock'))
             $query->whereRaw('stock <= low_stock_alert');
@@ -24,6 +29,7 @@ class ProductController extends Controller
             'data' => $products->map(fn($p) => $this->formatProduct($p)),
             'total' => $products->total(),
             'last_page' => $products->lastPage(),
+            'current_page' => $products->currentPage(),
         ]);
     }
 
@@ -47,6 +53,7 @@ class ProductController extends Controller
             'message' => "Stock updated from $old to {$request->stock}",
             'old_stock' => $old,
             'new_stock' => $request->stock,
+            'product' => $this->formatProduct($product->fresh(['brand', 'category'])),
         ]);
     }
 
@@ -54,6 +61,7 @@ class ProductController extends Controller
     {
         $products = Product::whereRaw('stock <= low_stock_alert')
             ->where('is_active', true)
+            ->with('brand', 'category')
             ->orderByRaw('stock - low_stock_alert ASC')
             ->get()
             ->map(fn($p) => $this->formatProduct($p));
@@ -63,10 +71,10 @@ class ProductController extends Controller
 
     public function expiring()
     {
-        // Products whose expiry_date is within 90 days — add expiry_date column if needed
         $products = Product::where('is_active', true)
             ->whereNotNull('expiry_date')
             ->where('expiry_date', '<=', now()->addDays(90))
+            ->with('brand', 'category')
             ->orderBy('expiry_date')
             ->get()
             ->map(fn($p) => $this->formatProduct($p));

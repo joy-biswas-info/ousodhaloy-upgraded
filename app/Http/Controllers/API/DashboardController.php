@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -28,23 +28,21 @@ class DashboardController extends Controller
             'new_orders_1h' => Order::where('created_at', '>=', now()->subHour())->count(),
         ];
 
-        // Recent orders
         $recent = Order::with('items')
             ->latest()
             ->take(10)
             ->get()
             ->map(fn($o) => $this->orderSummary($o));
 
-        // Orders by status for chart
         $byStatus = Order::selectRaw('status, count(*) as count')
-            ->whereDate('created_at', '>=', now()->subDays(7))
+            ->where('created_at', '>=', now()->subDays(7))
             ->groupBy('status')
             ->pluck('count', 'status');
 
         return response()->json(compact('stats', 'recent', 'byStatus'));
     }
 
-    private function orderSummary($o): array
+    private function orderSummary(Order $o): array
     {
         return [
             'id' => $o->id,
@@ -54,7 +52,7 @@ class DashboardController extends Controller
             'status' => $o->status,
             'payment_method' => $o->payment_method,
             'payment_status' => $o->payment_status,
-            'total' => $o->total,
+            'total' => (float) $o->total,
             'items_count' => $o->items->count(),
             'created_at' => $o->created_at->toIso8601String(),
         ];
