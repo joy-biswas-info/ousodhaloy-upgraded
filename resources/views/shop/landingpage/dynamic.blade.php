@@ -195,7 +195,7 @@
         .final-cta h2 { font-size: clamp(24px, 6vw, 38px); font-weight: 700; letter-spacing: -.3px; line-height: 1.15; margin-bottom: 10px; }
         .final-cta h2 em { color: var(--cta-bright); font-style: normal; }
         .final-cta p { font-size: 15px; color: var(--muted); margin-bottom: 26px; max-width: 400px; margin: 0 auto 26px; }
-        .final-cta-btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; background: var(--cta); color: #fff; padding: 17px 40px; border-radius: 12px; font-size: 17px; font-weight: 700; box-shadow: 0 6px 28px color-mix(in srgb, var(--cta) 40%, transparent); max-width: 380px; width: 100%; }
+        .final-cta-btn { display: inline-flex; align-items: center; justify-content: center; background: var(--cta); color: #fff; padding: 17px 40px; border-radius: 12px; font-size: 17px; font-weight: 700; box-shadow: 0 6px 28px color-mix(in srgb, var(--cta) 40%, transparent); max-width: 380px; width: 100%; }
         .final-cta-btn:hover { background: var(--cta-bright); }
 
         footer { padding: 22px 20px; text-align: center; border-top: 1px solid rgba(139,90,80,.12); }

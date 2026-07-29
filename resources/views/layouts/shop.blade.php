@@ -221,7 +221,6 @@
 
             {{-- Right actions — desktop --}}
             <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;" class="desktop-actions">
-
                 {{-- Upload Rx --}}
                 <a href="{{ route('checkout.index') }}" class="hdr-action" style="display:none" id="rx-btn">
                     <i class="fas fa-file-prescription"></i>
