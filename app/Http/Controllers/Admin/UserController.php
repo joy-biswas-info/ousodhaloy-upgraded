@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -28,10 +29,20 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $user->update([
-            'is_active' => $request->boolean('is_active', true),
-            'role' => $request->role ?? $user->role,
-        ]);
+        // This route is admin-only (see routes/web.php) because it can grant
+        // admin/manager access — never trust that alone, validate here too.
+        if ($user->is(Auth::user())) {
+            return back()->with('error', "You can't change your own role.");
+        }
+
+        $data = ['is_active' => $request->boolean('is_active', true)];
+        if ($request->filled('role')) {
+            $data['role'] = $request->validate([
+                'role' => 'in:customer,manager,admin',
+            ])['role'];
+        }
+
+        $user->update($data);
         return back()->with('success', 'User updated.');
     }
 }

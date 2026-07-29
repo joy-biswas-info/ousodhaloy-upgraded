@@ -1,5 +1,8 @@
 @extends('layouts.shop')
 @section('title', ($currentCat ? $currentCat->name . ' – ' : '') . 'Products')
+@section('meta_description', $currentCat
+    ? "Buy {$currentCat->name} online in Bangladesh — genuine products, fast delivery, cash on delivery available."
+    : 'Browse all medicine, healthcare and wellness products. Genuine products, fast delivery across Bangladesh.')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-5">

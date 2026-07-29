@@ -182,12 +182,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'manager'])->group(f
     Route::resource('brands', BrandController::class)->except(['show']);
 
     // ── Users ────────────────────────────────────────────────
+    // Read-only customer views stay manager-accessible; role changes do not
+    // (see admin-only group below — UserController::update() can grant
+    // admin/manager, which is exactly what "managers must not be able to
+    // create/edit admin accounts" is protecting against).
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-    Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
 
     // ── Staff Management (admin only — managers must not be able to create/edit admin accounts) ──
     Route::middleware('admin')->group(function () {
+        Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::get('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'index'])->name('staff.index');
         Route::post('/staff', [\App\Http\Controllers\Admin\StaffController::class, 'store'])->name('staff.store');
         Route::patch('/staff/{user}', [\App\Http\Controllers\Admin\StaffController::class, 'update'])->name('staff.update');

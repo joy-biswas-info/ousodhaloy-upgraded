@@ -8,35 +8,33 @@
     <meta name="theme-color" content="{{ \App\Models\Setting::get('brand_primary', '#0e7673') }}">
     <title>@yield('title', config('app.name', 'Ousodhaloy')) – Bangladesh's Trusted Online Healthcare and Wellness Shop</title>
     <meta name="description" content="@yield('meta_description', 'Buy genuine medicine, healthcare and wellness products online. Fast delivery across Bangladesh.')">
+    {{-- Canonical defaults to the current path with no query string, so
+         filtered/sorted listing URLs (?min_price=, ?sort=, etc) all point
+         back at the one clean URL instead of each being indexed separately. --}}
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+    <meta property="og:site_name" content="{{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }}">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="@yield('og_title', config('app.name', 'Ousodhaloy'))">
+    <meta property="og:description" content="@yield('meta_description', 'Buy genuine medicine, healthcare and wellness products online. Fast delivery across Bangladesh.')">
+    <meta property="og:image" content="@yield('og_image', asset('favicon.svg'))">
+    <meta property="og:url" content="@yield('canonical', url()->current())">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    {{-- Tailwind CSS - configure custom teal before script loads --}}
-    <script>
-        window.tailwind = window.tailwind || {};
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        teal: {
-                            50: '#f0fafa',
-                            100: '#e6f4f4',
-                            200: '#c4e8e8',
-                            300: '#93d5d5',
-                            400: '#5bbebe',
-                            500: '#35a5a5',
-                            600: '#13a09c',
-                            700: '#0e7673',
-                            800: '#0a5250',
-                            900: '#073f3d',
-                        },
-                    },
-                },
-            },
-        }
-    </script>
+    {{-- Preconnect to every third-party origin this page loads from, so the
+         DNS/TLS handshake happens during the preload scan instead of only
+         starting once the browser reaches each <link>/<script> tag. --}}
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -61,8 +59,31 @@
             --teal-bg:
                 {{ $bbg }};
         }
+
+        #shop-sidebar.mobile-open {
+            transform: translateX(0) !important;
+        }
     </style>
     @stack('styles')
+
+    {{-- Organization schema — site-wide, helps Google associate search
+         results and the knowledge panel with the actual business. --}}
+    <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => \App\Models\Setting::get('site_name', 'Ousodhaloy'),
+            'url' => url('/'),
+            'logo' => asset('favicon.svg'),
+            'telephone' => \App\Models\Setting::get('site_phone', '09610016778'),
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => \App\Models\Setting::get('site_address', 'Dhaka, Bangladesh'),
+                'addressCountry' => 'BD',
+            ],
+        ], JSON_UNESCAPED_SLASHES) !!}
+    </script>
+    @stack('head')
     @include('partials.meta-pixel')
 </head>
 
@@ -297,6 +318,31 @@
     <div id="sidebar-overlay" onclick="toggleSidebar()"
         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199">
     </div>
+
+    {{-- Mobile category drawer — opened by "Categories" in the bottom nav.
+         Mirrors the desktop subnav's category list so there's one source
+         of truth for which categories are shown. --}}
+    <aside id="shop-sidebar" class="lg:hidden" style="position:fixed;top:0;left:0;bottom:0;width:82%;max-width:320px;background:#fff;z-index:200;transform:translateX(-100%);transition:transform .25s ease;overflow-y:auto;box-shadow:4px 0 24px rgba(0,0,0,.15)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #e5e7eb">
+            <p style="font-weight:800;font-size:15px;color:#1f2937;margin:0">Categories</p>
+            <button onclick="toggleSidebar()" aria-label="Close categories"
+                style="background:#f3f4f6;border:none;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer">
+                <i class="fas fa-times" style="color:#6b7280"></i>
+            </button>
+        </div>
+        <nav style="padding:8px">
+            <a href="{{ route('shop.index') }}" onclick="toggleSidebar()"
+                style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;text-decoration:none;color:#1f2937;font-weight:600;font-size:14px;{{ request()->routeIs('shop.index') && !request()->has('category') ? 'background:var(--teal-bg);color:var(--teal-dark)' : '' }}">
+                🏠 All Products
+            </a>
+            @foreach (\App\Models\Category::active()->get() as $cat)
+                <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" onclick="toggleSidebar()"
+                    style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;text-decoration:none;color:#1f2937;font-weight:600;font-size:14px;{{ request('category') === $cat->slug ? 'background:var(--teal-bg);color:var(--teal-dark)' : '' }}">
+                    {{ $cat->icon }} {{ $cat->name }}
+                </a>
+            @endforeach
+        </nav>
+    </aside>
     {{-- ── FOOTER ── --}}
     <footer style="background:#111827;color:#9ca3af;padding:0 0px 40px 0px;margin-top:0">
         <div style="background:#fff;border-bottom:1px solid #e5e7eb" class=" w-full">

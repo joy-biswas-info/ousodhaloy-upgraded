@@ -108,11 +108,11 @@ class CheckoutController extends Controller
             $result = $this->ssl->initiatePayment($order);
             if ($result['success'])
                 return redirect($result['gateway_url']);
-            return redirect()->route('orders.show', $order->id)
+            return redirect($order->signedShowUrl())
                 ->with('error', $result['error'] ?? 'Payment gateway error.');
         }
 
-        return redirect()->route('orders.show', $order->id)
+        return redirect($order->signedShowUrl())
             ->with('success', 'Order placed successfully! 🎉');
     }
 

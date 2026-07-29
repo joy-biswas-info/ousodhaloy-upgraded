@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{LandingPage, Product};
+use App\Models\{Category, LandingPage, Product};
 use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
@@ -17,6 +17,15 @@ class SitemapController extends Controller
                 ['loc' => route('legal.terms'), 'priority' => '0.3', 'changefreq' => 'monthly'],
                 ['loc' => route('legal.returns'), 'priority' => '0.3', 'changefreq' => 'monthly'],
             ];
+
+            Category::active()->select('slug', 'updated_at')->get()->each(function ($category) use (&$urls) {
+                $urls[] = [
+                    'loc' => route('shop.index', ['category' => $category->slug]),
+                    'lastmod' => $category->updated_at->toAtomString(),
+                    'priority' => '0.7',
+                    'changefreq' => 'weekly',
+                ];
+            });
 
             Product::active()->select('slug', 'updated_at')->chunk(500, function ($products) use (&$urls) {
                 foreach ($products as $product) {

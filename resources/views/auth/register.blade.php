@@ -11,32 +11,32 @@
             </div>
             <div class="p-7 space-y-4">
                 @if($errors->any())
-                <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
+                <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700" role="alert">
                     @foreach($errors->all() as $e) <p>{{ $e }}</p> @endforeach
                 </div>
                 @endif
                 <form method="POST" action="{{ route('auth.register.post') }}" class="space-y-4">
                     @csrf
                     <div>
-                        <label class="form-label">Full Name *</label>
-                        <input type="text" name="name" value="{{ old('name') }}" class="form-input" placeholder="Your full name" required>
+                        <label class="form-label" for="register-name-input">Full Name *</label>
+                        <input type="text" name="name" id="register-name-input" value="{{ old('name') }}" class="form-input" placeholder="Your full name" required>
                     </div>
                     <div>
-                        <label class="form-label">Phone Number *</label>
-                        <input type="tel" name="phone" value="{{ old('phone') }}" class="form-input" placeholder="01XXXXXXXXX" required>
+                        <label class="form-label" for="register-phone-input">Phone Number *</label>
+                        <input type="tel" name="phone" id="register-phone-input" value="{{ old('phone') }}" class="form-input" placeholder="01XXXXXXXXX" required>
                         <p class="text-xs text-gray-400 mt-1">Valid Bangladeshi mobile number</p>
                     </div>
                     <div>
-                        <label class="form-label">Email Address (optional)</label>
-                        <input type="email" name="email" value="{{ old('email') }}" class="form-input" placeholder="email@example.com">
+                        <label class="form-label" for="register-email-input">Email Address (optional)</label>
+                        <input type="email" name="email" id="register-email-input" value="{{ old('email') }}" class="form-input" placeholder="email@example.com">
                     </div>
                     <div>
-                        <label class="form-label">Password *</label>
-                        <input type="password" name="password" class="form-input" placeholder="Min 6 characters" required>
+                        <label class="form-label" for="register-password-input">Password *</label>
+                        <input type="password" name="password" id="register-password-input" class="form-input" placeholder="Min 6 characters" required>
                     </div>
                     <div>
-                        <label class="form-label">Confirm Password *</label>
-                        <input type="password" name="password_confirmation" class="form-input" placeholder="Repeat password" required>
+                        <label class="form-label" for="register-password-confirm-input">Confirm Password *</label>
+                        <input type="password" name="password_confirmation" id="register-password-confirm-input" class="form-input" placeholder="Repeat password" required>
                     </div>
                     <button type="submit" class="btn-primary w-full py-3">Create Account</button>
                 </form>

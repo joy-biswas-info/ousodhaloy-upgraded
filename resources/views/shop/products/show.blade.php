@@ -2,17 +2,65 @@
 @php
     $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') === 'true';
 @endphp
-@section('title', $product->name . ' – ' . ($product->generic_name ?? '') . ' – ' .
-    \App\Models\Setting::get('site_name'))
+@section('title', collect([$product->name, $product->generic_name, \App\Models\Setting::get('site_name')])->filter()->implode(' – '))
 @section('meta_description',
     $product->meta_description ??
     "Buy {$product->name} online. {$product->generic_name}
     {$product->strength}. Fast delivery in Bangladesh.")
+@section('canonical', route('shop.product', $product->slug))
+@section('og_title', $product->name)
+@section('og_type', 'product')
+@section('og_image', $product->thumbnail_url)
     @php
 
         $isWishlisted = auth()->check() && auth()->user()->wishlists()->where('product_id', $product->id)->exists();
 
     @endphp
+
+@push('head')
+<script type="application/ld+json">
+    {!! json_encode(array_filter([
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'description' => $product->meta_description ?? "{$product->generic_name} {$product->strength}",
+        'sku' => $product->sku,
+        'image' => $product->thumbnail_url,
+        'brand' => $product->brand ? ['@type' => 'Brand', 'name' => $product->brand->name] : null,
+        'aggregateRating' => $product->rating_count > 0 ? [
+            '@type' => 'AggregateRating',
+            'ratingValue' => (string) $product->average_rating,
+            'reviewCount' => (string) $product->rating_count,
+        ] : null,
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => route('shop.product', $product->slug),
+            'priceCurrency' => 'BDT',
+            'price' => (string) $product->effective_price,
+            'availability' => $product->stock > 0
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+        ],
+    ]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+<script type="application/ld+json">
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => array_values(array_filter([
+            ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => url('/')],
+            $product->category ? [
+                '@type' => 'ListItem', 'position' => 2, 'name' => $product->category->name,
+                'item' => route('shop.index', ['category' => $product->category->slug]),
+            ] : null,
+            [
+                '@type' => 'ListItem', 'position' => $product->category ? 3 : 2, 'name' => $product->name,
+                'item' => route('shop.product', $product->slug),
+            ],
+        ])),
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endpush
 
 @section('content')
     <div class="max-w-6xl mx-auto px-3 sm:px-4 py-4" x-data="productPage()">

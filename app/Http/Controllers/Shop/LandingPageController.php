@@ -187,7 +187,7 @@ class LandingPageController extends Controller
             'success' => true,
             'order_number' => $order->order_number,
             'order_id' => $order->id,
-            'track_url' => route('orders.show', $order->id),
+            'track_url' => $order->signedShowUrl(),
         ]);
     }
 }

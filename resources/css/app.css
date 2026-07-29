@@ -16,7 +16,10 @@
   --font-inter: "Inter", sans-serif;
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap");
+/* Fonts load via a preloaded <link> in layouts/shop.blade.php's <head>
+   instead of @import here — an @import inside a bundled CSS file is only
+   discovered once the browser starts parsing that file, adding a full
+   extra round trip before text renders. See layouts/shop.blade.php. */
 
 :root {
   --teal: #0e7673;

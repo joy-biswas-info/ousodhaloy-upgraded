@@ -10,17 +10,23 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    public function show(int $id)
+    public function show(Request $request, int $id)
     {
-        $order = Order::with(['items.product', 'statusHistory'])
-            ->where(function ($q) use ($id) {
-                $q->where('id', $id);
-                if (Auth::check())
-                    $q->orWhere('user_id', Auth::id());
-            })->firstOrFail();
+        $order = Order::with(['items.product', 'statusHistory'])->findOrFail($id);
 
-        if ($order->user_id && Auth::check() && Auth::id() !== $order->user_id && !Auth::user()->isManager()) {
-            abort(403);
+        if ($order->user_id) {
+            // Registered-customer order — ownership is by login.
+            if (!Auth::check() || (Auth::id() !== $order->user_id && !Auth::user()->isManager())) {
+                abort(403);
+            }
+        } elseif (!$request->hasValidSignature() && !(Auth::check() && Auth::user()->isManager())) {
+            // Guest order — no login to check ownership against, so this
+            // page is only reachable via the signed link generated right
+            // after checkout (see CheckoutController/PaymentController).
+            // A guessed /order/{id} — or a link past its 30-day signature —
+            // goes to the phone+order-number lookup instead of a dead-end 403.
+            return redirect()->route('track')
+                ->with('info', 'Enter your order number and phone number to view this order.');
         }
 
         return view('shop.orders.show', compact('order'));

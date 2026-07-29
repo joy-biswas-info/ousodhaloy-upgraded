@@ -17,7 +17,7 @@ class PaymentController extends Controller
     {
         $order = $this->ssl->handleSuccess($request->all());
         if ($order) {
-            return redirect()->route('orders.show', $order->id)
+            return redirect($order->signedShowUrl())
                 ->with('success', '✅ Payment successful! Your order is confirmed.');
         }
         return redirect()->route('checkout.index')->with('error', 'Payment verification failed.');
@@ -30,7 +30,7 @@ class PaymentController extends Controller
             $order = \App\Models\Order::where('order_number', $orderNum)->first();
             if ($order) {
                 $order->update(['payment_status' => 'failed']);
-                return redirect()->route('orders.show', $order->id)
+                return redirect($order->signedShowUrl())
                     ->with('error', 'Payment failed. Please try again or use Cash on Delivery.');
             }
         }

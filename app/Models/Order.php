@@ -145,6 +145,21 @@ class Order extends Model
         return in_array($newStatus, self::STATUS_FLOW[$this->status] ?? []);
     }
 
+    /**
+     * Signed link to the customer-facing order page for a guest order (no
+     * user_id to check ownership against). See Shop/OrderController::show()
+     * — this is the only way a guest order is reachable, so every place that
+     * hands a customer their confirmation link should use this, not route().
+     */
+    public function signedShowUrl(): string
+    {
+        return \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'orders.show',
+            now()->addDays(30),
+            ['id' => $this->id]
+        );
+    }
+
     public function scopeForCustomer($q, $userId, $phone = null)
     {
         return $q->where(function ($sub) use ($userId, $phone) {

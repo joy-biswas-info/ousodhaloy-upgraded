@@ -14,7 +14,7 @@
                 </div>
                 <div class="p-7 space-y-4">
                     @if ($errors->any())
-                        <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
+                        <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700" role="alert">
                             @foreach ($errors->all() as $e)
                                 <p>{{ $e }}</p>
                             @endforeach
@@ -23,13 +23,13 @@
                     <form method="POST" action="{{ route('auth.login.post') }}" class="space-y-4">
                         @csrf
                         <div>
-                            <label class="form-label">Email or Phone</label>
-                            <input type="text" name="login" value="{{ old('login') }}" class="form-input"
+                            <label class="form-label" for="login-input">Email or Phone</label>
+                            <input type="text" name="login" id="login-input" value="{{ old('login') }}" class="form-input"
                                 placeholder="email@example.com or 01XXXXXXXXX" required autofocus>
                         </div>
                         <div>
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-input" placeholder="Your password" required>
+                            <label class="form-label" for="password-input">Password</label>
+                            <input type="password" name="password" id="password-input" class="form-input" placeholder="Your password" required>
                         </div>
                         <div class="flex justify-between items-center text-xs">
                             <label class="flex items-center gap-2 text-gray-600 cursor-pointer">

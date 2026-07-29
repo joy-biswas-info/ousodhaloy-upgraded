@@ -55,8 +55,8 @@
 
                     @if(auth()->user()?->addresses->count() > 0)
                     <div class="mb-4">
-                        <label class="form-label">Saved Addresses</label>
-                        <select onchange="fillAddress(this)" class="form-select mb-2">
+                        <label class="form-label" for="saved-address-select">Saved Addresses</label>
+                        <select id="saved-address-select" onchange="fillAddress(this)" class="form-select mb-2">
                             <option value="">Select saved address</option>
                             @foreach(auth()->user()->addresses as $addr)
                             <option value="{{ json_encode($addr) }}">{{ $addr->label }}: {{ $addr->name }}, {{ $addr->district }}</option>
@@ -68,29 +68,31 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {{-- Name --}}
                         <div>
-                            <label class="form-label">Full Name *</label>
-                            <input type="text" name="shipping_name"
+                            <label class="form-label" for="shipping-name-input">Full Name *</label>
+                            <input type="text" name="shipping_name" id="shipping-name-input"
                                 value="{{ old('shipping_name', auth()->user()?->name) }}"
-                                class="form-input @error('shipping_name') border-red-400 @enderror" required>
-                            @error('shipping_name') <p class="form-error">{{ $message }}</p> @enderror
+                                class="form-input @error('shipping_name') border-red-400 @enderror" required
+                                @error('shipping_name') aria-invalid="true" aria-describedby="shipping-name-error" @enderror>
+                            @error('shipping_name') <p class="form-error" id="shipping-name-error">{{ $message }}</p> @enderror
                         </div>
 
                         {{-- Phone --}}
                         <div>
-                            <label class="form-label">Phone Number *</label>
+                            <label class="form-label" for="shipping-phone-input">Phone Number *</label>
                             <input type="tel" name="shipping_phone" id="shipping-phone-input"
                                 value="{{ old('shipping_phone', auth()->user()?->phone) }}"
                                 class="form-input @error('shipping_phone') border-red-400 @enderror"
-                                placeholder="01XXXXXXXXX" required>
-                            @error('shipping_phone') <p class="form-error">{{ $message }}</p> @enderror
+                                placeholder="01XXXXXXXXX" required
+                                aria-describedby="phone-live-error @error('shipping_phone') shipping-phone-error @enderror">
+                            @error('shipping_phone') <p class="form-error" id="shipping-phone-error">{{ $message }}</p> @enderror
                             <p class="form-error hidden" id="phone-live-error">Please enter a valid Bangladeshi phone number (01XXXXXXXXX)</p>
                         </div>
 
                         {{-- Email (configurable) --}}
                         @if($showEmail)
                         <div class="sm:col-span-2">
-                            <label class="form-label">Email Address{{ $requireEmail ? ' *' : '' }}</label>
-                            <input type="email" name="shipping_email"
+                            <label class="form-label" for="shipping-email-input">Email Address{{ $requireEmail ? ' *' : '' }}</label>
+                            <input type="email" name="shipping_email" id="shipping-email-input"
                                 value="{{ old('shipping_email', auth()->user()?->email) }}"
                                 class="form-input" placeholder="optional@email.com"
                                 {{ $requireEmail ? 'required' : '' }}>
@@ -99,7 +101,7 @@
 
                         {{-- Division --}}
                         <div>
-                            <label class="form-label">Division *</label>
+                            <label class="form-label" for="division-select">Division *</label>
                             <select name="shipping_division"
                                 class="form-select @error('shipping_division') border-red-400 @enderror"
                                 id="division-select"
@@ -115,7 +117,7 @@
 
                         {{-- District --}}
                         <div>
-                            <label class="form-label">District *</label>
+                            <label class="form-label" for="district-select">District *</label>
                             <select name="shipping_district" class="form-select @error('shipping_district') border-red-400 @enderror"
                                 id="district-select"
                                 onchange="recalcDelivery()"
@@ -133,8 +135,8 @@
                         {{-- Upazila (configurable) --}}
                         @if($showUpazila)
                         <div>
-                            <label class="form-label">Upazila / Area{{ $requireUpazila ? ' *' : '' }}</label>
-                            <input type="text" name="shipping_upazila"
+                            <label class="form-label" for="shipping-upazila-input">Upazila / Area{{ $requireUpazila ? ' *' : '' }}</label>
+                            <input type="text" name="shipping_upazila" id="shipping-upazila-input"
                                 value="{{ old('shipping_upazila', $address?->upazila) }}"
                                 class="form-input @error('shipping_upazila') border-red-400 @enderror"
                                 placeholder="Mirpur, Dhanmondi..."
@@ -146,8 +148,8 @@
                         {{-- Postcode (configurable) --}}
                         @if($showPostcode)
                         <div>
-                            <label class="form-label">Postal Code{{ $requirePostcode ? ' *' : '' }}</label>
-                            <input type="text" name="shipping_postcode"
+                            <label class="form-label" for="shipping-postcode-input">Postal Code{{ $requirePostcode ? ' *' : '' }}</label>
+                            <input type="text" name="shipping_postcode" id="shipping-postcode-input"
                                 value="{{ old('shipping_postcode') }}"
                                 class="form-input" placeholder="1216" maxlength="10"
                                 {{ $requirePostcode ? 'required' : '' }}>
@@ -156,8 +158,8 @@
 
                         {{-- Full Address --}}
                         <div class="sm:col-span-2">
-                            <label class="form-label">Full Address *</label>
-                            <textarea name="shipping_address" rows="2"
+                            <label class="form-label" for="shipping-address-input">Full Address *</label>
+                            <textarea name="shipping_address" id="shipping-address-input" rows="2"
                                 class="form-input resize-none @error('shipping_address') border-red-400 @enderror"
                                 placeholder="House, Road, Block..." required>{{ old('shipping_address', $address?->address) }}</textarea>
                             @error('shipping_address') <p class="form-error">{{ $message }}</p> @enderror
@@ -166,8 +168,8 @@
                         {{-- Order Notes (configurable) --}}
                         @if($showNotes)
                         <div class="sm:col-span-2">
-                            <label class="form-label">Order Notes (optional)</label>
-                            <textarea name="notes" rows="2" class="form-input resize-none"
+                            <label class="form-label" for="order-notes-input">Order Notes (optional)</label>
+                            <textarea name="notes" id="order-notes-input" rows="2" class="form-input resize-none"
                                 placeholder="Special delivery instructions...">{{ old('notes') }}</textarea>
                         </div>
                         @endif
@@ -186,12 +188,13 @@
                             <span class="text-xs text-gray-400">(optional)</span>
                         @endif
                     </h2>
-                    <div class="border-2 border-dashed rounded-xl p-6 text-center hover:border-teal-400 transition-colors cursor-pointer @error('prescription') border-red-400 @else border-gray-300 @enderror"
-                        onclick="document.getElementById('prescription-input').click()">
+                    <label for="prescription-input" tabindex="0"
+                        class="block border-2 border-dashed rounded-xl p-6 text-center hover:border-teal-400 transition-colors cursor-pointer @error('prescription') border-red-400 @else border-gray-300 @enderror"
+                        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('prescription-input').click();}">
                         <i class="fas fa-file-medical text-3xl text-gray-400 mb-2"></i>
                         <p class="text-sm text-gray-600 font-semibold">Upload Prescription</p>
                         <p class="text-xs text-gray-400 mt-1">JPG, PNG or PDF up to 5MB</p>
-                    </div>
+                    </label>
                     <input type="file" id="prescription-input" name="prescription" accept="image/*,.pdf" class="hidden"
                         onchange="document.getElementById('rx-name').textContent = this.files[0]?.name || ''">
                     <p id="rx-name" class="text-xs text-teal-600 font-semibold mt-2 text-center"></p>
@@ -281,6 +284,7 @@
                     {{-- Promo code (configurable) --}}
                     @if($showPromo)
                     <div class="mt-3 flex gap-2">
+                        <label for="promo-input" class="sr-only">Promo code</label>
                         <input type="text" id="promo-input" placeholder="Promo code"
                             class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs uppercase outline-none focus:border-teal-500">
                         <button type="button" onclick="validatePromo()" class="btn-secondary btn-sm px-3">Apply</button>
