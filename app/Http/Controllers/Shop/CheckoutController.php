@@ -30,7 +30,14 @@ class CheckoutController extends Controller
         $codEnabled = Setting::get('cod_enabled', 'true') === 'true';
         $sslEnabled = Setting::get('ssl_enabled', 'true') === 'true';
 
-        return view('shop.checkout.index', compact('address', 'BD_DIVISIONS', 'codEnabled', 'sslEnabled'));
+        // This page's content is entirely session-specific (one customer's
+        // cart). If anything upstream ever cached it, the worst case isn't
+        // just a broken checkout — it's serving one customer's cart/address
+        // to a different visitor. Never cacheable, no exceptions.
+        return response()
+            ->view('shop.checkout.index', compact('address', 'BD_DIVISIONS', 'codEnabled', 'sslEnabled'))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
     }
 
     public function store(Request $request)

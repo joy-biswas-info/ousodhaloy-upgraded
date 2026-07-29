@@ -109,7 +109,18 @@ class LandingPageController extends Controller
             'landing_page_id' => $landingPage->id,
         ]);
 
-        return redirect()->route('checkout.index');
+        // This is a GET request with a side effect (writes the cart to the
+        // session) followed by a redirect — if anything between the browser
+        // and Laravel caches that response (CDN, reverse proxy, browser
+        // back/forward cache), a later visitor gets served the cached
+        // redirect straight to checkout WITHOUT this handler ever running
+        // again, so their session never gets the cart written — checkout
+        // then correctly sees an empty cart and reports it. This explicit
+        // no-store header is what actually prevents that; it's not optional
+        // decoration on a request that mutates state.
+        return redirect()->route('checkout.index')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
     }
 
     public function quickOrder(Request $request, LandingPage $landingPage)
