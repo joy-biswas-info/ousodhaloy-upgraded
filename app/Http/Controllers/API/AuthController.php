@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class AuthControllerApi extends Controller
+class AuthController extends Controller
 {
     public function login(Request $request)
     {
@@ -56,12 +56,14 @@ class AuthControllerApi extends Controller
     {
         $user = $request->user();
 
-        return response()->json(['user' => [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'role' => $user->role,
-        ]]);
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'role' => $user->role,
+            ]
+        ]);
     }
 }
