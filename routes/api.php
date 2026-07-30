@@ -21,8 +21,8 @@ Route::post('/auth/login', [AuthControllerApi::class, 'login'])->middleware('thr
 //    pattern on the web admin side) ───────────────────────────────────────
 Route::middleware(['auth:sanctum', 'api.manager'])->group(function () {
 
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/logout', [AuthControllerApi::class, 'logout']);
+    Route::get('/auth/me', [AuthControllerApi::class, 'me']);
 
     Route::post('/device-token', [DeviceTokenController::class, 'store']);
     Route::delete('/device-token', [DeviceTokenController::class, 'destroy']);
