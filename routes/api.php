@@ -8,7 +8,13 @@ use App\Http\Controllers\Api\ProductController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public ─────────────────────────────────────────────────────────────────
-Route::post('/auth/login', [AuthController::class, 'login']);
+// This app's 'api' middleware group (see bootstrap/app.php) carries no
+// throttle at all — Laravel's usual default isn't actually registered here.
+// That's a tolerable gap for the routes below (Sanctum + api.manager already
+// require a valid staff token first), but login is the one route anyone
+// unauthenticated can hit, and without this it had zero brute-force
+// protection. Matches the web login route's own throttle:5,1.
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 // ── Protected (staff/manager only — reopen is further gated to admin
 //    inside OrderController::reopen(), see routes/web.php for the same

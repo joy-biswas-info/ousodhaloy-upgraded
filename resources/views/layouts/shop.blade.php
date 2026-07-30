@@ -45,6 +45,8 @@
         $bl = \App\Models\Setting::get('brand_light', '#13a09c');
         $bbg = \App\Models\Setting::get('brand_bg', '#e6f4f4');
         $messengerUrl = \App\Models\Setting::get('messenger_url', '');
+        $siteLogo = \App\Models\Setting::get('site_logo');
+        $siteName = \App\Models\Setting::get('site_name', 'Ousodhaloy');
     @endphp
 
     {{-- Inject dynamic brand colors as CSS variables --}}
@@ -109,49 +111,45 @@
         <div x-data="{ userMenu: false }">
 
             {{-- ── Row 1 ── --}}
-            <div style="height:52px;display:flex;align-items:center;gap:6px;padding:0 12px;">
+            <div class="mobile-header-row">
 
                 {{-- Logo --}}
-                <a href="{{ route('home') }}"
-                    style="display:flex;align-items:center;text-decoration:none;color:#fff;flex:1;min-width:0">
-                    <div
-                        style=" border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
-                        ঔষ<span class=" text-red-400">ধা</span>লয়
-                    </div>
+                <a href="{{ route('home') }}" class="hdr-logo">
+                    @if($siteLogo)
+                        <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}">
+                    @else
+                        <span class="hdr-logo-text">
+                        ঔষ<span class="accent">ধা</span>লয়
+                        </span>
+                    @endif
                 </a>
 
                 {{-- Cart --}}
-                <a href="{{ route('cart.index') }}"
-                    style="position:relative;background:rgba(255,255,255,.18);color:#fff;width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;text-decoration:none;flex-shrink:0">
-                    <i class="fas fa-shopping-cart" style="font-size:17px"></i>
-                    <span id="cart-count-mobile"
-                        style="position:absolute;top:-5px;right:-5px;background:var(--orange);color:#fff;font-size:9px;font-weight:800;min-width:18px;height:18px;border-radius:9px;align-items:center;justify-content:center;padding:0 3px;border:2px solid var(--teal);display:{{ \App\Http\Controllers\Shop\CartController::getCount() === 0 ? 'none' : 'flex' }}">
+                <a href="{{ route('cart.index') }}" class="hdr-icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count-mobile" class="hdr-icon-badge"
+                        style="display:{{ \App\Http\Controllers\Shop\CartController::getCount() === 0 ? 'none' : 'flex' }}">
                         {{ \App\Http\Controllers\Shop\CartController::getCount() }}
                     </span>
                 </a>
 
                 {{-- Account --}}
                 <div style="position:relative;flex-shrink:0">
-                    <button @click="userMenu=!userMenu"
-                        style="background:rgba(255,255,255,.18);border:none;color:#fff;width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer">
-                        <i class="fas fa-user" style="font-size:16px"></i>
+                    <button @click="userMenu=!userMenu" class="hdr-icon-btn">
+                        <i class="fas fa-user"></i>
                     </button>
                     @include('partials.account-dropdown')
                 </div>
             </div>
 
             {{-- ── Row 2: Search ── --}}
-            <div style="padding:0 12px 10px" x-data="liveSearch()" @click.away="open=false">
-                <div
-                    style="position:relative;display:flex;align-items:center;background:#fff;border-radius:10px;overflow:visible">
-                    <i class="fas fa-search"
-                        style="color:#9ca3af;padding:0 8px 0 12px;font-size:13px;flex-shrink:0"></i>
+            <div class="mobile-search-row" x-data="liveSearch()" @click.away="open=false">
+                <div class="mobile-search-box" style="position:relative">
+                    <i class="fas fa-search search-icon"></i>
                     <input type="text" x-model="query" @input.debounce.280ms="search()"
                         @focus="if(results.length) open=true" @keydown.enter="goToShop()" @keydown.escape="open=false"
-                        placeholder="Search medicines, brands..."
-                        style="flex:1;padding:10px 8px;font-size:14px;outline:none;border:none;background:transparent;font-family:inherit">
-                    <button @click="goToShop()"
-                        style="background:var(--orange);color:#fff;border:none;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;border-radius:0 10px 10px 0;flex-shrink:0">
+                        placeholder="Search medicines, brands...">
+                    <button class="search-btn" @click="goToShop()">
                         <i class="fas fa-search"></i>
                     </button>
                     @include('partials.search-dropdown')
@@ -164,12 +162,14 @@
     <header class="site-header hidden lg:block px-4 my-auto">
         <div class="header-inner" x-data="{ userMenu: false }">
             {{-- Logo --}}
-            <a href="{{ route('home') }}"
-                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;flex:1;min-width:0">
-                <div
-                    style="width:110px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:24px">
-                    ঔষ<span class=" text-red-400">ধা</span>লয়
-                </div>
+            <a href="{{ route('home') }}" class="hdr-logo">
+                @if($siteLogo)
+                    <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" style="height:40px">
+                @else
+                    <span class="hdr-logo-text" style="font-size:24px">
+                    ঔষ<span class="accent">ধা</span>লয়
+                    </span>
+                @endif
             </a>
 
             {{-- Search bar — centred --}}
@@ -182,41 +182,7 @@
                     <span class="hidden-mobile">Search</span>
                     <i class="fas fa-arrow-right visible-mobile" style="display:none"></i>
                 </button>
-
-                {{-- Search dropdown --}}
-                <div x-show="open && results.length" x-cloak
-                    style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid #e5e7eb;z-index:500;max-height:380px;overflow-y:auto;">
-                    <template x-for="p in results" :key="p.id">
-                        <a :href="'/shop/product/' + p.slug"
-                            style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid #f3f4f6;text-decoration:none;transition:background .12s"
-                            @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
-                            <div
-                                style="width:40px;height:40px;background:#f8fafb;border-radius:8px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-                                <img x-show="p.thumbnail_url" :src="p.thumbnail_url"
-                                    style="width:100%;height:100%;object-fit:contain;">
-                                <span x-show="!p.thumbnail_url" style="font-size:20px;">💊</span>
-                            </div>
-                            <div style="flex:1;min-width:0;">
-                                <p style="font-size:13px;font-weight:600;color:#1f2937;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
-                                    x-text="p.name"></p>
-                                <p style="font-size:11px;color:#6b7280"
-                                    x-text="(p.generic_name||'')+(p.brand?' · '+p.brand:'')"></p>
-                            </div>
-                            <div style="text-align:right;flex-shrink:0;">
-                                <p style="font-size:13px;font-weight:800;color:var(--teal)">৳<span
-                                        x-text="p.price"></span></p>
-                                <p x-show="p.discount>0" style="font-size:11px;color:#dc2626;font-weight:600">-<span
-                                        x-text="p.discount"></span>%</p>
-                            </div>
-                        </a>
-                    </template>
-                    <div style="padding:10px;text-align:center;background:#f9fafb;">
-                        <button @click="goToShop()"
-                            style="font-size:12px;color:var(--teal);font-weight:600;background:none;border:none;cursor:pointer;">
-                            View all for "<span x-text="query"></span>" →
-                        </button>
-                    </div>
-                </div>
+                @include('partials.search-dropdown')
             </div>
 
             {{-- Right actions — desktop --}}
@@ -245,54 +211,12 @@
                             class="hidden-mobile">{{ auth()->user()?->name ? Str::words(auth()->user()->name, 1, '') : 'Login' }}</span>
                         <i class="fas fa-chevron-down" style="font-size:9px"></i>
                     </button>
-                    <div x-show="userMenu" @click.away="userMenu=false" x-cloak
-                        style="position:absolute;right:0;top:calc(100%+4px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid #e5e7eb;width:200px;z-index:500;overflow:hidden;padding:4px 0">
-                        @auth
-                            <div
-                                style="padding:10px 14px 8px;font-size:12px;color:#6b7280;border-bottom:1px solid #f3f4f6">
-                                <p style="font-weight:700;color:#1f2937">{{ auth()->user()->name }}</p>
-                                <p>{{ auth()->user()->phone ?? auth()->user()->email }}</p>
-                            </div>
-                            @if (auth()->user()->isManager())
-                                <a href="{{ route('admin.dashboard') }}"
-                                    style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
-                                    @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
-                                    <i class="fas fa-tachometer-alt" style="color:var(--teal);width:14px"></i> Admin Panel
-                                </a>
-                            @endif
-                            @foreach ([['account.orders', 'fa-box', 'My Orders'], ['account.profile', 'fa-user-cog', 'Account'], ['account.wishlist', 'fa-heart', 'Wishlist']] as [$rt, $ic, $lb])
-                                <a href="{{ route($rt) }}"
-                                    style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
-                                    @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
-                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i>
-                                    {{ $lb }}
-                                </a>
-                            @endforeach
-                            <div style="border-top:1px solid #f3f4f6;margin-top:2px">
-                                <form action="{{ route('auth.logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit"
-                                        style="width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#dc2626;background:none;border:none;cursor:pointer;font-family:inherit">
-                                        <i class="fas fa-sign-out-alt" style="width:14px"></i> Logout
-                                    </button>
-                                </form>
-                            </div>
-                        @else
-                            @foreach ([['auth.login', 'fa-sign-in-alt', 'Login'], ['auth.register', 'fa-user-plus', 'Register'], ['auth.otp', 'fa-mobile-alt', 'Login with OTP']] as [$rt, $ic, $lb])
-                                <a href="{{ route($rt) }}"
-                                    style="display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;color:#374151;text-decoration:none"
-                                    @mouseenter="$el.style.background='#f9fafb'" @mouseleave="$el.style.background=''">
-                                    <i class="fas {{ $ic }}" style="color:var(--teal);width:14px"></i>
-                                    {{ $lb }}
-                                </a>
-                            @endforeach
-                        @endauth
-                    </div>
+                    @include('partials.account-dropdown')
                 </div>
             </div>
         </div>
     </header>
-    <div class="subnav ">
+    <div class="subnav">
         <div class="subnav-inner max-w-8xl mx-auto">
             <a href="{{ route('shop.index') }}"
                 class="snav-item {{ request()->routeIs('shop.index') && !request()->has('category') ? 'active' : '' }}">
@@ -321,88 +245,72 @@
     {{-- Mobile category drawer — opened by "Categories" in the bottom nav.
          Mirrors the desktop subnav's category list so there's one source
          of truth for which categories are shown. --}}
-    <aside id="shop-sidebar" class="lg:hidden" style="position:fixed;top:0;left:0;bottom:0;width:82%;max-width:320px;background:#fff;z-index:200;transform:translateX(-100%);transition:transform .25s ease;overflow-y:auto;box-shadow:4px 0 24px rgba(0,0,0,.15)">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #e5e7eb">
+    <aside id="shop-sidebar" class="lg:hidden mobile-cat-drawer">
+        <div class="mobile-cat-drawer-head">
             <p style="font-weight:800;font-size:15px;color:#1f2937;margin:0">Categories</p>
-            <button onclick="toggleSidebar()" aria-label="Close categories"
-                style="background:#f3f4f6;border:none;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer">
-                <i class="fas fa-times" style="color:#6b7280"></i>
+            <button onclick="toggleSidebar()" aria-label="Close categories" class="mobile-cat-drawer-close">
+                <i class="fas fa-times"></i>
             </button>
         </div>
         <nav style="padding:8px">
             <a href="{{ route('shop.index') }}" onclick="toggleSidebar()"
-                style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;text-decoration:none;color:#1f2937;font-weight:600;font-size:14px;{{ request()->routeIs('shop.index') && !request()->has('category') ? 'background:var(--teal-bg);color:var(--teal-dark)' : '' }}">
+                class="mobile-cat-drawer-link {{ request()->routeIs('shop.index') && !request()->has('category') ? 'active' : '' }}">
                 🏠 All Products
             </a>
             @foreach (\App\Models\Category::active()->get() as $cat)
                 <a href="{{ route('shop.index', ['category' => $cat->slug]) }}" onclick="toggleSidebar()"
-                    style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;text-decoration:none;color:#1f2937;font-weight:600;font-size:14px;{{ request('category') === $cat->slug ? 'background:var(--teal-bg);color:var(--teal-dark)' : '' }}">
+                    class="mobile-cat-drawer-link {{ request('category') === $cat->slug ? 'active' : '' }}">
                     {{ $cat->icon }} {{ $cat->name }}
                 </a>
             @endforeach
         </nav>
     </aside>
     {{-- ── FOOTER ── --}}
-    <footer style="background:#111827;color:#9ca3af;padding:0 0px 40px 0px;margin-top:0">
-        <div style="background:#fff;border-bottom:1px solid #e5e7eb" class=" w-full">
-            <div style="margin:0 auto;padding:10px 16px">
-                <div style="display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px">
-                    @foreach ([['fas fa-truck', 'Fast Delivery', '24-48hrs'], ['fas fa-headset', '24/7 Support', 'Always here'], ['fas fa-shield-alt', 'Secure Pay', 'bKash · Card']] as [$icon, $text, $sub])
-                        <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
-                            <i class="{{ $icon }}" style="color:var(--teal);font-size:10px"></i>
-                            <div>
-                                <p style="font-size:10px;font-weight:700;color:#1f2937;margin:0">
-                                    {{ $text }}</p>
-                                <p style="font-size:10px;color:#9ca3af;margin:0">{{ $sub }}</p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-        <div style="padding:20px">
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-bottom:32px">
-                <div style="grid-column:1/-1">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-                        <div
-                            style="width:64px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px">
-                            ঔষ<span class=" text-red-400">ধা</span>লয়
+    <footer class="site-footer">
+        <div class="footer-trust-strip">
+            <div class="footer-trust-strip-inner">
+                @foreach ([['fas fa-truck', 'Fast Delivery', '24-48hrs'], ['fas fa-headset', '24/7 Support', 'Always here'], ['fas fa-shield-alt', 'Secure Pay', 'bKash · Card']] as [$icon, $text, $sub])
+                    <div class="footer-trust-item">
+                        <i class="{{ $icon }}"></i>
+                        <div>
+                            <p>{{ $text }}</p>
+                            <p>{{ $sub }}</p>
                         </div>
                     </div>
-                    <p style="font-size:12px;line-height:1.7;margin-bottom:8px">Trusted Health and Wellness
-                        Shop in Bangladesh</p>
+                @endforeach
+            </div>
+        </div>
+        <div class="footer-main">
+            <div class="footer-grid">
+                <div class="footer-brand-col">
+                    <div class="footer-brand-logo">
+                        @if($siteLogo)
+                            <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}">
+                        @else
+                            <span class="hdr-logo-text" style="font-size:18px">
+                            ঔষ<span class="accent">ধা</span>লয়
+                            </span>
+                        @endif
+                    </div>
+                    <p class="footer-brand-text">Trusted Health and Wellness Shop in Bangladesh</p>
                 </div>
                 <div>
-                    <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Quick Links</p>
+                    <p class="footer-col-title">Quick Links</p>
                     @foreach ([['home', 'Home'], ['shop.index', 'All Products'], ['track', 'Track Order'], ['auth.login', 'My Account'], ['legal.privacy', 'Privacy Policy'], ['legal.terms', 'Terms'], ['legal.returns', 'Return Policy']] as [$rt, $lb])
-                        <a href="{{ route($rt) }}"
-                            style="display:block;font-size:12px;color:#9ca3af;text-decoration:none;margin-bottom:6px"
-                            @mouseenter="$el.style.color='#fff'"
-                            @mouseleave="$el.style.color='#9ca3af'">{{ $lb }}</a>
+                        <a href="{{ route($rt) }}" class="footer-link">{{ $lb }}</a>
                     @endforeach
                 </div>
                 <div>
-                    <p style="color:#fff;font-weight:600;font-size:13px;margin-bottom:10px">Contact</p>
-                    <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-phone"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_phone', '09610016778') }}
-                    </p>
-                    <p style="font-size:12px;margin-bottom:6px"><i class="fas fa-envelope"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_email', 'info@ousodhaloy.com') }}
-                    </p>
-                    <p style="font-size:12px"><i class="fas fa-map-marker-alt"
-                            style="color:var(--teal-light);margin-right:6px"></i>{{ \App\Models\Setting::get('site_address', 'Dhaka, Bangladesh') }}
-                    </p>
+                    <p class="footer-col-title">Contact</p>
+                    <p class="footer-contact-line"><i class="fas fa-phone"></i>{{ \App\Models\Setting::get('site_phone', '09610016778') }}</p>
+                    <p class="footer-contact-line"><i class="fas fa-envelope"></i>{{ \App\Models\Setting::get('site_email', 'info@ousodhaloy.com') }}</p>
+                    <p class="footer-contact-line"><i class="fas fa-map-marker-alt"></i>{{ \App\Models\Setting::get('site_address', 'Dhaka, Bangladesh') }}</p>
                 </div>
             </div>
-            <div
-                style="border-top:1px solid #1f2937;padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px">
-                <p>© {{ date('Y') }} {{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }} Ltd. All
-                    rights
-                    reserved.
-                </p>
-                <div style="display:flex;gap:14px">
-                    <span><i class="fas fa-lock" style="color:var(--teal-light);margin-right:4px"></i>SSL
-                        Secured</span>
+            <div class="footer-bottom">
+                <p>© {{ date('Y') }} {{ \App\Models\Setting::get('site_name', 'Ousodhaloy') }} Ltd. All rights reserved.</p>
+                <div class="footer-ssl-badge">
+                    <i class="fas fa-lock"></i><span>SSL Secured</span>
                 </div>
             </div>
         </div>
@@ -413,11 +321,11 @@
         <a href="{{ $messengerUrl }}" target="_blank" rel="noopener" class="messenger-fab"
             aria-label="Chat on Messenger">
             <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="34" cy="34" r="34" fill="#0084FF" />
+                <circle cx="34" cy="34" r="34" fill="{{ $bp }}" />
                 <path
                     d="M24 10C16.268 10 10 15.82 10 23c0 3.876 1.748 7.354 4.558 9.826V37l4.242-2.334A15.16 15.16 0 0024 35c7.732 0 14-5.82 14-12S31.732 10 24 10z"
                     fill="white" />
-                <path d="M13 26l6-6.4 4.5 4.5L30 20l-6.2 6.6-4.3-4.5L13 26z" fill="#0084FF" />
+                <path d="M13 26l6-6.4 4.5 4.5L30 20l-6.2 6.6-4.3-4.5L13 26z" fill="{{ $bp }}" />
             </svg>
         </a>
     @endif
@@ -450,8 +358,8 @@
         </div>
     </nav>
     {{-- Back to top --}}
-    <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"
-        style="display:none;position:fixed;bottom:80px;right:16px;background:var(--teal);color:#fff;width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:90;align-items:center;justify-content:center;transition:background .15s">
+    <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="back-to-top-btn"
+        style="display:none">
         <i class="fas fa-arrow-up" style="font-size:13px"></i>
     </button>
     @include('partials.cookie-banner')

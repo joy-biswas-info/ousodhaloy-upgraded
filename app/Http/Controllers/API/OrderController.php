@@ -73,6 +73,18 @@ class OrderController extends Controller
             'confirm_courier_cancel' => 'nullable|boolean',
         ]);
 
+        // Same admin-editable gate as the web admin's updateStatus() — without
+        // it, a client could set ready_to_ship/shipped/out_for_delivery/
+        // delivered/returned directly, statuses meant to be set only by the
+        // push-to-courier actions and the courier webhook. canTransitionTo()
+        // alone would allow it (it has to, for those other callers).
+        if (!in_array($request->status, $order->adminSelectableStatuses(), true)) {
+            $reason = $request->status === 'cancelled' && !$order->canCancel()
+                ? 'This order can no longer be cancelled — the package has already been picked up by the courier.'
+                : "\"" . (Order::STATUS_LABELS[$request->status] ?? $request->status) . '" is set automatically by the courier and can\'t be chosen manually.';
+            return response()->json(['message' => $reason], 422);
+        }
+
         // Same courier-cancel gate as the web admin — neither courier API
         // supports remote cancellation, so cancelling a courier-linked
         // order here only changes our own status.
@@ -226,7 +238,15 @@ class OrderController extends Controller
             'items_count' => $o->items->count(),
             'district' => $o->shipping_district,
             'created_at' => $o->created_at->toIso8601String(),
-            'next_statuses' => Order::STATUS_FLOW[$o->status] ?? [],
+            // adminSelectableStatuses(), not the raw STATUS_FLOW map — the
+            // latter is the full state machine including courier-driven
+            // targets (ready_to_ship/shipped/out_for_delivery/delivered/
+            // returned) that only the push-to-courier action or a webhook
+            // may set. The web admin already restricts its dropdown to this
+            // same subset; this endpoint listing the wider set would let the
+            // app build a status picker that can attempt transitions
+            // updateStatus() itself doesn't gate (see AdminOrderController).
+            'next_statuses' => $o->adminSelectableStatuses(),
         ];
     }
 

@@ -79,25 +79,12 @@
         {{-- ── MAIN PRODUCT BLOCK ── --}}
         <div class="bg-white rounded-2xl border overflow-hidden mb-5 shadow-sm">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
-
-                {{-- Images --}}
-                <div class="p-5 border-b md:border-b-0 md:border-r border-gray-100">
-                    <div class="pdp-img-main mb-3" @click="lightboxOpen = true">
-                        <template x-if="activeImg">
-                            <img :src="activeImg" alt="{{ $product->name }}"
-                                class="max-h-full max-w-full object-contain transition-opacity duration-200">
-                        </template>
-                        <template x-if="!activeImg">
-                            <span class="text-8xl select-none">💊</span>
-                        </template>
-
-                        @if ($product->mrp && $product->mrp > $product->effective_price)
-                            <div
-                                class="absolute top-3 left-3 bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-lg shadow">
-                                {{ $product->discount_percentage }}% OFF
-                            </div>
-                        @endif
-                    </div>
+                {{-- Images — thumbnail column beside the main image on mobile
+                     (not just desktop), main image always visually on top
+                     since it's the more important element regardless of DOM
+                     order (thumbs come first in markup so md:flex-col-reverse
+                     can flip them below it on the desktop layout). --}}
+                <div class="p-3 sm:p-5 border-b md:border-b-0 md:border-r border-gray-100 flex flex-row md:flex-col-reverse gap-3">
                     @php $allImages = array_values(array_filter(array_merge([$product->thumbnail_url], $product->image_urls ?? []))); @endphp
                     @if (count($allImages) > 1)
                         <div class="pdp-thumb-rail">
@@ -109,6 +96,23 @@
                             @endforeach
                         </div>
                     @endif
+                    <div class="pdp-img-main flex-1 min-w-0" @click="lightboxOpen = true">
+                        <template x-if="activeImg">
+                            <img :src="activeImg" alt="{{ $product->name }}"
+                                class="max-h-full max-w-full object-contain transition-opacity duration-200">
+                        </template>
+                        <template x-if="!activeImg">
+                            <span class="text-8xl select-none">💊</span>
+                        </template>
+
+                        @if ($product->mrp && $product->mrp > $product->effective_price)
+                            <div class="pdp-discount-badge">
+                                {{ $product->discount_percentage }}% OFF
+                            </div>
+                        @endif
+
+                        <span class="pdp-zoom-hint"><i class="fas fa-search-plus"></i></span>
+                    </div>
                 </div>
 
                 {{-- Product Info --}}
