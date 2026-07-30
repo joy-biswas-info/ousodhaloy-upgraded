@@ -32,26 +32,31 @@ class NotificationService
             return;
         }
 
-        // FCM data payload values must all be strings.
-        $message = CloudMessage::new()
-            ->withData(MessageData::fromArray([
-                'type' => 'new_order',
-                'order_id' => (string) $order->id,
-                'order_number' => $order->order_number,
-                'title' => "New Order #{$order->order_number}",
-                'body' => "৳" . number_format((float) $order->total, 0) . ' · ' . ($order->shipping_district ?? ''),
-            ]))
-            ->withAndroidConfig(AndroidConfig::fromArray([])->withHighMessagePriority());
-
         try {
-            // Resolved lazily, inside the try — the Firebase SDK validates
-            // the service-account credentials the moment it's built, not
-            // just when a message is actually sent. Until the credentials
-            // file from Stage 2's Firebase setup exists, that resolution
-            // itself throws; constructor-injecting Messaging would let that
-            // exception escape before this catch ever runs, which would
-            // break order creation entirely on a missing/misconfigured key
-            // — exactly what this method must never do.
+            // Building the message itself was previously OUTSIDE this try —
+            // if the Kreait Firebase classes weren't loadable for any reason
+            // (e.g. the package missing/incomplete in a deployed vendor/,
+            // which is exactly what happened in production once), that
+            // construction threw uncaught and took down the entire checkout
+            // request with it. The comment below already documented the
+            // intent ("must never break order creation") — moving the
+            // construction in here is what actually delivers on it.
+            //
+            // Messaging itself is also still resolved lazily, inside the try
+            // — the Firebase SDK validates the service-account credentials
+            // the moment it's built, not just when a message is actually
+            // sent, so a missing/misconfigured credentials file throws at
+            // resolution time too.
+            $message = CloudMessage::new()
+                ->withData(MessageData::fromArray([
+                    'type' => 'new_order',
+                    'order_id' => (string) $order->id,
+                    'order_number' => $order->order_number,
+                    'title' => "New Order #{$order->order_number}",
+                    'body' => "৳" . number_format((float) $order->total, 0) . ' · ' . ($order->shipping_district ?? ''),
+                ]))
+                ->withAndroidConfig(AndroidConfig::fromArray([])->withHighMessagePriority());
+
             $messaging = app(Messaging::class);
             $report = $messaging->sendMulticast($message, $tokens);
 
