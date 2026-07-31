@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum', 'api.manager'])->group(function () {
     // Orders — specific routes before the {order} wildcard
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
+    Route::get('/orders/{order}/pathao-success-rate', [OrderController::class, 'pathaoSuccessRate']);
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus']);
     Route::post('/orders/{order}/note', [OrderController::class, 'addNote']);
     Route::post('/orders/{order}/steadfast', [OrderController::class, 'pushToSteadfast']);

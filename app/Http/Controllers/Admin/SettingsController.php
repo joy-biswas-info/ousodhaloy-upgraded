@@ -29,7 +29,6 @@ class SettingsController extends Controller
         'meta_pixel_add_to_cart',
         'meta_pixel_initiate_checkout',
         'meta_pixel_purchase',
-        'email_new_order',          // ← add
         'sms_on_confirmed',          // ← also missing, add this too
         'sms_on_shipped',            // ← also missing
         'sms_on_out_for_delivery',   // ← also missing
@@ -52,7 +51,7 @@ class SettingsController extends Controller
             'brand_bg',
             'messenger_url'
         ],
-        'notifications' => ['admin_notification_email', 'email_new_order'],
+        'notifications' => ['admin_notification_email'],
         'orders' => ['guest_checkout', 'free_delivery_min', 'delivery_charge', 'min_order_amount'],
         'payment' => [
             'cod_enabled',

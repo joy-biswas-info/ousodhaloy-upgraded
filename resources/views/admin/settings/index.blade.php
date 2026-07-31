@@ -773,24 +773,6 @@
                 <p class="text-xs text-gray-400 mt-1">All admin notifications are sent to this address</p>
             </div>
 
-            <div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Email Triggers</p>
-                <label class="flex items-center justify-between p-4 border rounded-xl hover:bg-gray-50 cursor-pointer">
-                    <div class="flex items-center gap-3">
-                        <span class="text-lg">🛍️</span>
-                        <div>
-                            <p class="text-sm font-semibold text-gray-800">New Order Placed</p>
-                            <p class="text-xs text-gray-400">Receive an email every time a customer places an order</p>
-                        </div>
-                    </div>
-                    <div class="relative flex-shrink-0 ml-4">
-                        <input type="checkbox" name="email_new_order" value="true"
-                            {{ ($settings['email_new_order'] ?? 'true') === 'true' ? 'checked' : '' }} class="sr-only peer">
-                        <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-checked:bg-teal-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
-                    </div>
-                </label>
-            </div>
-
             <div class="flex justify-end border-t pt-4">
                 <button type="submit" class="btn-primary"><i class="fas fa-save mr-2"></i>Save Notification Settings</button>
             </div>

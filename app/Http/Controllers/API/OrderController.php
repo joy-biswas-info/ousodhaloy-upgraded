@@ -118,6 +118,20 @@ class OrderController extends Controller
         return response()->json(['message' => 'Status updated', 'status' => $request->status]);
     }
 
+    // Same fraud-check as the web admin's pathaoSuccessRate() — Pathao's own
+    // API reporting this customer's historical delivery success rate by
+    // phone number, so the app can flag risky customers before pushing an
+    // order to the courier. Cached 1h server-side inside PathaoService.
+    public function pathaoSuccessRate(Order $order)
+    {
+        if (!$order->customer_phone) {
+            return response()->json(['success' => false, 'error' => 'This order has no phone number on file.'], 422);
+        }
+
+        $result = $this->pathao->getUserSuccessRate($order->customer_phone);
+        return response()->json($result, $result['success'] ? 200 : 422);
+    }
+
     public function addNote(Request $request, Order $order)
     {
         $request->validate(['note' => 'required|string|max:1000']);

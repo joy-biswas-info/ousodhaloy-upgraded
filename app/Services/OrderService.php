@@ -1,8 +1,6 @@
 <?php
 namespace App\Services;
-use App\Mail\NewOrderMail;
 use App\Models\PromoCodeUsage;
-use Illuminate\Support\Facades\Mail;
 use App\Models\{DeliveryZone, Order, OrderItem, OrderStatusHistory, Product, PromoCode, Setting};
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -152,15 +150,6 @@ class OrderService
 
             // 8. Send confirmation SMS
             $this->sms->orderPlaced($order);
-
-            $adminEmail = Setting::get('admin_notification_email') ?: Setting::get('site_email');
-            if ($adminEmail && Setting::get('email_new_order', 'true') === 'true') {
-                try {
-                    Mail::to($adminEmail)->send(new NewOrderMail($order->load('items')));
-                } catch (\Exception $e) {
-                    logger()->error('Admin order email failed: ' . $e->getMessage());
-                }
-            }
 
             // 9. Server-side Purchase (CAPI) — COD orders convert immediately
             // at creation, matching the client-side Purchase pixel that fires
