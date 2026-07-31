@@ -29,10 +29,3 @@ jobs:
             **/node_modules/**
             tests/**
             .env
-            # Live server data — never overwrite from the repo
-            storage/app/**
-            storage/logs/**
-            storage/framework/cache/**
-            storage/framework/sessions/**
-            storage/framework/views/**
-            .github/**
