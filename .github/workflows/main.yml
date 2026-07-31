@@ -23,9 +23,25 @@ jobs:
           port: 21
           server-dir: public_html/
 
+          # The old .ftp-deploy-sync-state.json listed files (app/Http/Controllers/API/*)
+          # that never actually existed on the server, so every run tried to STOR into
+          # — then CWD to — a directory that wasn't there (553, then 550). Pointing at a
+          # fresh state file makes the action treat the server as empty: it issues MKD
+          # for each directory and re-uploads everything, rebuilding accurate state.
+          # Safe to leave in place permanently. Do NOT swap this for
+          # dangerous-clean-slate, which would wipe .env, vendor/ and uploaded files.
+          state-name: .ftp-deploy-state-v2.json
+
           exclude: |
             **/.git*
             **/.git*/**
             **/node_modules/**
             tests/**
             .env
+            # Live server data — never overwrite from the repo
+            storage/app/**
+            storage/logs/**
+            storage/framework/cache/**
+            storage/framework/sessions/**
+            storage/framework/views/**
+            .github/**
