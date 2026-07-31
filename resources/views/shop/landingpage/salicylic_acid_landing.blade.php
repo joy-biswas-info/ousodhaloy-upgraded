@@ -1971,7 +1971,7 @@ $pixelViewContent = \App\Models\Setting::get('meta_pixel_view_content', 'true') 
 
   <!-- FOOTER -->
   <footer>
-    <p>© 2026 Ousodhaloy.com · Bangladesh</p>
+    <p>© 2026 Ousodhaloy.com · Dhaka, Bangladesh</p>
     <div class="footer-links">
       <a href="https://ousodhaloy.com/privacy-policy">Privacy Policy</a>
       <a href="https://ousodhaloy.com/terms-of-use">Terms of Use</a>
