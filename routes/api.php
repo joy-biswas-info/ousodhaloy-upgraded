@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AuthControllers;
 use App\Http\Controllers\Api\DeviceTokenController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
@@ -14,15 +14,15 @@ use Illuminate\Support\Facades\Route;
 // require a valid staff token first), but login is the one route anyone
 // unauthenticated can hit, and without this it had zero brute-force
 // protection. Matches the web login route's own throttle:5,1.
-Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/auth/login', [AuthControllers::class, 'login'])->middleware('throttle:5,1');
 
 // ── Protected (staff/manager only — reopen is further gated to admin
 //    inside OrderController::reopen(), see routes/web.php for the same
 //    pattern on the web admin side) ───────────────────────────────────────
 Route::middleware(['auth:sanctum', 'api.manager'])->group(function () {
 
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/logout', [AuthControllers::class, 'logout']);
+    Route::get('/auth/me', [AuthControllers::class, 'me']);
 
     Route::post('/device-token', [DeviceTokenController::class, 'store']);
     Route::delete('/device-token', [DeviceTokenController::class, 'destroy']);
