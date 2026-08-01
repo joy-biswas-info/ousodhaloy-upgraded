@@ -337,6 +337,29 @@ body {
   margin-top: 4px;
 }
 
+/* iOS Safari auto-zooms into any form control it focuses whose font-size is
+   under 16px — and it never zooms back out on blur, leaving the customer stuck
+   on a magnified, side-scrolling checkout for the rest of the session. The 13px
+   above triggers it on every field, most noticeably the address textarea.
+   Bumping to exactly 16px is the only reliable fix; desktop keeps 13px so the
+   design is unchanged there.
+
+   Keyed to width (Tailwind's lg breakpoint, which this checkout already uses for
+   its mobile/desktop split) rather than `(pointer: coarse)`: pointer-capability
+   detection is unreliable — iPads with a trackpad and touchscreen laptops report
+   a fine pointer while still auto-zooming.
+
+   Deliberately NOT solved with `maximum-scale=1, user-scalable=no` on the
+   viewport meta: that disables pinch-zoom for everyone (an accessibility
+   regression) and iOS has ignored it since iOS 10 anyway. */
+@media (max-width: 1023px) {
+  .form-input,
+  .form-select,
+  textarea.form-input {
+    font-size: 16px;
+  }
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;

@@ -295,8 +295,11 @@
                     @if($showPromo)
                     <div class="mt-3 flex gap-2">
                         <label for="promo-input" class="sr-only">Promo code</label>
+                        {{-- text-base on mobile (=16px) keeps iOS from auto-zooming on focus,
+                             same reason as the .form-input rule in app.css; lg:text-xs restores
+                             the intended size on desktop where the zoom behaviour doesn't apply --}}
                         <input type="text" id="promo-input" placeholder="Promo code"
-                            class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs uppercase outline-none focus:border-teal-500">
+                            class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-base lg:text-xs uppercase outline-none focus:border-teal-500">
                         <button type="button" onclick="validatePromo()" class="btn-secondary btn-sm px-3">Apply</button>
                     </div>
                     <p id="promo-msg" class="text-xs mt-1 hidden"></p>
@@ -360,6 +363,55 @@ document.addEventListener('DOMContentLoaded', () => {
         firstError.focus({ preventScroll: true });
     }
 });
+
+// Submit spinner + double-submit guard. The POST does real work (stock lock,
+// SMS, CAPI) before it redirects, so on mobile data there's a visible gap where
+// the page looks frozen — customers tapped again and got duplicate orders.
+// Disabling on the FIRST submit is what actually prevents that; the spinner is
+// what stops them wanting to tap in the first place.
+(() => {
+    const form = document.getElementById('checkout-form');
+    if (!form) return;
+    const buttons = () => form.querySelectorAll('button[type="submit"]');
+
+    const unlock = () => {
+        delete form.dataset.submitting;
+        buttons().forEach(b => {
+            b.disabled = false;
+            if (b._originalHTML) b.innerHTML = b._originalHTML;
+        });
+    };
+
+    form.addEventListener('submit', (e) => {
+        // Native constraint validation blocks the event entirely, so reaching
+        // here means the form is actually valid and on its way.
+        if (form.dataset.submitting) {
+            e.preventDefault();
+            return;
+        }
+        form.dataset.submitting = '1';
+
+        // Deferred: disabling a submit button synchronously inside its own
+        // submit handler cancels the submission in some browsers. The flag
+        // above already blocks a second tap in this same tick.
+        setTimeout(() => {
+            buttons().forEach(b => {
+                b._originalHTML = b.innerHTML;
+                b.disabled = true;
+                b.style.opacity = '0.75';
+                b.style.cursor = 'wait';
+                b.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Placing Order…';
+            });
+        }, 0);
+    });
+
+    // Coming Back from the confirmation page or an abandoned payment gateway
+    // restores this page from bfcache with the DOM exactly as we left it —
+    // buttons still disabled and spinning. Re-enable so checkout isn't dead.
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) unlock();
+    });
+})();
 
 // Live phone format check on blur — catches typos before the server round trip
 const phoneInput = document.getElementById('shipping-phone-input');
